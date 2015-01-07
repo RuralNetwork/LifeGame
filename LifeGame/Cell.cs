@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace LifeGame
 {
@@ -25,9 +26,9 @@ namespace LifeGame
         Snow
     }
 
-    class HexGrid
+    class HexGrid : Grid
     {
-        //Prova modifica
+
     }
 
     class Cell
