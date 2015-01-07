@@ -37,6 +37,10 @@ namespace LifeGame
         public readonly PointF Position { get; set; }
         public Terrain Terrain { get; set; }
         public int Altitude { get; set; }
+        /// <summary>
+        /// We should consider wheter keep this minimal and theoretical or go all the way
+        /// Here for example could put only one item per cell and don't allow anything else if we keep it minimal
+        /// </summary>
         public List<Item> SubItems { get; set; }
 
         public Cell(HexGrid parent, float x, float y)
@@ -49,5 +53,16 @@ namespace LifeGame
     class Item
     {
 
+    }
+    //The traits of a being, should be a module
+    class Trait{
+
+    }
+    class Being
+    {
+        public Being(PointF position, Trait parents)
+        {
+
+        }
     }
 }
