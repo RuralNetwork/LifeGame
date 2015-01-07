@@ -27,7 +27,7 @@ namespace LifeGame
 
     class HexGrid
     {
-
+        //Prova modifica
     }
 
     class Cell
