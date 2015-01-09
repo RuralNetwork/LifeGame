@@ -64,7 +64,7 @@ namespace LifeGame
         public Cell[][] Cells;//jagged array is faster than matrix
         public Environment()
         {
-
+             
         }
 
         void RunStep()
