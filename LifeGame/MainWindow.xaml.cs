@@ -23,6 +23,8 @@ namespace LifeGame
         public MainWindow()
         {
             InitializeComponent();
+            GridPoint a = new GridPoint(0, 1);
+
         }
     }
 }

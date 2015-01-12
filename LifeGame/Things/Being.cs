@@ -9,25 +9,87 @@ namespace LifeGame
     // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
     public class Being : Thing
     {
+        // sensors:
+        // 5, one for each direction except back,
+        // 1 for the cell it is ("look down")
+        // 1 for the generic environment ("look up")
+        // 1 for what it holds
+        // each sensor can percevive a subset of the perceptible properties
+
+        // actions per timestep:
+        // Walk (x, y), it will be clamped to the nearest cell, if the vector is too small it will only reorient the being;
+        // + another action
+
         Environment _environment;
-        public Cell Location { get; set; }
+
+        public GridPoint Location { get; set; }
+
 
         public Thing CarriedObj { get; set; }
 
-        public Being(Environment environment)
+        public int ID { get; private set; }
+
+        public Being(Environment environment, int id, GridPoint location)
         {
             _environment = environment;
         }
 
         public override void Update()
         {
+            CarriedObj.Update();
+
             // run n cycles of his neural net
-            // then do the choosen action
+            // then do the choosen action + walk
 
             // dummy code
-            var food = new List<Thing>() { Location.Items[0] };
-            var eating = new Action(ActionType.Eat, this, food);
-            eating.Perform();
+            //var food = _environment.Cells[Location.X][Location.Y]
+            //var eating = new Action(ActionType.Eat, this, food);
+            //eating.Perform();
+        }
+
+        public override void Draw()
+        {
+            CarriedObj.Draw();
+        }
+
+        public override float Moving// it depends on what was the magnitude of the previous vector of walk
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Painful //if it has fougth or tried to eat someone else
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Weight // the corpse?
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Warmth
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Amplitude
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Pitch // could change with age or actions (eg mating call)
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float SmellIntensity
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Smell
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

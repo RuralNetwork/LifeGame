@@ -13,10 +13,7 @@ namespace LifeGame
     {
         Walk,
         Sleep,
-        HideSelf,
-        HideSth,
         Eat,
-        Excrete, //(correggimi se è sbagliato)
         Breed,
         Fight,
         Take,
@@ -27,7 +24,9 @@ namespace LifeGame
 
     }
 
-
+    /// <summary>
+    /// Can be performed by a being
+    /// </summary>
     public class Action
     {
 
@@ -35,25 +34,26 @@ namespace LifeGame
 
         public Dictionary<string, byte> Parameters { get; set; }
 
-        public Thing Actor { get; set; }
-        public List<Thing> CoActors { get; set; }
+        /// <summary>
+        /// Who is performing the action
+        /// </summary>
+        public Being Actor { get; set; }
 
-        public Action(ActionType type, Thing actor, List<Thing> coactors)
+        /// <summary>
+        /// Who/What is undergoing the action
+        /// </summary>
+        public Thing CoActor { get; set; }
+
+        public Action(ActionType type, Being actor, Thing coactor)
         {
             Type = type;
             Actor = actor;
-            CoActors = coactors;
+            CoActor = coactor;
         }
 
         public void Perform()
         {
-            foreach (var coactor in CoActors)
-            {
-                if (coactor.Interactions.ContainsKey(this.Type))
-                {
-                    coactor.Interactions[this.Type](Actor); // <-- this is a delegate call  ( Effects(Thing actor) )
-                }
-            }
+            CoActor.Interactions[this.Type](Actor); // <-- this is a delegate call  ( Effects(Being actor) )
         }
 
     }
