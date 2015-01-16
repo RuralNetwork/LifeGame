@@ -23,7 +23,7 @@ namespace LifeGame
         Environment _environment;
 
         public GridPoint Location { get; set; }
-
+        public Vector LastWalkDir { get; set; }
 
         public Thing CarriedObj { get; set; }
 
@@ -37,6 +37,10 @@ namespace LifeGame
         public override void Update()
         {
             CarriedObj.Update();
+
+            var inputs = new List<float>();
+            var dir = LastWalkDir.Normalized;
+
 
             // run n cycles of his neural net
             // then do the choosen action + walk
@@ -62,9 +66,9 @@ namespace LifeGame
             get { throw new NotImplementedException(); }
         }
 
-        public override float Weight // the corpse?
+        public override float Weight // the corpse? -> no it becomes a corpse thing, it doesn't perform actions
         {
-            get { throw new NotImplementedException(); }
+            get { return 0; }
         }
 
         public override float Warmth
