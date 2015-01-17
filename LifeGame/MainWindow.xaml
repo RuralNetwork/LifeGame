@@ -1,6 +1,8 @@
 ﻿<Window x:Class="LifeGame.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid/>
+        Title="MainWindow" Height="600" Width="1000">
+    <Grid Margin="0">
+        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Width="276" Height="72" Click="Button_Click" FontSize="24"/>
+    </Grid>
 </Window>

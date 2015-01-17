@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace LifeGame
 {
@@ -26,12 +27,14 @@ namespace LifeGame
         public Vector LastWalkDir { get; set; }
 
         public Thing CarriedObj { get; set; }
-
+        //Something tells me int won't be enough
         public int ID { get; private set; }
 
         public Being(Environment environment, int id, GridPoint location)
         {
             _environment = environment;
+            ID = id;
+            Location = location;
         }
 
         public override void Update()
@@ -54,6 +57,7 @@ namespace LifeGame
         public override void Draw()
         {
             CarriedObj.Draw();
+            Debug.WriteLine("Drew %d\n",ID);
         }
 
         public override float Moving// it depends on what was the magnitude of the previous vector of walk
