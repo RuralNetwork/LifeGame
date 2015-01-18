@@ -12,10 +12,8 @@ namespace LifeGame
     public class Environment : Thing
     {
         public int Time;
-        //I don't really now how you intend to use this, with a jagged array we can't add and remove items
-        //Unless we already know when we create the environment how many cells we want, then it's perfect
-        //Otherwise we might need to use List
         public Cell[][] Cells;//jagged array is faster than matrix
+
         public Environment(int gridWidth, int gridHeight)
         {
             Cells = new Cell[gridWidth][];
@@ -40,7 +38,7 @@ namespace LifeGame
 
         public override void Draw()
         {
-            //So each game-tick I just need to call this draw
+            //So each game-tick you just need to call this draw, every cell is updated
             foreach (var arr in Cells)
             {
                 foreach (var cell in arr)
