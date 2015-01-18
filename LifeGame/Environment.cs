@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace LifeGame
 {
 
-
     public class Environment : Thing
     {
         public int Time;
+        //I don't really now how you intend to use this, with a jagged array we can't add and remove items
+        //Unless we already know when we create the environment how many cells we want, then it's perfect
+        //Otherwise we might need to use List
         public Cell[][] Cells;//jagged array is faster than matrix
         public Environment(int gridWidth, int gridHeight)
         {
@@ -37,6 +40,7 @@ namespace LifeGame
 
         public override void Draw()
         {
+            //So each game-tick I just need to call this draw
             foreach (var arr in Cells)
             {
                 foreach (var cell in arr)
@@ -88,11 +92,12 @@ namespace LifeGame
         }
     }
 
-    public class Cell // I de-inherited it from Thing beacuse it doesn't have any perceptible property. We assume it as a mere container. It will contains the environment elements
+    public class Cell // I de-inherited it from Thing beacuse it doesn't have any perceptible property. We assume it as a mere container. It will contain the environment elements
     {
         Environment _parent;
 
         public GridPoint Location { get; set; }
+        //Are you sure? If so, do we need a 3D model?
         public int Altitude { get; set; }
         public Thing Item { get; set; }
         /// <summary>
@@ -113,7 +118,8 @@ namespace LifeGame
 
         public void Draw()
         {
-            Item.Draw();
+            //Item.Draw(); Commented for testing draw
+            Debug.Write("Drew cell\n");
         }
     }
 }

@@ -59,6 +59,7 @@
     </ApplicationDefinition>
     <Compile Include="Simulation.cs" />
     <Compile Include="Things\Interfaces\IEatable.cs" />
+    <Compile Include="Graphics.cs" />
     <Compile Include="Structures.cs" />
     <Compile Include="Things\Being.cs" />
     <Compile Include="Things\Thing.cs" />
