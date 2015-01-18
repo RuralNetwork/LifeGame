@@ -13,9 +13,14 @@ namespace LifeGame
     {
         public int Time;
         public Cell[][] Cells;//jagged array is faster than matrix
-        public Environment()
+        public Environment(int gridWidth, int gridHeight)
         {
+            Cells = new Cell[gridWidth][];
+            for (int i = 0; i < gridHeight; i++)
+			{
+                Cells[i] = new Cell[gridHeight];
 
+			}
         }
 
         public override void Update()

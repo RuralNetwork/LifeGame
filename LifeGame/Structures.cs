@@ -103,7 +103,8 @@ namespace LifeGame
         {
             get
             {
-                return new Vector(X / Magnitude, Y / Magnitude);
+                float mag = Magnitude;
+                return new Vector(X / mag, Y / mag);
             }
         }
 

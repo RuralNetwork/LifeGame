@@ -9,6 +9,14 @@ namespace LifeGame
     // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
     public class Being : Thing
     {
+        struct State
+        {
+            public float Health;// can be healed
+            public float Integrity; // cannot be healed
+            public float Hunger;
+        }
+
+
         // sensors:
         // 5, one for each direction except back,
         // 1 for the cell it is ("look down")
@@ -22,12 +30,12 @@ namespace LifeGame
 
         Environment _environment;
 
+        public int ID { get; private set; }
         public GridPoint Location { get; set; }
         public Vector LastWalkDir { get; set; }
-
         public Thing CarriedObj { get; set; }
 
-        public int ID { get; private set; }
+        //Phenome
 
         public Being(Environment environment, int id, GridPoint location)
         {
@@ -37,7 +45,7 @@ namespace LifeGame
         public override void Update()
         {
             CarriedObj.Update();
-
+            
             var inputs = new List<float>();
             var dir = LastWalkDir.Normalized;
 
