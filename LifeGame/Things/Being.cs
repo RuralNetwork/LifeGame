@@ -7,15 +7,17 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
+    public struct BeingState
+    {
+        public float Health;// can be healed
+        public float Integrity; // cannot be healed
+        public float Thirst;
+        public float Hunger;
+    }
     // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
     public class Being : Thing
     {
-        struct State
-        {
-            public float Health;// can be healed
-            public float Integrity; // cannot be healed
-            public float Hunger;
-        }
+        public BeingState State { get; set; }
 
 
         // sensors:
@@ -64,7 +66,7 @@ namespace LifeGame
         public override void Draw()
         {
             CarriedObj.Draw();
-            Debug.WriteLine("Drew %d\n",ID);
+            Debug.WriteLine("Drew %d\n", ID);
         }
 
         public override float Moving// it depends on what was the magnitude of the previous vector of walk
