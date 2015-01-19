@@ -8,7 +8,7 @@ namespace LifeGame
 {
     public class Event
     {
-
+        // This class should contains time of the event, the message(actor, action), all the data from the previous n ticks and the data from the following n ticks
     }
     public enum SimulationType
     {
@@ -23,9 +23,9 @@ namespace LifeGame
         SimulationType Type { get; set; }
         public bool IsRunning { get; private set; }
         /// <summary>
-        /// History of events. Key: time tick. Value: message.
+        /// History of events.
         /// </summary>
-        Dictionary<int, string> Events { get; set; }
+        List<Event> Events { get; set; }
 
         Environment _environment;
 

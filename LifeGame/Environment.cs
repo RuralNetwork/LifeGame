@@ -12,7 +12,7 @@ namespace LifeGame
     public class Environment : Thing
     {
         public int Time;
-        public Cell[][] Cells;//jagged array is faster than matrix
+        public Cell[][] Cells;
 
         public Environment(int gridWidth, int gridHeight)
         {
@@ -90,12 +90,13 @@ namespace LifeGame
         }
     }
 
-    public class Cell // I de-inherited it from Thing beacuse it doesn't have any perceptible property. We assume it as a mere container. It will contain the environment elements
+    public class Cell
     {
         Environment _parent;
 
         public GridPoint Location { get; set; }
         //Are you sure? If so, do we need a 3D model?
+        //No, just overlayed bitmaps, but then the system for selecting the cells with mouse must consider the altitude (and it's not so straight forward)
         public int Altitude { get; set; }
         public Thing Item { get; set; }
         /// <summary>
