@@ -60,7 +60,6 @@
     <Compile Include="NeuralNetwork\NeuralNetwork.cs" />
     <Compile Include="NeuralNetwork\SignalArray.cs" />
     <Compile Include="Simulation.cs" />
-    <Compile Include="Things\Interfaces\IEatable.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="Structures.cs" />
     <Compile Include="Things\Being.cs" />
@@ -110,6 +109,9 @@
   <ItemGroup />
   <ItemGroup>
     <Resource Include="Things\Interfaces\Remarks.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NeuralNetwork\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
