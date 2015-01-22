@@ -13,34 +13,15 @@ namespace LifeGame
     /// </summary>
     public abstract class Thing
     {
-        //////// Perceptible properties
         // Sight
-        public float R
-        {
-            get
-            {
-                return this.Color.ScR * Size;
-            }
-        }
-        public float G
-        {
-            get
-            {
-                return this.Color.ScG * Size;
-            }
-        }
-        public float B
-        {
-            get
-            {
-                return this.Color.ScB * Size;
-            }
-        }
+        public abstract float R { get; }
+        public abstract float G { get; }
+        public abstract float B { get; }
         public abstract float Moving { get; }
 
         //feel
-        public abstract float Painful { get; }// only for carried object
-        public abstract float Weight { get; }// only for carried object
+        public abstract float Painful { get; }
+        public abstract float Weight { get; }
         public abstract float Warmth { get; }
 
         //hearing
@@ -50,11 +31,7 @@ namespace LifeGame
         //smell
         public abstract float SmellIntensity { get; }
         public abstract float Smell { get; }
-        
 
-        ////////////Intrisic properties
-        public Color Color { get; set; }
-        public float Size { get; set; }
 
         public delegate void Effects(Being actor);
         public readonly Dictionary<ActionType, Effects> Interactions;

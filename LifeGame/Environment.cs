@@ -49,6 +49,21 @@ namespace LifeGame
 
         }
 
+        public override float R
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float G
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float B
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public override float Moving
         {
             get { return 0; }
@@ -69,14 +84,14 @@ namespace LifeGame
             get { throw new NotImplementedException(); }
         }
 
-        public override float Amplitude // birds?
+        public override float Amplitude // birds?  -> no, useless
         {
-            get { throw new NotImplementedException(); }
+            get { return 0; }
         }
 
-        public override float Pitch // birds?
+        public override float Pitch // birds?  -> no, useless
         {
-            get { throw new NotImplementedException(); }
+            get { return 0; }
         }
 
         public override float SmellIntensity // if rainy?

@@ -57,13 +57,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Math_stuff\FastRandom.cs" />
     <Compile Include="NeuralNetwork\NeuralNetwork.cs" />
+    <Compile Include="NeuralNetwork\NNGenome.cs" />
     <Compile Include="NeuralNetwork\SignalArray.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Graphics.cs" />
-    <Compile Include="Structures.cs" />
+    <Compile Include="Math_stuff\GridPoint.cs" />
     <Compile Include="Things\Being.cs" />
     <Compile Include="Things\Thing.cs" />
+    <Compile Include="Math_stuff\Vector.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,12 +110,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Resource Include="Things\Interfaces\Remarks.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NeuralNetwork\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

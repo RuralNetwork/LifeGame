@@ -19,18 +19,6 @@ namespace LifeGame
     {
         public BeingState State { get; set; }
 
-
-        // sensors:
-        // 5, one for each direction except back,
-        // 1 for the cell it is ("look down")
-        // 1 for the generic environment ("look up")
-        // 1 for what it holds
-        // each sensor can percevive a subset of the perceptible properties
-
-        // actions per timestep:
-        // Walk (x, y), it will be clamped to the nearest cell, if the vector is too small it will only reorient the being;
-        // + another action
-
         Environment _environment;
 
         public GridPoint Location { get; set; }
@@ -56,17 +44,27 @@ namespace LifeGame
 
             // run n cycles of his neural net
             // then do the choosen action + walk
-
-            // dummy code
-            //var food = _environment.Cells[Location.X][Location.Y]
-            //var eating = new Action(ActionType.Eat, this, food);
-            //eating.Perform();
         }
 
         public override void Draw()
         {
             CarriedObj.Draw();
             Debug.WriteLine("Drew %d\n", ID);
+        }
+
+        public override float R
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float G
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float B
+        {
+            get { throw new NotImplementedException(); }
         }
 
         public override float Moving// it depends on what was the magnitude of the previous vector of walk
