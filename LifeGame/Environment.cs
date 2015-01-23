@@ -8,19 +8,21 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
-
     public class Environment : Thing
     {
         public int Time;
         public Cell[][] Cells;
 
-        public Environment(int gridWidth, int gridHeight)
+        public Environment(int gridWidth, int gridHeight, Graphics engine)
         {
-            Cells = new Cell[gridWidth][];
+            Cells = new Cell[gridHeight][];
             for (int i = 0; i < gridHeight; i++)
 			{
-                Cells[i] = new Cell[gridHeight];
-
+                Cells[i] = new Cell[gridWidth];
+                for (var j = 0; j < gridWidth; j++)
+                {
+                    Cells[i][j] = new Cell(i, j, this, engine);
+                }
 			}
         }
 
@@ -119,7 +121,7 @@ namespace LifeGame
         /// </summary>
         public int Count { get; set; }
 
-        public Cell(Environment parent, int x, int y)
+        public Cell(int x, int y, Environment parent, Graphics engine)
         {
             _parent = parent;
             Location = new GridPoint(x, y);

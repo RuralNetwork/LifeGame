@@ -43,29 +43,26 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-        private Graphics motor { get; set; }
+        private Environment Environment { get; set; }
+        private Graphics Engine { get; set; }
+        private Simulation Simulation { get; set; }
         public MainWindow()
         {
             InitializeComponent();
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
-            Environment environment;
-            GridPoint a = new GridPoint(0, 1);
-            //Initialize new environment 1x1     ___
-            //                                  /   \
-            //                                  \___/
-            //                                   
-            environment = new Environment(1,1);
-            //Place a cell
-            environment.Cells[0][0] = new Cell(environment, 0, 0);
-
-            new Being(environment,1, new GridPoint(0, 0));
-            motor = new Graphics(environment);
+            //Graphics should know nothing about environment, Simulation manages the relation between environment and graphic
+            //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
+            
+            Engine = new Graphics();
+            Environment= new Environment(10,10,Engine);
+            Simulation = new Simulation(Environment, Engine);
+           
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Debug.Write("Button clicked\n");
-            this.motor.startSimulation();
+            //this.Simulation;
         }
     }
 }

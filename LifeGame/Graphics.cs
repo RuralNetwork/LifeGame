@@ -7,11 +7,15 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
-    class Graphics
+    public class Graphics
     {
-        private Environment Environment;
-        public Graphics(Environment environment) {
-            Environment = environment;
+        
+        public Graphics() {
+
+        }
+        public void addCell(int x, int y)
+        {
+
         }
         //Array of items with draw
 

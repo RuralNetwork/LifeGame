@@ -29,10 +29,10 @@ namespace LifeGame
 
         Environment _environment;
 
-        public Simulation(int gridWidth, int gridHeight)
+        public Simulation(Environment environment, Graphics engine)
         {
             
-            _environment = new Environment(gridWidth, gridHeight);
+            _environment = environment;
         }
 
         void RunPause()
