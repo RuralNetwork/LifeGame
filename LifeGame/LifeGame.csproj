@@ -58,7 +58,6 @@
     </ApplicationDefinition>
     <Compile Include="Math_stuff\FastRandom.cs" />
     <Compile Include="NeuralNetwork\NeuralNetwork.cs" />
-    <Compile Include="NeuralNetwork\NNGenome.cs" />
     <Compile Include="NeuralNetwork\SignalArray.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Graphics.cs" />

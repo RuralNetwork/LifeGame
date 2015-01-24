@@ -14,7 +14,7 @@ namespace LifeGame
     }
 
     //TODO: test if is better to have one bias node or the bias in every node, for best evolution speed/computation speed
-    public class NeuralNetwork
+    /*public class NeuralNetwork
     {
         // parameters to be adjusted
         const int CYCLES_COUNT = 10;                                              // V-- bias
@@ -56,5 +56,5 @@ namespace LifeGame
                 }
             }
         }
-    }
+    }*/
 }
