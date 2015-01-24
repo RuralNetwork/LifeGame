@@ -13,6 +13,7 @@ namespace LifeGame
     /// </summary>
     public abstract class Thing
     {
+        protected Environment environment;
         // Sight
         public abstract float R { get; }
         public abstract float G { get; }
@@ -32,9 +33,14 @@ namespace LifeGame
         public abstract float SmellIntensity { get; }
         public abstract float Smell { get; }
 
-
+        
         public delegate void Effects(Being actor);
         public readonly Dictionary<ActionType, Effects> Interactions;
+
+        public Thing(Environment environment)
+        {
+            this.environment = environment;
+        }
 
         public abstract void Update();
         public abstract void Draw();

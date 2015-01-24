@@ -32,13 +32,13 @@ namespace LifeGame
     public class NNGenome
     {
         ///// Parameters
-        static float WeigthRange = 5.0f;
-        static float DisjointExcessRecombProb = 0.1f;
+        public static float WeigthRange = 5.0f;
+        public static float DisjointExcessRecombProb = 0.1f;
         //mutation probalility coefficients
-        static float WeightProb = 0.988f;
-        static float AddNodeProb = 0.01f;
-        static float AddConnectionProb = 0.01f;
-        static float DeleteConnectionProb = 0.01f;
+        public static float WeightProb = 0.988f;
+        public static float AddNodeProb = 0.01f;
+        public static float AddConnectionProb = 0.01f;
+        public static float DeleteConnectionProb = 0.01f;
 
 
         //SortedList
@@ -47,33 +47,27 @@ namespace LifeGame
             //do the cross-over (actually don't know, it's though with the ogranization of genes)
         }
 
-        NeuralNetwork GenerateNeuralNetwork()
-        {
-            //generate the network from the dominant phenotypes
-            return null;
-        }
-
-         void Mutate()
+        void mutate()
         {
 
         }
 
-        void MutateWeigth()
+        void mutateWeigth()
         {
 
         }
 
-        void AddNode()
+        void addNode()
         {
 
         }
 
-        void AddConnection()
+        void addConnection()
         {
 
         }
 
-        void RemoveConnection()
+        void removeConnection()
         {
 
         }

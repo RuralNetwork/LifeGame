@@ -14,16 +14,17 @@ namespace LifeGame
         public Cell[][] Cells;
 
         public Environment(int gridWidth, int gridHeight, Graphics engine)
+            : base(null)
         {
             Cells = new Cell[gridHeight][];
             for (int i = 0; i < gridHeight; i++)
-			{
+            {
                 Cells[i] = new Cell[gridWidth];
                 for (var j = 0; j < gridWidth; j++)
                 {
                     Cells[i][j] = new Cell(i, j, this, engine);
                 }
-			}
+            }
         }
 
         public override void Update()
@@ -109,7 +110,7 @@ namespace LifeGame
 
     public class Cell
     {
-        Environment _parent;
+        Environment environment;
 
         public GridPoint Location { get; set; }
         //Are you sure? If so, do we need a 3D model?
@@ -121,9 +122,9 @@ namespace LifeGame
         /// </summary>
         public int Count { get; set; }
 
-        public Cell(int x, int y, Environment parent, Graphics engine)
+        public Cell(int x, int y, Environment environment, Graphics engine)
         {
-            _parent = parent;
+            this.environment = environment;
             Location = new GridPoint(x, y);
         }
 

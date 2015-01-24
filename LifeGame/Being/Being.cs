@@ -7,19 +7,37 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
-    public struct BeingState
+    public struct MutableStats
     {
-        public float Health;// can be healed
-        public float Integrity; // cannot be healed
-        public float Thirst;
-        public float Hunger;
+        public float Health { get; set; }// can be healed
+        public float Integrity { get; set; } // cannot be healed
+        public float Thirst { get; set; }
+        public float Hunger { get; set; }
+        public float Warmth { get; set; }
+        public float Wet { get; set; }
+        public float Weigth { get; set; }
+        public float Height { get; set; }
+        float R { get; set; }
+    }
+
+    public struct Phenome
+    {
+        public float Sex { get; private set; }
+        float HeigthMul; //heigth multiplicator: assume that a being can grow during life, consider if we should change to static height
+        float SightMul;
+        /// <summary>
+        /// Herbivore: from 0 up; carnivore: from 1 down
+        /// </summary>
+        float HerbCarn;
     }
     // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
     public class Being : Thing
     {
-        public BeingState State { get; set; }
 
-        Environment _environment;
+        public MutableStats MutableStats { get; set; }
+
+
+        Environment environment;
 
         public GridPoint Location { get; set; }
         public Vector LastWalkDir { get; set; }
@@ -28,8 +46,8 @@ namespace LifeGame
         public int ID { get; private set; }
 
         public Being(Environment environment, int id, GridPoint location)
+            : base(environment)
         {
-            _environment = environment;
             ID = id;
             Location = location;
         }

@@ -27,12 +27,12 @@ namespace LifeGame
         /// </summary>
         List<Event> Events { get; set; }
 
-        Environment _environment;
+        Environment environment;
 
         public Simulation(Environment environment, Graphics engine)
         {
             
-            _environment = environment;
+            this.environment = environment;
         }
 
         void RunPause()
