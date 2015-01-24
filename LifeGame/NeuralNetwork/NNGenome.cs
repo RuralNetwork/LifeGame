@@ -26,7 +26,7 @@ namespace LifeGame
 
     public class NodeGene
     {
-        NodeType Type { get; private set; }
+        public NodeType Type { get; private set; }
     }
 
     public class NNGenome
@@ -38,7 +38,7 @@ namespace LifeGame
         static float WeightProb = 0.988f;
         static float AddNodeProb = 0.01f;
         static float AddConnectionProb = 0.01f;
-        static float AddConnectionProb = 0.01f;
+        static float DeleteConnectionProb = 0.01f;
 
 
         //SortedList
