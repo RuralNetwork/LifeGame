@@ -53,15 +53,21 @@ namespace LifeGame
             //Graphics should know nothing about environment, Simulation manages the relation between environment and graphic
             //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
             
-            Engine = new Graphics();
+            Engine = new Graphics(mainpanel);
             Environment= new Environment(10,10,Engine);
             Simulation = new Simulation(Environment, Engine);
-           
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Debug.Write("Button clicked\n");
+            for(int x=0;x<10;x++){
+                for (int y = 0; y < 10; y++)
+                {
+                    Engine.addCell(x, y);
+                }
+            }//Engine.addCell(0, 0);
             //this.Simulation;
         }
     }

@@ -23,7 +23,7 @@ namespace LifeGame
         public static float HeightMulProb;
         public static float SightMulProb;
         public static float HerbCarnProb;
-        RouletteWeel rw = new RouletteWeel(ColorProb, HeightMulProb, SightMulProb, HerbCarnProb);
+        RouletteWheel rw = new RouletteWheel(ColorProb, HeightMulProb, SightMulProb, HerbCarnProb);
 
         public BodyGenome(BodyGenome parent1, BodyGenome parent2)
         {

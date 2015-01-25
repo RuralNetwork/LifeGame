@@ -4,6 +4,13 @@
         Title="MainWindow" Height="600" Width="1000">
     <Grid Margin="0">
         <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Width="276" Height="72" Click="Button_Click" FontSize="24"/>
-        <Viewbox x:Name="mainView" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Fill" StretchDirection="Both"></Viewbox>
+
+        <Canvas x:Name="mainpanel" Margin="217,119,205,117">
+            
+        </Canvas>
+
+
+
+
     </Grid>
 </Window>
