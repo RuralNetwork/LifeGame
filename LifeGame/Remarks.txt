@@ -4,3 +4,7 @@
 - Use "UpperCamelCase" for public properties/methods
 - Use "UpperCamelCase" for classes, structs & enums
 - Use "CAPITAL_UNDERSCORE" for consts
+
+- Use structs instead of class for ease of full copy (just an assignment), but they should be passed as parameter as less as possible
+
+- When downcasting (ex. from Thing to Being) use the "as" operator instead of () prefix operator beacuse it doesn't check if operation succeed
