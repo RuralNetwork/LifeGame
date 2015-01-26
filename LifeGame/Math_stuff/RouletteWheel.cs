@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    class RouletteWeel
+    class RouletteWheel
     {
         Random rand = new Random();
         float[] stair;
         int count;
 
-        public RouletteWeel(params float[] probs)
+        public RouletteWheel(params float[] probs)
         {
             count = probs.Length;
             var sum = probs.Sum();

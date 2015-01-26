@@ -18,7 +18,7 @@ namespace LifeGame
         public static float AddNodeProb = 0.01f;
         public static float AddConnectionProb = 0.01f;
         public static float DeleteConnectionProb = 0.01f;
-        RouletteWeel mutationRW = new RouletteWeel(UnchangedProb, WeightProb, AddNodeProb, AddConnectionProb, DeleteConnectionProb);
+        RouletteWheel mutationRW = new RouletteWheel(UnchangedProb, WeightProb, AddNodeProb, AddConnectionProb, DeleteConnectionProb);
 
         static Random rand = new Random();
 

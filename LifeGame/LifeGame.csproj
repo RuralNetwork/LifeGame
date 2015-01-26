@@ -58,7 +58,7 @@
     </ApplicationDefinition>
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Math_stuff\FastRandom.cs" />
-    <Compile Include="Math_stuff\RouletteWeel.cs" />
+    <Compile Include="Math_stuff\RouletteWheel.cs" />
     <Compile Include="Being\NeuralNetwork.cs" />
     <Compile Include="Being\NNGenome.cs" />
     <Compile Include="Being\NNGenomeStructs.cs" />

@@ -58,8 +58,8 @@ namespace LifeGame
             ChromArr2 = new Chromosome[1];
             for (int i = 0; i < 6; i++)
             {
-                
-            }
+
+        }
         }
 
         void mutate()
