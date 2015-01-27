@@ -7,6 +7,7 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
+    //Why should there be this if Being inherits from Thing, and all these things are defined in Thing
     public struct MutableStats
     {
         public float Health { get; set; }// can be healed
