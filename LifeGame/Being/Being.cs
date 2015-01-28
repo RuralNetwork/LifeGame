@@ -16,7 +16,7 @@ namespace LifeGame
         public float Hunger { get; set; }
         public float Warmth { get; set; }
         public float Wet { get; set; }
-        public float Weigth { get; set; }
+        public float Weight { get; set; }
         public float Height { get; set; }
         float R { get; set; }
     }

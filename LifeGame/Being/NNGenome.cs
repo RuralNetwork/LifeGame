@@ -24,7 +24,7 @@ namespace LifeGame
     public class NNGenome
     {
         ///// Parameters
-        public static float WeigthRange = 5.0f;
+        public static float WeightRange = 5.0f;
         public static float DisjointExcessRecombProb = 0.1f;
         //mutation probalility coefficients
         public static float UnchangedProb = 10f;
@@ -39,11 +39,12 @@ namespace LifeGame
         public SortedList<int, ConnectionGene> ConnectionGeneList { get; set; }
         public SortedList<int, NodeGene> NodeGeneList { get; set; }
 
-
         //--------Store the identifiers needed to match genes during recombination
         //The innovation IDs are assigned based on the structure, not on internal properties:
-        //Connections: based on source & target ID, not on weigth
+        //Connections: based on source & target ID, not on weight
         //Nodes: based on connection they replaced, not on bias
+
+        static int lastID;
 
         //The key is the actual innovation ID
         static SortedList<int, AddedConnection> connectionBuffer;
@@ -75,7 +76,7 @@ namespace LifeGame
                         break;
                     case 1:
 
-                        mutateWeigth();
+                        mutateWeight();
                         break;
 
                 }
@@ -83,31 +84,74 @@ namespace LifeGame
 
         }
 
-        void mutateWeigth()
+        void mutateWeight()
         {
 
         }
 
+
+        #region addNode
         /// <summary>
         /// Replace a connection gene with a node gene and two connection genes, in a way to achieve a similiar behaviour
         /// </summary>
         void addNode()
         {
             var oldConnID = rand.Next(ConnectionGeneList.Count);
-            //var oldConn = ConnectionGeneList[connID];
+            var oldConn = ConnectionGeneList[oldConnID];
             ConnectionGeneList.Remove(oldConnID);
 
-            AddedNode newStruct;
-            if (nodeBuffer.TryGetValue(oldConnID, out newStruct) )
-            {
-                if (!(NodeGeneList.ContainsKey(newStruct.ID) || ConnectionGeneList.ContainsKey(newStruct.InputConnID) || ConnectionGeneList.ContainsKey(newStruct.OutputConnID)))
-                {
-                }
-            }
+            var addedNode = getAddedNode(oldConnID);
 
+            var newNode = new NodeGene() { Type = NodeType.Hidden };
+            NodeGeneList.Add(addedNode.ID, newNode);
+            //TODO: recheck the following approach
+            //input connection with oldConn weight
+            ConnectionGeneList.Add(addedNode.InputConn, new ConnectionGene(oldConn.Source, addedNode.ID, oldConn.Weight));
+            //output connection with max weight
+            ConnectionGeneList.Add(addedNode.OutputConn, new ConnectionGene(addedNode.ID, oldConn.Target, WeightRange));
+
+            var srcNode = NodeGeneList[oldConn.Source];
+            srcNode.TargetNodes.Remove(oldConn.Source);
+            srcNode.TargetNodes.Add(addedNode.ID);
+            newNode.SourceNodes.Add(oldConn.Source);
+
+            var tgtNode = NodeGeneList[oldConn.Target];
+            tgtNode.SourceNodes.Remove(oldConn.Source);
+            tgtNode.SourceNodes.Add(addedNode.ID);
+            newNode.TargetNodes.Add(oldConn.Target);
 
         }
 
+        /// <summary>
+        /// Returns an AddedNode struct with the right IDs and, if necessary, save the new struct in the global buffer
+        /// </summary>
+        /// <param name="oldConnID"></param>
+        /// <returns></returns>
+        AddedNode getAddedNode(int oldConnID)//tried to shrink sharpneat code but didn't succeed
+        {
+            AddedNode addedNode;
+            var newAddedNode = false;
+            if (nodeBuffer.TryGetValue(oldConnID, out addedNode))
+            {
+                if (!(NodeGeneList.ContainsKey(addedNode.ID) || ConnectionGeneList.ContainsKey(addedNode.InputConn) || ConnectionGeneList.ContainsKey(addedNode.OutputConn)))
+                {
+                    return addedNode;
+                }
+            }
+            else
+            {
+                newAddedNode = true;
+            }
+
+            addedNode = new AddedNode(ref lastID);
+
+            if (newAddedNode)
+            {
+                nodeBuffer.Add(oldConnID, addedNode);
+            }
+            return addedNode;
+        }
+        #endregion
 
         void addConnection()
         {
