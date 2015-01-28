@@ -8,7 +8,6 @@ namespace LifeGame
 {
     public struct ConnectionGene
     {
-        public int InnovationID { get; set; }
         public int Source { get; set; }
         public int Target { get; set; }
         public float Weight { get; set; }
@@ -26,7 +25,6 @@ namespace LifeGame
 
     public struct NodeGene
     {
-        public int ID { get; set; }
         public NodeType Type { get; private set; }
         public HashSet<int> Sources { get; set; }
         public HashSet<int> Targets { get; set; }
