@@ -38,8 +38,6 @@ namespace LifeGame
         public MutableStats MutableStats { get; set; }
 
 
-        Environment environment;
-
         public GridPoint Location { get; set; }
         public Vector LastWalkDir { get; set; }
         public Thing CarriedObj { get; set; }
@@ -86,11 +84,6 @@ namespace LifeGame
             get { throw new NotImplementedException(); }
         }
 
-        public override float Moving// it depends on what was the magnitude of the previous vector of walk
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public override float Painful //if it has fougth or tried to eat someone else
         {
             get { throw new NotImplementedException(); }
@@ -99,11 +92,6 @@ namespace LifeGame
         public override float Weight // the corpse? -> no it becomes a corpse thing, it doesn't perform actions
         {
             get { return 0; }
-        }
-
-        public override float Warmth
-        {
-            get { throw new NotImplementedException(); }
         }
 
         public override float Amplitude
@@ -122,6 +110,16 @@ namespace LifeGame
         }
 
         public override float Smell
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Speed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Temperature
         {
             get { throw new NotImplementedException(); }
         }

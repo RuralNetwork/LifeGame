@@ -67,11 +67,6 @@ namespace LifeGame
             get { throw new NotImplementedException(); }
         }
 
-        public override float Moving
-        {
-            get { return 0; }
-        }
-
         public override float Painful //if too cold
         {
             get { throw new NotImplementedException(); }
@@ -80,11 +75,6 @@ namespace LifeGame
         public override float Weight
         {
             get { return 0; }
-        }
-
-        public override float Warmth
-        {
-            get { throw new NotImplementedException(); }
         }
 
         public override float Amplitude // birds?  -> no, useless
@@ -103,6 +93,16 @@ namespace LifeGame
         }
 
         public override float Smell // if rainy?
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Speed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Temperature
         {
             get { throw new NotImplementedException(); }
         }

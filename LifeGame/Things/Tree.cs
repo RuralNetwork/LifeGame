@@ -23,22 +23,12 @@ namespace LifeGame.Things
             get { throw new NotImplementedException(); }
         }
 
-        public override float Moving
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public override float Painful
         {
             get { throw new NotImplementedException(); }
         }
 
         public override float Weight
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Warmth
         {
             get { throw new NotImplementedException(); }
         }
@@ -77,6 +67,16 @@ namespace LifeGame.Things
         public override void Draw()
         {
             throw new NotImplementedException();
+        }
+
+        public override float Speed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override float Temperature
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }
