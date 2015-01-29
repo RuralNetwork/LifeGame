@@ -8,14 +8,17 @@ namespace LifeGame
 {
     public struct ConnectionGene
     {
-        public int Source { get; set; }
-        public int Target { get; set; }
+        public uint Source { get; set; }
+        public uint Target { get; set; }
         public float Weight { get; set; }
         public bool IsMutated { get; set; }
 
-        public ConnectionGene(int source, int target, float weight)
+        public ConnectionGene(uint source, uint target, float weight)
+            : this()
         {
-
+            Source = source;
+            Target = target;
+            Weight = weight;
         }
 
     }
@@ -31,8 +34,8 @@ namespace LifeGame
     public struct NodeGene
     {
         public NodeType Type { get; set; }
-        public HashSet<int> SourceNodes { get; set; }
-        public HashSet<int> TargetNodes { get; set; }
+        public HashSet<uint> SourceNodes { get; set; }
+        public HashSet<uint> TargetNodes { get; set; }
 
         public bool IsRedundant
         {
@@ -46,20 +49,20 @@ namespace LifeGame
 
     public struct AddedConnection
     {
-        public int Source { get; private set; }
-        public int Target { get; private set; }
+        public uint Source { get; set; }
+        public uint Target { get; set; }
     }
 
     public struct AddedNode
     {
-        public int ID { get; private set; }
-        public int InputConn { get; private set; }
-        public int OutputConn { get; private set; }
+        public uint Node { get; private set; }
+        public uint InputConn { get; private set; }
+        public uint OutputConn { get; private set; }
 
-        public AddedNode(ref int lastID)
+        public AddedNode(ref uint lastID)
             : this()
         {
-            ID = ++lastID;
+            Node = ++lastID;
             InputConn = ++lastID;
             OutputConn = ++lastID;
         }

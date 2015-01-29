@@ -29,7 +29,8 @@ namespace LifeGame
         // circadian, circa-annual sine & cosine:                                                                                                 4
         //                                                                                                                                   TOT: 135
 
-        const int OUTPUTS = 000;
+        const int OUTPUTS_COUNT = 19;
+        // 2 walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
         // actions:
         Connection[] connections;
 
