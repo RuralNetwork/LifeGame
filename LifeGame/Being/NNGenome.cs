@@ -170,12 +170,12 @@ namespace LifeGame
             {
                 var srcIdx = rand.Next(nodeCount);
                 var srcID = NodeGeneList.Keys[srcIdx];
-                var srcNode = NodeGeneList.Values[srcIdx];
+                var srcNode = NodeGeneList.Values[srcIdx];//use index instead if ID for faster search
 
-                var tgtIdx = INPUTS_AND_BIAS_COUNT + rand.Next(nodeCount - INPUTS_AND_BIAS_COUNT);
+                var tgtIdx = INPUTS_AND_BIAS_COUNT + rand.Next(nodeCount - INPUTS_AND_BIAS_COUNT);// input and bias nodes can't be targets
                 var tgtID = NodeGeneList.Keys[tgtIdx];
                 var tgtNode = NodeGeneList.Values[tgtIdx];
-                //if srcID == tgt ID then the connection is recursive
+                //if srcID == tgtID then the connection is recursive
 
                 if (!srcNode.TargetNodes.Contains(tgtID))
                 {
@@ -198,23 +198,45 @@ namespace LifeGame
                     return;
                 }
             }
+            //else
+            mutateWeight();
         }
 
-        bool removeConnection()
+        /// <summary>
+        /// Remove a connection. If there's only one connection, mutate weight of it.
+        /// </summary>
+        void removeConnection()
         {
-            if (ConnectionGeneList.Count > 1)
+            if (ConnectionGeneList.Count == 1)
             {
-
-                return true;
+                mutateWeight();
+                return;
             }
-            return false;
+
+            var idx = rand.Next(ConnectionGeneList.Count);
+            var oldConn = ConnectionGeneList.Values[idx];
+            ConnectionGeneList.RemoveAt(idx);
+
+            //-------------Remove unnecessary nodes------------
+            //source node
+            idx = NodeGeneList.IndexOfKey(oldConn.Source);
+            var srcNode = NodeGeneList.Values[idx];
+            srcNode.TargetNodes.Remove(oldConn.Target);
+
+            if (srcNode.IsRedundant) NodeGeneList.RemoveAt(idx);
+
+            //target node
+            idx = NodeGeneList.IndexOfKey(oldConn.Target);
+            var tgtNode = NodeGeneList.Values[idx];
+            tgtNode.SourceNodes.Remove(oldConn.Target);
+
+            if (tgtNode.IsRedundant)  NodeGeneList.RemoveAt(idx);
+
         }
 
         void defragIDs()
         {
 
         }
-
-        //what i called "brainwash" was already present in sharpneat in another way
     }
 }
