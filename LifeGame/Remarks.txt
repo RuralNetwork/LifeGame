@@ -5,12 +5,12 @@
 - Use "UpperCamelCase" for classes, structs & enums
 - Use "CAPITAL_UNDERSCORE" for consts
 
+-------------------Notes------------------------
 - Use structs instead of class for ease of full copy (just an assignment), but they should be passed as parameter as less as possible
-
+  Remember that when copying a struct, modifying the copy doesn't affect the original
 - When downcasting (ex. from Thing to Being) use the "as" operator instead of () prefix operator beacuse it doesn't check if operation succeed
-
-
-When testing, consider using <gcAllowVeryLargeObjects> and switching to 64 bit for more space allocation for a single object (the ram could be not enough though)
+- When testing, consider using <gcAllowVeryLargeObjects> and switching to 64 bit for more space allocation for a single object (the ram could be not enough though)
+- The keyword "readonly" doesn't give peformance benefits
 
 
 Code example:

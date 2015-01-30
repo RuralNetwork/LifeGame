@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    public struct ConnectionGene
+    public class ConnectionGene// switched back to class because it is not immutable and gave problems with references
     {
-        public uint Source { get; set; }
-        public uint Target { get; set; }
+        public uint Source { get; private set; }
+        public uint Target { get; private set; }
         public float Weight { get; set; }
-        public bool IsMutated { get; set; }
 
         public ConnectionGene(uint source, uint target, float weight)
-            : this()
         {
             Source = source;
             Target = target;
@@ -31,11 +29,24 @@ namespace LifeGame
         Hidden
     }
 
-    public struct NodeGene
+    public class NodeGene// switched back to class
     {
-        public NodeType Type { get; set; }
-        public HashSet<uint> SourceNodes { get; set; }
-        public HashSet<uint> TargetNodes { get; set; }
+        public NodeType Type { get; private set; }
+        public HashSet<uint> SourceNodes { get; private set; }
+        public HashSet<uint> TargetNodes { get; private set; }
+
+        public NodeGene()
+        {
+            Type = NodeType.Hidden;
+            SourceNodes = new HashSet<uint>();
+            TargetNodes = new HashSet<uint>();
+        }
+        public NodeGene(NodeType type)
+        {
+            Type = type;
+            SourceNodes = new HashSet<uint>();
+            TargetNodes = new HashSet<uint>();
+        }
 
         public bool IsRedundant
         {
@@ -49,8 +60,15 @@ namespace LifeGame
 
     public struct AddedConnection
     {
-        public uint Source { get; set; }
-        public uint Target { get; set; }
+        public uint Source { get; private set; }
+        public uint Target { get; private set; }
+
+        public AddedConnection(uint source, uint target)
+            : this()
+        {
+            Source = source;
+            Target = target;
+        }
     }
 
     public struct AddedNode

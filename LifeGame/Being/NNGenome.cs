@@ -27,22 +27,26 @@ namespace LifeGame
         const int INPUTS_AND_BIAS_COUNT = 135 + 1;
         const int OUTPUTS_COUNT = 19;
 
-        ///// Parameters
-        public static float WeightRange = 5.0f;
-        public static float DisjointExcessRecombProb = 0.1f;
-        //mutation probalility coefficients
-        public static float UnchangedProb = 10f;
-        public static float WeightProb = 0.988f;
-        public static float AddNodeProb = 0.01f;
-        public static float AddConnectionProb = 0.01f;
-        public static float DeleteConnectionProb = 0.01f;
-        RouletteWheel mutationRW = new RouletteWheel(UnchangedProb, WeightProb, AddNodeProb, AddConnectionProb, DeleteConnectionProb);
+        // parameters
+        public static float WEIGHT_RANGE = 5.0f;
+        public static float DISJ_EXC_RECOMB_PROP = 0.1f;// disjoint-excess recombination proportion
+        public static float WEIGHT_MUT_PROP = 0.02f;    // weight mutation proportion
+        public static float MAX_WEIGHT_PERT_PROP = 0.4f;// maximum weight perturbation proportion
+
+        // mutation probalility coefficients
+        public static float UNCHANGED_MUT_PROB = 10f;   // do nothing probability
+        public static float WEIGHT_MUT_PROB = 0.988f;   // weight mutation probability
+        public static float ADD_NODE_MUT_PROB = 0.01f;  // add node mutation probability
+        public static float ADD_CONN_MUT_PROB = 0.01f;  // add connection mutation probability
+        public static float DEL_CONN_MUT_PROB = 0.01f;  // delete connection mutation probability
+
+        RouletteWheel mutationRW = new RouletteWheel(UNCHANGED_MUT_PROB, WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB);
 
         static Random rand = new Random();
 
         //Being specific genomes
-        public SortedList<uint, ConnectionGene> ConnectionGeneList { get; set; }
         public SortedList<uint, NodeGene> NodeGeneList { get; set; }
+        public SortedList<uint, ConnectionGene> ConnectionGeneList { get; set; }
 
 
         //--------Globally store the identifiers needed to match genes during recombination
@@ -53,13 +57,12 @@ namespace LifeGame
         //ID counter for both connectionBuffer and nodeBuffer
         static uint lastID;
 
-        //The value is the actual ID
-        static SortedList<AddedConnection, uint?> connectionBuffer;
-
         //The key is the connection ID the AddedNode struct replaced
         //The ID is contained in the AddedNode sruct
-        static SortedList<uint, AddedNode> nodeBuffer;
+        static SortedList<uint, AddedNode> nodeBuffer = new SortedList<uint, AddedNode>();
 
+        //The value is the actual ID
+        static SortedList<AddedConnection, uint?> connectionBuffer = new SortedList<AddedConnection, uint?>();
 
         public NNGenome()
         {
@@ -74,26 +77,36 @@ namespace LifeGame
 
         void mutate()
         {
-            var success = false;
-            while (!success)
+            switch (mutationRW.Spin())
             {
-                switch (mutationRW.Spin())
-                {
-                    case 0:
-                        break;
-                    case 1:
-
-                        mutateWeight();
-                        break;
-
-                }
+                case 0:
+                    //do nothing
+                    break;
+                case 1:
+                    mutateWeight();
+                    break;
+                case 2:
+                    addNode();
+                    break;
+                case 3:
+                    addConnection();
+                    break;
+                case 4:
+                    removeConnection();
+                    break;
             }
-
         }
 
-        void mutateWeight()
+        void mutateWeight()//sharpneat's code for weight mutation was extremely long and redundant with lot of wasted r.n.g.
         {
-
+            var n = (int)Math.Ceiling(WEIGHT_MUT_PROB * ConnectionGeneList.Count);
+            for (int i = 0; i < n; i++)
+            {
+                var m = rand.Next(n);
+                var weight = ConnectionGeneList.Values[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
+                var conn = ConnectionGeneList.Values[m];
+                conn.Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
+            }
         }
 
 
@@ -110,13 +123,13 @@ namespace LifeGame
 
             var addedNode = getAddedNode(oldConnID);
 
-            var newNode = new NodeGene() { Type = NodeType.Hidden };
+            var newNode = new NodeGene();// NodeType set to hidden
             NodeGeneList.Add(addedNode.Node, newNode);
             //TODO: recheck the following approach
             //input connection with oldConn weight
             ConnectionGeneList.Add(addedNode.InputConn, new ConnectionGene(oldConn.Source, addedNode.Node, oldConn.Weight));
             //output connection with max weight
-            ConnectionGeneList.Add(addedNode.OutputConn, new ConnectionGene(addedNode.Node, oldConn.Target, WeightRange));
+            ConnectionGeneList.Add(addedNode.OutputConn, new ConnectionGene(addedNode.Node, oldConn.Target, WEIGHT_RANGE));
 
             var srcNode = NodeGeneList[oldConn.Source];//search by key -> binary search
             srcNode.TargetNodes.Remove(oldConn.Source);
@@ -179,9 +192,9 @@ namespace LifeGame
 
                 if (!srcNode.TargetNodes.Contains(tgtID))
                 {
-                    var addedConn = new AddedConnection() { Source = srcID, Target = tgtID };
+                    var addedConn = new AddedConnection(srcID, tgtID);
                     uint? existingConnID;// must be nullable, to handle the case there isn't an existing ID
-                    var newConn = new ConnectionGene(srcID, tgtID, ((float)rand.NextDouble() * 2f - 1f) * WeightRange);
+                    var newConn = new ConnectionGene(srcID, tgtID, ((float)rand.NextDouble() * 2f - 1f) * WEIGHT_RANGE);
 
                     if (connectionBuffer.TryGetValue(addedConn, out existingConnID))
                     {
@@ -230,7 +243,7 @@ namespace LifeGame
             var tgtNode = NodeGeneList.Values[idx];
             tgtNode.SourceNodes.Remove(oldConn.Target);
 
-            if (tgtNode.IsRedundant)  NodeGeneList.RemoveAt(idx);
+            if (tgtNode.IsRedundant) NodeGeneList.RemoveAt(idx);
 
         }
 
