@@ -207,6 +207,7 @@ namespace LifeGame
         /// </summary>
         void removeConnection()
         {
+            System.Drawing.
             if (ConnectionGeneList.Count == 1)
             {
                 mutateWeight();

@@ -11,3 +11,11 @@
 
 
 When testing, consider using <gcAllowVeryLargeObjects> and switching to 64 bit for more space allocation for a single object (the ram could be not enough though)
+
+
+Code example:
+// To merge bitmaps:
+var finalBitmap;
+var subBitmap1;
+var subBitmap2;
+var graphics = 
