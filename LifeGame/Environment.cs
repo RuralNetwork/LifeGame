@@ -13,7 +13,7 @@ namespace LifeGame
         public int Time;
         public Cell[][] Cells;
 
-        public Environment(int gridWidth, int gridHeight, Graphics engine)
+        public Environment(int gridWidth, int gridHeight, GraphicsEngine engine)
             : base(null)
         {
             Cells = new Cell[gridHeight][];
@@ -122,7 +122,7 @@ namespace LifeGame
         /// </summary>
         public int Count { get; set; }
 
-        public Cell(int x, int y, Environment environment, Graphics engine)
+        public Cell(int x, int y, Environment environment, GraphicsEngine engine)
         {
             this.environment = environment;
             Location = new GridPoint(x, y);

@@ -44,7 +44,7 @@ namespace LifeGame
     public partial class MainWindow : Window
     {
         private Environment Environment { get; set; }
-        private Graphics Engine { get; set; }
+        private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
         public MainWindow()
         {
@@ -78,7 +78,7 @@ namespace LifeGame
             //Graphics should know nothing about environment, Simulation manages the relation between environment and graphic
             //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
             
-            Engine = new Graphics(mainpanel);
+            Engine = new GraphicsEngine(mainpanel);
             Environment= new Environment(10,10,Engine);
             Simulation = new Simulation(Environment, Engine);
            
