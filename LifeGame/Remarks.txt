@@ -15,7 +15,7 @@ When testing, consider using <gcAllowVeryLargeObjects> and switching to 64 bit f
 
 Code example:
 // To merge bitmaps:
-var finalBitmap;
-var subBitmap1;
-var subBitmap2;
-var graphics = 
+var finalBitmap = new Bitmap(x, y);
+var subBitmap1;// this can be a Bitmap or an Image
+var graphics = Graphics.FromImage(subBitmap1); //this is System.Drawing.Graphics, you should change our Graphics in sth like Engine
+graphics.DrawImage(subBitmap1, new Point(x, y)); //Now finalBitmap has changed. you can use other overloads, for image trasformations
