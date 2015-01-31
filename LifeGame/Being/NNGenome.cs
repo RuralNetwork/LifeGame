@@ -28,20 +28,20 @@ namespace LifeGame
         const int OUTPUTS_COUNT = 19;
 
         // parameters
-        public static float WEIGHT_RANGE = 5.0f;
-        public static float DISJ_EXC_RECOMB_PROP = 0.1f;// disjoint-excess recombination proportion
-        public static float WEIGHT_MUT_PROP = 0.02f;    // weight mutation proportion
-        public static float MAX_WEIGHT_PERT_PROP = 0.4f;// maximum weight perturbation proportion
+        const float WEIGHT_RANGE = 5.0f;
+        const float DISJ_EXC_RECOMB_PROP = 0.1f;// disjoint-excess recombination proportion
+        const float WEIGHT_MUT_PROP = 0.02f;    // weight mutation proportion
+        const float MAX_WEIGHT_PERT_PROP = 0.4f;// maximum weight perturbation proportion
 
         // mutation probalility coefficients
-        public static float UNCHANGED_MUT_PROB = 10f;   // do nothing probability
-        public static float WEIGHT_MUT_PROB = 0.988f;   // weight mutation probability
-        public static float ADD_NODE_MUT_PROB = 0.01f;  // add node mutation probability
-        public static float ADD_CONN_MUT_PROB = 0.01f;  // add connection mutation probability
-        public static float DEL_CONN_MUT_PROB = 0.01f;  // delete connection mutation probability
+        const float UNCHANGED_MUT_PROB = 10f;   // do nothing probability
+        const float WEIGHT_MUT_PROB = 0.988f;   // weight mutation probability
+        const float ADD_NODE_MUT_PROB = 0.01f;  // add node mutation probability
+        const float ADD_CONN_MUT_PROB = 0.01f;  // add connection mutation probability
+        const float DEL_CONN_MUT_PROB = 0.01f;  // delete connection mutation probability
 
-        RouletteWheel mutationRW = new RouletteWheel(UNCHANGED_MUT_PROB, WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB);
-
+        static RouletteWheel stdMutationRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB, UNCHANGED_MUT_PROB);
+        static RouletteWheel alwaysMutateRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB);
         static Random rand = new Random();
 
         //Being specific genomes
@@ -77,22 +77,22 @@ namespace LifeGame
 
         void mutate()
         {
-            switch (mutationRW.Spin())
+            switch ((true/*here the SimulationType flag*/? stdMutationRW : alwaysMutateRW).Spin())
             {
                 case 0:
-                    //do nothing
-                    break;
-                case 1:
                     mutateWeight();
                     break;
-                case 2:
+                case 1:
                     addNode();
                     break;
-                case 3:
+                case 2:
                     addConnection();
                     break;
-                case 4:
+                case 3:
                     removeConnection();
+                    break;
+                case 4:
+                    //do nothing
                     break;
             }
         }
@@ -104,8 +104,7 @@ namespace LifeGame
             {
                 var m = rand.Next(n);
                 var weight = ConnectionGeneList.Values[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
-                var conn = ConnectionGeneList.Values[m];
-                conn.Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
+                ConnectionGeneList.Values[m].Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
             }
         }
 

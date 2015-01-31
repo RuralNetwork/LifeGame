@@ -50,26 +50,10 @@ namespace LifeGame
         {
             InitializeComponent();
             //---------------------Test Space------------------------
-            var rw = new RouletteWheel(0.1f, 0.3f, 0.2f);
-            int a = 0, b = 0, c = 0;
-            var watch = Stopwatch.StartNew();
-            for (int i = 0; i < 10000000; i++)
-            {
-                switch (rw.Spin())
-                {
-                    case 0:
-                        a++;
-                        break;
-                    case 1:
-                        b++;
-                        break;
-                    case 2:
-                        c++;
-                        break;
-                }
-            }
-            watch.Stop();
-            Debug.Write(watch.Elapsed.TotalSeconds.ToString());
+            
+            
+
+
 
 
             //-----------------------------------------------------

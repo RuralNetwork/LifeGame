@@ -31,14 +31,12 @@ namespace LifeGame
 
         const int OUTPUTS_COUNT = 19;
         // 2 walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
-        // actions:
+
         Connection[] connections;
 
         float[] preActivationArray;
-        public float[] State { get; set; }// old postActivationArray;
+        public float[] State { get; set; } // postActivationArray;
 
-        //public SignalArray Inputs { get; private set; }     // theese are redundant, just use State prop
-        //public SignalArray Outputs { get; private set; }
 
         public NeuralNetwork(NNGenome genome)
         {
