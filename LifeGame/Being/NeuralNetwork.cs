@@ -17,8 +17,8 @@ namespace LifeGame
     public class NeuralNetwork
     {
         // parameters to be adjusted
-        const int CYCLES_COUNT = 10;         // V-- bias
-        const int INPUTS_AND_BIAS_COUNT = 135 + 1;
+        const int CYCLES_COUNT = 10;
+        const int INPUTS_COUNT = 135;
         // environment:                                   R, G, B,         painful,         warmth,                   smellintensity, smell       7
         // carried object:                                R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell       11
         // current cell:                                  R, G, B, moving, painful,         warmth, amplitude, pitch, smellintensity, smell       10
@@ -29,8 +29,10 @@ namespace LifeGame
         // circadian, circa-annual sine & cosine:                                                                                                 4
         //                                                                                                                                   TOT: 135
 
-        const int OUTPUTS_COUNT = 19;
-        // 2 walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
+        const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
+        const int OUTPUTS_COUNT = 20;
+        // 2 component action direction, walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
+
 
         Connection[] connections;
 

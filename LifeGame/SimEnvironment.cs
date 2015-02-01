@@ -8,12 +8,12 @@ using System.Diagnostics;
 
 namespace LifeGame
 {
-    public class Environment : Thing
+    public class SimEnvironment : Thing
     {
         public int Time;
         public Cell[][] Cells;
 
-        public Environment(int gridWidth, int gridHeight, GraphicsEngine engine)
+        public SimEnvironment(int gridWidth, int gridHeight, GraphicsEngine engine)
             : base(null)
         {
             Cells = new Cell[gridHeight][];
@@ -110,7 +110,7 @@ namespace LifeGame
 
     public class Cell
     {
-        Environment environment;
+        SimEnvironment environment;
 
         public GridPoint Location { get; set; }
         //Are you sure? If so, do we need a 3D model?
@@ -122,7 +122,7 @@ namespace LifeGame
         /// </summary>
         public int Count { get; set; }
 
-        public Cell(int x, int y, Environment environment, GraphicsEngine engine)
+        public Cell(int x, int y, SimEnvironment environment, GraphicsEngine engine)
         {
             this.environment = environment;
             Location = new GridPoint(x, y);

@@ -6,20 +6,6 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    public class ConnectionGene// switched back to class because it is not immutable and gave problems with references
-    {
-        public uint Source { get; private set; }
-        public uint Target { get; private set; }
-        public float Weight { get; set; }
-
-        public ConnectionGene(uint source, uint target, float weight)
-        {
-            Source = source;
-            Target = target;
-            Weight = weight;
-        }
-
-    }
 
     public enum NodeType
     {
@@ -29,7 +15,7 @@ namespace LifeGame
         Hidden
     }
 
-    public class NodeGene// switched back to class
+    public class NodeGene// switched back to class because it is not immutable and gave problems with references
     {
         public NodeType Type { get; private set; }
         public HashSet<uint> SourceNodes { get; private set; }
@@ -57,18 +43,19 @@ namespace LifeGame
 
         }
     }
-
-    public struct AddedConnection
+    public class ConnectionGene// switched back to class
     {
         public uint Source { get; private set; }
         public uint Target { get; private set; }
+        public float Weight { get; set; }
 
-        public AddedConnection(uint source, uint target)
-            : this()
+        public ConnectionGene(uint source, uint target, float weight)
         {
             Source = source;
             Target = target;
+            Weight = weight;
         }
+
     }
 
     public struct AddedNode
@@ -85,5 +72,18 @@ namespace LifeGame
             OutputConn = ++lastID;
         }
 
+    }
+
+    public struct AddedConnection
+    {
+        public uint Source { get; private set; }
+        public uint Target { get; private set; }
+
+        public AddedConnection(uint source, uint target)
+            : this()
+        {
+            Source = source;
+            Target = target;
+        }
     }
 }

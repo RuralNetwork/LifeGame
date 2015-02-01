@@ -34,6 +34,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Media.Animation;
 
 namespace LifeGame
 {
@@ -43,16 +45,13 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-        private Environment Environment { get; set; }
+        private SimEnvironment Environment { get; set; }
         private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
         public MainWindow()
         {
             InitializeComponent();
             //---------------------Test Space------------------------
-            
-            
-
 
 
 
@@ -63,7 +62,7 @@ namespace LifeGame
             //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
             
             Engine = new GraphicsEngine(mainpanel);
-            Environment= new Environment(10,10,Engine);
+            Environment= new SimEnvironment(10,10,Engine);
             Simulation = new Simulation(Environment, Engine);
            
         }

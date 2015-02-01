@@ -25,7 +25,7 @@ namespace LifeGame
     }
     public class Simulation
     {
-        private Environment _environment;
+        private SimEnvironment _environment;
         private GraphicsEngine _engine;
 
         SimulationType Type { get; set; }
@@ -35,7 +35,7 @@ namespace LifeGame
         /// </summary>
         List<Event> Events { get; set; }
 
-        public Simulation(Environment environment, GraphicsEngine engine)
+        public Simulation(SimEnvironment environment, GraphicsEngine engine)
         {
             _environment = environment;
             _engine = engine;

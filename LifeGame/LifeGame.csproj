@@ -58,11 +58,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Being\BodyGenome.cs" />
+    <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
+    <Compile Include="Math_stuff\FloatCircularBuffer.cs" />
     <Compile Include="Math_stuff\FastRandom.cs" />
     <Compile Include="Math_stuff\RouletteWheel.cs" />
     <Compile Include="Being\NeuralNetwork.cs" />
     <Compile Include="Being\NNGenome.cs" />
     <Compile Include="Being\NNGenomeStructs.cs" />
+    <Compile Include="Math_stuff\RandomBool.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="Math_stuff\GridPoint.cs" />
@@ -79,7 +82,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Environment.cs" />
+    <Compile Include="SimEnvironment.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

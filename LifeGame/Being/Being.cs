@@ -44,7 +44,7 @@ namespace LifeGame
 
         public int ID { get; private set; }
 
-        public Being(Environment environment, int id, GridPoint location)
+        public Being(SimEnvironment environment, int id, GridPoint location)
             : base(environment)
         {
             ID = id;

@@ -13,7 +13,7 @@ namespace LifeGame
     /// </summary>
     public abstract class Thing
     {
-        protected Environment environment;
+        protected SimEnvironment environment;
         // Sight
         public abstract float R { get; }
         public abstract float G { get; }
@@ -48,7 +48,7 @@ namespace LifeGame
         public delegate void Effects(Being actor);
         public readonly Dictionary<ActionType, Effects> Interactions;
 
-        public Thing(Environment environment)
+        public Thing(SimEnvironment environment)
         {
             this.environment = environment;
         }

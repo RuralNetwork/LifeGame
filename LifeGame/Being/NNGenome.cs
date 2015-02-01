@@ -24,13 +24,14 @@ namespace LifeGame
 
     public class NNGenome
     {
-        const int INPUTS_AND_BIAS_COUNT = 135 + 1;
-        const int OUTPUTS_COUNT = 19;
+        const int INPUTS_COUNT = 135;
+        const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
+        const int OUTPUTS_COUNT = 20;
 
         // parameters
         const float WEIGHT_RANGE = 5.0f;
-        const float DISJ_EXC_RECOMB_PROP = 0.1f;// disjoint-excess recombination proportion
-        const float WEIGHT_MUT_PROP = 0.02f;    // weight mutation proportion
+        const float DISJ_EXC_RECOMB_PROB = 0.1f;// disjoint-excess recombine probability
+        const float WEIGHT_MUT_PROP = 0.02f;    // weight mutation proportion    0.02 -> 2% of connectivity
         const float MAX_WEIGHT_PERT_PROP = 0.4f;// maximum weight perturbation proportion
 
         // mutation probalility coefficients
@@ -40,14 +41,11 @@ namespace LifeGame
         const float ADD_CONN_MUT_PROB = 0.01f;  // add connection mutation probability
         const float DEL_CONN_MUT_PROB = 0.01f;  // delete connection mutation probability
 
+        //random generators
         static RouletteWheel stdMutationRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB, UNCHANGED_MUT_PROB);
         static RouletteWheel alwaysMutateRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_CONN_MUT_PROB, DEL_CONN_MUT_PROB);
-        static Random rand = new Random();
-
-        //Being specific genomes
-        public SortedList<uint, NodeGene> NodeGeneList { get; set; }
-        public SortedList<uint, ConnectionGene> ConnectionGeneList { get; set; }
-
+        static FastRandom rand = new FastRandom();
+        static RandomBool randBool = new RandomBool();
 
         //--------Globally store the identifiers needed to match genes during recombination
         //The innovation IDs are assigned based on the structure:
@@ -59,19 +57,49 @@ namespace LifeGame
 
         //The key is the connection ID the AddedNode struct replaced
         //The ID is contained in the AddedNode sruct
-        static SortedList<uint, AddedNode> nodeBuffer = new SortedList<uint, AddedNode>();
+        static KVCircularBuffer<uint, AddedNode> nodeBuffer = new KVCircularBuffer<uint, AddedNode>(0x20000);
 
         //The value is the actual ID
-        static SortedList<AddedConnection, uint?> connectionBuffer = new SortedList<AddedConnection, uint?>();
+        static KVCircularBuffer<AddedConnection, uint?> connectionBuffer = new KVCircularBuffer<AddedConnection, uint?>(0x20000);
 
+
+        //Being specific genomes
+        public SortedList<uint, NodeGene> NodeGeneList { get; private set; }
+        public SortedList<uint, ConnectionGene> ConnectionGeneList { get; private set; }
+        // SortedList:       fast to search by key, slow to add, fast to search by index  <-- best for our needs
+        // SortedDictionary: fast to search by key, fast to add, slow to search by index
+
+        public FloatCircularBuffer FitnessHistory { get; private set; }
+
+        /// <summary>
+        /// Initialize a random genome
+        /// </summary>
         public NNGenome()
         {
+            NodeGeneList = new SortedList<uint, NodeGene>();
+            NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
+            for (uint i = 1; i < INPUTS_COUNT + 1; i++)
+            {
+                NodeGeneList.Add(i, new NodeGene(NodeType.Input));
+            }
+            for (uint i = 0; i < OUTPUTS_COUNT + INPUTS_AND_BIAS_COUNT + 1; i++)
+            {
+                NodeGeneList.Add(i, new NodeGene(NodeType.Output));
+            }
+
+            ConnectionGeneList = new SortedList<uint, ConnectionGene>();
+            addConnection();// add a single connection
+            FitnessHistory = new FloatCircularBuffer(10);
+
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public NNGenome(NNGenome parent1, NNGenome parent2)
         {
-            //do the cross-over (actually don't know, it's though with the ogranization of genes)
+            //do the cross-over (actually don't know, it's though with the organization of genes)
 
         }
 
@@ -99,10 +127,11 @@ namespace LifeGame
 
         void mutateWeight()//sharpneat's code for weight mutation was extremely long and redundant with lot of wasted r.n.g.
         {
-            var n = (int)Math.Ceiling(WEIGHT_MUT_PROB * ConnectionGeneList.Count);
+            var n = (int)Math.Ceiling(WEIGHT_MUT_PROP * ConnectionGeneList.Count);
             for (int i = 0; i < n; i++)
             {
                 var m = rand.Next(n);
+
                 var weight = ConnectionGeneList.Values[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
                 ConnectionGeneList.Values[m].Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
             }
@@ -165,7 +194,7 @@ namespace LifeGame
 
             if (isNewAddedNode)
             {
-                nodeBuffer.Add(oldConnID, addedNode);
+                nodeBuffer.Enqueue(oldConnID, addedNode);
             }
             return addedNode;
         }
@@ -202,7 +231,7 @@ namespace LifeGame
                     else
                     {
                         ConnectionGeneList.Add(++lastID, newConn);
-                        connectionBuffer.Add(addedConn, lastID);//same ID
+                        connectionBuffer.Enqueue(addedConn, lastID);//same ID
                     }
                     srcNode.TargetNodes.Add(tgtID);
                     tgtNode.SourceNodes.Add(srcID);
@@ -215,7 +244,7 @@ namespace LifeGame
         }
 
         /// <summary>
-        /// Remove a connection. If there's only one connection, mutate weight of it.
+        /// Remove a connection. If there's only one connection, then mutate weight.
         /// </summary>
         void removeConnection()
         {
@@ -243,11 +272,6 @@ namespace LifeGame
             tgtNode.SourceNodes.Remove(oldConn.Target);
 
             if (tgtNode.IsRedundant) NodeGeneList.RemoveAt(idx);
-
-        }
-
-        void defragIDs()
-        {
 
         }
     }

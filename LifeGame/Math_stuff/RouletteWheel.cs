@@ -8,7 +8,7 @@ namespace LifeGame
 {
     class RouletteWheel
     {
-        Random rand = new Random();
+        FastRandom rand = new FastRandom();
         float[] stair;
         int count;
 

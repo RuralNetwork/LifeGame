@@ -53,7 +53,7 @@ namespace LifeGame.Things
             get { throw new NotImplementedException(); }
         }
 
-        public Tree(Environment environment)
+        public Tree(SimEnvironment environment)
             : base(environment)
         {
 
