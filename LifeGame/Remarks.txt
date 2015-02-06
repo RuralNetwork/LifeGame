@@ -1,6 +1,6 @@
 ﻿------------Code layout conventions-------------
 - Use properties instead of fields
-- Use "lowerCamelCase" for private properties/methods/fields
+- Use "lowerCamelCase" for private methods/fields
 - Use "UpperCamelCase" for public properties/methods
 - Use "UpperCamelCase" for classes, structs & enums
 - Use "CAPITAL_UNDERSCORE" for consts

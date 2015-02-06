@@ -18,72 +18,94 @@ namespace LifeGame
     public class NodeGene// switched back to class because it is not immutable and gave problems with references
     {
         public NodeType Type { get; private set; }
-        public HashSet<uint> SourceNodes { get; private set; }
-        public HashSet<uint> TargetNodes { get; private set; }
+        public HashSet<uint> SrcNodeIDs { get; private set; }
+        public HashSet<uint> TgtNodeIDs { get; private set; }
 
         public NodeGene()
         {
             Type = NodeType.Hidden;
-            SourceNodes = new HashSet<uint>();
-            TargetNodes = new HashSet<uint>();
+            SrcNodeIDs = new HashSet<uint>();
+            TgtNodeIDs = new HashSet<uint>();
         }
+
+        public NodeGene(NodeGene nodeGene)
+        {
+            Type = nodeGene.Type;
+            SrcNodeIDs = new HashSet<uint>();
+            foreach (var id in nodeGene.SrcNodeIDs)
+            {
+                SrcNodeIDs.Add(id);
+            }
+            TgtNodeIDs = new HashSet<uint>();
+            foreach (var id in nodeGene.TgtNodeIDs)
+            {
+                TgtNodeIDs.Add(id);
+            }
+        }
+
         public NodeGene(NodeType type)
         {
             Type = type;
-            SourceNodes = new HashSet<uint>();
-            TargetNodes = new HashSet<uint>();
+            SrcNodeIDs = new HashSet<uint>();
+            TgtNodeIDs = new HashSet<uint>();
         }
 
         public bool IsRedundant
         {
             get
             {
-                return Type == NodeType.Hidden && SourceNodes.Count + TargetNodes.Count == 0;
+                return Type == NodeType.Hidden && SrcNodeIDs.Count + TgtNodeIDs.Count == 0;
             }
 
         }
     }
+
     public class ConnectionGene// switched back to class
     {
-        public uint Source { get; private set; }
-        public uint Target { get; private set; }
+        public uint SourceID { get; private set; }
+        public uint TargetID { get; private set; }
         public float Weight { get; set; }
 
-        public ConnectionGene(uint source, uint target, float weight)
+        public ConnectionGene(uint sourceId, uint targetId, float weight)
         {
-            Source = source;
-            Target = target;
+            SourceID = sourceId;
+            TargetID = targetId;
             Weight = weight;
         }
 
+        public ConnectionGene(ConnectionGene connGene)
+        {
+            SourceID = connGene.SourceID;
+            TargetID = connGene.TargetID;
+            Weight = connGene.Weight;
+        }
     }
 
     public struct AddedNode
     {
-        public uint Node { get; private set; }
-        public uint InputConn { get; private set; }
-        public uint OutputConn { get; private set; }
+        public uint NodeID { get; private set; }
+        public uint InpConnID { get; private set; }
+        public uint OutpConnID { get; private set; }
 
         public AddedNode(ref uint lastID)
             : this()
         {
-            Node = ++lastID;
-            InputConn = ++lastID;
-            OutputConn = ++lastID;
+            NodeID = ++lastID;
+            InpConnID = ++lastID;
+            OutpConnID = ++lastID;
         }
-
     }
 
     public struct AddedConnection
     {
-        public uint Source { get; private set; }
-        public uint Target { get; private set; }
+        public uint SourceID { get; private set; }
+        public uint TargetID { get; private set; }
 
-        public AddedConnection(uint source, uint target)
+        public AddedConnection(uint sourceId, uint targetId)
             : this()
         {
-            Source = source;
-            Target = target;
+            SourceID = sourceId;
+            TargetID = targetId;
         }
     }
 }

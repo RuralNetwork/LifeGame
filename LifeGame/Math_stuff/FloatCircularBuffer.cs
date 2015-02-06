@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    //this circular buffer gives an inconsistent mean for the first n values enqueued (where n is the buffer capacity). this was done for the sake of speed
     // this class is used for FitnessHistory property
     public class FloatCircularBuffer
     {
         float[] buffer;
         int idx;
         int capacity;
+        bool isFull;// the buffer starts assigning values from idx 1. when idx 0 is assigned, the buffer is full.
 
         public float Total { get; private set; }
 
@@ -26,7 +26,7 @@ namespace LifeGame
         {
             get
             {
-                return Total / capacity;
+                return Total / (isFull ? capacity : idx);
             }
         }
 
@@ -34,7 +34,11 @@ namespace LifeGame
         {
             Total -= buffer[idx];
             idx++;
-            if (idx == capacity) idx = 0;
+            if (idx == capacity)
+            {
+                isFull = true;
+                idx = 0;
+            }
             buffer[idx] = item;
             Total += item;
         }
