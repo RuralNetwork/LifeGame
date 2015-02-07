@@ -11,7 +11,7 @@
 - When downcasting (ex. from Thing to Being) use the "as" operator instead of () prefix operator beacuse it doesn't check if operation succeed
 - When testing, consider using <gcAllowVeryLargeObjects> and switching to 64 bit for more space allocation for a single object (the ram could be not enough though)
 - The keyword "readonly" doesn't give peformance benefits
-
+- Before a loop, always precalculate constant values (and also copy object references) used inside. 
 
 Code example:
 // To merge bitmaps:

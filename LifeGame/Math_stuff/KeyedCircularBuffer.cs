@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LifeGame
 {
     /// <summary>
-    /// Circular buffer of key-value pairs. This is used for the addedNode and addedConnection buffers. 
+    /// Circular buffer of key-value pairs. This is used for the addedNode and addedLink buffers. 
     /// When the max capacity is reached, the buffer starts to override the oldest values. 
     /// This can cause the same structures to have different IDs and then don't match during recombination, 
     /// however this is the only chice because the IDs grow very fast during the simulation and exceed the maximum element that a collection can contain.

@@ -60,48 +60,48 @@ namespace LifeGame
         }
     }
 
-    public class ConnectionGene// switched back to class
+    public class LinkGene// switched back to class
     {
         public uint SourceID { get; private set; }
         public uint TargetID { get; private set; }
         public float Weight { get; set; }
 
-        public ConnectionGene(uint sourceId, uint targetId, float weight)
+        public LinkGene(uint sourceId, uint targetId, float weight)
         {
             SourceID = sourceId;
             TargetID = targetId;
             Weight = weight;
         }
 
-        public ConnectionGene(ConnectionGene connGene)
+        public LinkGene(LinkGene linkGene)
         {
-            SourceID = connGene.SourceID;
-            TargetID = connGene.TargetID;
-            Weight = connGene.Weight;
+            SourceID = linkGene.SourceID;
+            TargetID = linkGene.TargetID;
+            Weight = linkGene.Weight;
         }
     }
 
     public struct AddedNode
     {
         public uint NodeID { get; private set; }
-        public uint InpConnID { get; private set; }
-        public uint OutpConnID { get; private set; }
+        public uint InpLinkID { get; private set; }
+        public uint OutpLinkID { get; private set; }
 
         public AddedNode(ref uint lastID)
             : this()
         {
             NodeID = ++lastID;
-            InpConnID = ++lastID;
-            OutpConnID = ++lastID;
+            InpLinkID = ++lastID;
+            OutpLinkID = ++lastID;
         }
     }
 
-    public struct AddedConnection
+    public struct AddedLink
     {
         public uint SourceID { get; private set; }
         public uint TargetID { get; private set; }
 
-        public AddedConnection(uint sourceId, uint targetId)
+        public AddedLink(uint sourceId, uint targetId)
             : this()
         {
             SourceID = sourceId;

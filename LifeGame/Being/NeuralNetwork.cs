@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    public struct Connection
+    public struct Link
     {
-        public int Source { get; set; }
-        public int Target { get; set; }
+        public int SourceIdx { get; set; }
+        public int TargetIdx { get; set; }
         public float Weight { get; set; }
     }
 
@@ -34,32 +34,68 @@ namespace LifeGame
         // 2 component action direction, walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
 
 
-        Connection[] connections;
+        public Link[] Links { get; private set; }
 
         float[] preActivationArray;
-        public float[] State { get; set; } // postActivationArray;
+        public float[] State { get; private set; } // postActivationArray;
+
+        int linkCount, nodeCount;
 
 
         public NeuralNetwork(NNGenome genome)
         {
+            var linkList = genome.LinkGeneList;
+            var nodeList = genome.NodeGeneList;
+            var linkCount = linkList.Count;
+            var nodeCount = nodeList.Count;
+            var newLinkArr = new Link[linkCount];
 
+            //create ID-index map dictionary
+            var idxDict = new Dictionary<uint, int>(nodeCount);
+            var idArr = nodeList.Keys.ToArray();
+            for (int i = 0; i < nodeCount; i++)
+            {
+                idxDict.Add(idArr[i], i);
+            }
+
+            //fill link array
+            for (int i = 0; i < linkCount; i++)
+            {
+                var link = linkList.Values[i];
+                newLinkArr[i].SourceIdx = idxDict[link.SourceID];// O(1)
+                newLinkArr[i].TargetIdx = idxDict[link.TargetID];
+                newLinkArr[i].Weight = link.Weight;
+            }
+
+            //apply
+            Links = newLinkArr;//didn't used directly Links array to minimize overhead
+            preActivationArray = new float[nodeCount];
+            State = new float[nodeCount];
+            this.linkCount = linkCount;
+            this.nodeCount = nodeCount;
         }
 
         public void Calculate()
         {
+            //make local copy/reference for performance
+            var linkCount = this.linkCount;
+            var nodeCount = this.nodeCount;
+            var links = Links;
+            var preActArr = preActivationArray;
+            var postActArr = State;
             for (int i = 0; i < CYCLES_COUNT; i++)
             {
-                for (int j = 0; j < connections.Length; j++)
+                for (int j = 0; j < linkCount; j++)
                 {
-                    preActivationArray[connections[j].Target] += State[connections[j].Source] * connections[j].Weight;
+                    preActArr[links[j].TargetIdx] += postActArr[links[j].SourceIdx] * links[j].Weight;
                 }
 
-                for (int j = INPUTS_AND_BIAS_COUNT; j < preActivationArray.Length; j++)
+                for (int j = INPUTS_AND_BIAS_COUNT; j < nodeCount; j++)
                 {
-                    State[j] = 1.0f / (1.0f + ((float)Math.Exp(-preActivationArray[j])));// standard sigmoid
-                    // TODO: reconsider the activation function, can "0.5f+(x/(2.0f*(0.2f+Math.Abs(x))))" be better for performance/quality?
+                    postActArr[j] = 1f / (1f + ((float)Math.Exp(-preActArr[j])));// standard sigmoid
+                    // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
 
-                    preActivationArray[j] = 0.0f;
+                    preActArr[j] = 0f;
                 }
             }
         }
