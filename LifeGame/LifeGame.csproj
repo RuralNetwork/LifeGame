@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Being\BodyGenome.cs" />
+    <Compile Include="Math_stuff\Extensions.cs" />
     <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
     <Compile Include="Math_stuff\FloatCircularBuffer.cs" />
     <Compile Include="Math_stuff\FastRandom.cs" />

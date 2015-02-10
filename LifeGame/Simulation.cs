@@ -25,8 +25,14 @@ namespace LifeGame
     }
     public class Simulation
     {
-        private SimEnvironment _environment;
-        private GraphicsEngine _engine;
+        public int PopulationCount;
+
+        private SimEnvironment environment;
+        private GraphicsEngine engine;
+
+        //instead of using a SortedDictionary I use a Dictionary and store the fittest genomes in an hall of fame
+        Dictionary<float, NNGenome> NNGenomeList; // key: 
+        List<NNGenome> hallOfFame;
 
         SimulationType Type { get; set; }
         public bool IsRunning { get; private set; }
@@ -37,13 +43,26 @@ namespace LifeGame
 
         public Simulation(SimEnvironment environment, GraphicsEngine engine)
         {
-            _environment = environment;
-            _engine = engine;
+            this.environment = environment;
+            this.engine = engine;
         }
 
-        void RunPause()
+        public void RunPause()
         {
             IsRunning = !IsRunning;
+        }
+
+        //for now i put some code here, until we better define the methods for progressing the simulation 
+        public void Update()
+        {
+            //code for SimulationType.Fast
+            environment.Update();
+            if (environment.Population.Count< PopulationCount)
+            {
+                
+            }
+            //if fixed size population (should be used while the beings don't know how reproduce yet)
+
         }
     }
 }

@@ -10,8 +10,10 @@ namespace LifeGame
 {
     public class SimEnvironment : Thing
     {
-        public int Time;
-        public Cell[][] Cells;
+        public int Time { get; set; }
+        public Cell[][] Cells { get; private set; }
+
+        public List<Being> Population { get; private set; }
 
         public SimEnvironment(int gridWidth, int gridHeight, GraphicsEngine engine)
             : base(null)

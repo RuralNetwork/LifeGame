@@ -71,6 +71,7 @@ namespace LifeGame
             Links = newLinkArr;//didn't used directly Links array to minimize overhead
             preActivationArray = new float[nodeCount];
             State = new float[nodeCount];
+            State[0] = 1;                 // bias
             this.linkCount = linkCount;
             this.nodeCount = nodeCount;
         }

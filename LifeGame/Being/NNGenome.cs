@@ -79,13 +79,13 @@ namespace LifeGame
         /// </summary>
         public NNGenome()
         {
-            NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_COUNT + OUTPUTS_COUNT + 1);
+            NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
             NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
-            for (uint i = 1; i < INPUTS_COUNT + 1; i++)
+            for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Input));
             }
-            for (uint i = INPUTS_COUNT + 1; i < OUTPUTS_COUNT + INPUTS_COUNT + 1; i++)
+            for (uint i = INPUTS_AND_BIAS_COUNT; i < OUTPUTS_COUNT + INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Output));
             }
@@ -239,7 +239,7 @@ namespace LifeGame
             var valueList = LinkGeneList.Values;
             for (int i = 0; i < n; i++)
             {
-                var m = rand.Next(n);
+                var m = rand.Next(n);// it doesn't matter mutating a connection twice
 
                 var weight = valueList[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
                 valueList[m].Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
