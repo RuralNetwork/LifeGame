@@ -64,7 +64,7 @@
     <Compile Include="Math_stuff\RouletteWheel.cs" />
     <Compile Include="Being\NeuralNetwork.cs" />
     <Compile Include="Being\NNGenome.cs" />
-    <Compile Include="Being\NNGenomeStructs.cs" />
+    <Compile Include="Being\NNGenomeStrcts.cs" />
     <Compile Include="Math_stuff\RandomBool.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Graphics.cs" />

@@ -63,7 +63,6 @@ namespace LifeGame
             Engine = new GraphicsEngine(mainpanel);
             Environment= new SimEnvironment(10,10,Engine);
             Simulation = new Simulation(Environment, Engine);
-           
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
