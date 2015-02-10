@@ -9,9 +9,6 @@
 // Opera: "Studio di cromosomi"
 // Tecnica: "Monospace su canvas"
 
-
-//                                 ok ci ho provato
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -70,7 +67,7 @@ namespace LifeGame
         // Complexity comparison:
         // Dictionary: unsorted, search by index: O(1) (in practice is slower), search by key: O(1),     add: O(1)
         // SortedList: sorted,   search by index: O(log n),                     search by key: O(log n), add: O(n) (O(1) if sorted)
-        // TODO: test if it's better to switch to SortedDictionary (consider faster manipulation and slower access)
+        // TODO: test if it's better to switch to SortedDictionary (consider faster manipulation but slower access)
 
         public FloatCircularBuffer FitnessHistory { get; private set; }
 

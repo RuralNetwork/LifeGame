@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+//I renamed this file because I struct can be confused and structures is too long, I don't know, useless change, but whatever
 namespace LifeGame
 {
 
@@ -18,7 +18,9 @@ namespace LifeGame
     public class NodeGene// switched back to class because it is not immutable and gave problems with references
     {
         public NodeType Type { get; private set; }
+        //Source node
         public HashSet<uint> SrcNodeIDs { get; private set; }
+        //Target node
         public HashSet<uint> TgtNodeIDs { get; private set; }
 
         public NodeGene()
@@ -59,8 +61,8 @@ namespace LifeGame
 
         }
     }
-
-    public class LinkGene// switched back to class
+    //Class that identifies one single link
+    public class LinkGene
     {
         public uint SourceID { get; private set; }
         public uint TargetID { get; private set; }

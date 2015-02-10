@@ -28,7 +28,9 @@ namespace LifeGame
                 stair[i] = accumulator;
             }
         }
-
+        ///<summary>
+        ///Generated a new number based on initialized values
+        ///</summary>
         public int Spin()
         {
             var rng = (float)rand.NextDouble();

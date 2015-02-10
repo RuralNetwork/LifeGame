@@ -11,6 +11,9 @@ namespace LifeGame
     {
         public float X { get; set; }
         public float Y { get; set; }
+        ///<summary>
+        ///Eucledian length
+        ///</summary>
         public float Magnitude
         {
             get
@@ -19,6 +22,9 @@ namespace LifeGame
                                                         // math functions will be replaced when adding cudafy support
             }
         }
+        ///<summary>
+        ///Returns the normalized vector
+        ///</summary>
         public Vector Normalized
         {
             get
