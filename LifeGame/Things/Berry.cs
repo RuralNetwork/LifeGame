@@ -6,42 +6,41 @@ using System.Threading.Tasks;
 
 namespace LifeGame.Things
 {
-    class Tree : Thing
+    class Berry : Thing
     {
+        public float Quantity { get; set; }
         public override float R
         {
-            get { throw new NotImplementedException(); }
+            get { return 0.8f; }
         }
 
         public override float G
         {
-            get { throw new NotImplementedException(); }
+            get { return 0; }
         }
 
         public override float B
         {
-            get { throw new NotImplementedException(); }
+            get { return 0.8f; }
         }
-
-        public override float Painful
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public override float Weight
         {
-            get { throw new NotImplementedException(); }
+            get { return 0.001f * Quantity; }
+        }
+        public override float Temperature
+        {
+            get { return environment.Temperature; }
         }
 
-        public override float Amplitude
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public override float Speed { get { return 0; } }
 
-        public override float Pitch
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public override float Painful { get { return 0; } }
+
+
+
+        public override float Amplitude { get { return 0; } }
+
+        public override float Pitch { get { return 0; } }
 
         public override float SmellIntensity
         {
@@ -53,10 +52,10 @@ namespace LifeGame.Things
             get { throw new NotImplementedException(); }
         }
 
-        public Tree(SimEnvironment environment)
+        public Berry(SimEnvironment environment)
             : base(environment)
         {
-
+            Quantity = 100;
         }
 
         public override void Update()
@@ -67,16 +66,6 @@ namespace LifeGame.Things
         public override void Draw()
         {
             throw new NotImplementedException();
-        }
-
-        public override float Speed
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Temperature
-        {
-            get { throw new NotImplementedException(); }
         }
 
         public override bool CanContainBeing

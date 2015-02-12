@@ -15,19 +15,12 @@ namespace LifeGame
         bool isFull;// the buffer starts assigning values from idx 1. when idx 0 is assigned, the buffer is full.
 
         public float Total { get; private set; }
+        public float Mean { get; private set; }
 
         public FloatCircularBuffer(int capacity)
         {
             buffer = new float[capacity];
             this.capacity = capacity;
-        }
-
-        public float Mean
-        {
-            get
-            {
-                return Total / (isFull ? capacity : idx);
-            }
         }
 
         public void Enqueue(float item)
@@ -41,6 +34,7 @@ namespace LifeGame
             }
             buffer[idx] = item;
             Total += item;
+            Mean = Total / (isFull ? capacity : idx);
         }
 
     }

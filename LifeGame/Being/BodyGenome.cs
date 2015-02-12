@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace LifeGame
 {
 
-    
+
     // /////////////////////////////////////For now i'm leaving the body genome and keeping the same phenome for every being
-    
+
 
     public struct Chromosome
     {
@@ -18,24 +18,18 @@ namespace LifeGame
 
         public float[] Genes { get; private set; }
 
-        public Chromosome(float[] genes, bool isSexual)
+        public Chromosome(float[] genes, bool? isSexual)
             : this()
         {
             Genes = genes;
             IsSexual = isSexual;
         }
     }
-    class BodyGenome
+
+    public class BodyGenome
     {
         public Chromosome[] ChromArr1 { get; private set; }// for now we test with 1 pair of sexual chromosomes and 1 pair of autosomes
         public Chromosome[] ChromArr2 { get; private set; }
-        // Genes:
-        //R
-        //G
-        //B
-        //Height multiplicator
-        //Sight multiplicator
-        //Herbivore/carnivore
 
         //Consider switching to a more realistic rapresentation of genes
 
@@ -59,7 +53,7 @@ namespace LifeGame
             for (int i = 0; i < 6; i++)
             {
 
-        }
+            }
         }
 
         void mutate()

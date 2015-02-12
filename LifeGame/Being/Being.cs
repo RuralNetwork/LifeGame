@@ -24,7 +24,7 @@ namespace LifeGame
     public struct Phenome
     {
         public float Sex { get; private set; }
-        float HeigthMul; //heigth multiplicator: assume that a being can grow during life, consider if we should change to static height
+        float HeightMul; //height multiplicator: assume that a being can grow during life, consider if we should change to static height
         float SightMul;
         /// <summary>
         /// Herbivore: from 0 up; carnivore: from 1 down
@@ -34,21 +34,23 @@ namespace LifeGame
     // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
     public class Being : Thing
     {
+        public FloatCircularBuffer FitnessHistory { get; private set; }
 
         public MutableStats MutableStats { get; set; }
-
+        public Genome Genome { get; private set; }
 
         public GridPoint Location { get; set; }
         public Vector LastWalkDir { get; set; }
         public Thing CarriedObj { get; set; }
 
-        public int ID { get; private set; }
+        //public int ID { get; private set; }
 
-        public Being(SimEnvironment environment, int id, GridPoint location)
+        public Being(SimEnvironment environment, GridPoint location, Genome genome)
             : base(environment)
         {
-            ID = id;
             Location = location;
+            FitnessHistory = new FloatCircularBuffer(1000);// should countain the fitness for every tick of the lifespan
+            Genome = genome;
         }
 
         public override void Update()
@@ -66,7 +68,7 @@ namespace LifeGame
         public override void Draw()
         {
             CarriedObj.Draw();
-            Debug.WriteLine("Drew %d\n", ID);
+            //Debug.WriteLine("Drew %d\n", ID);
         }
 
         public override float R
@@ -120,6 +122,11 @@ namespace LifeGame
         }
 
         public override float Temperature
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override bool CanContainBeing
         {
             get { throw new NotImplementedException(); }
         }

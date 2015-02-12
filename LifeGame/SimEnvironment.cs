@@ -12,12 +12,18 @@ namespace LifeGame
     {
         public int Time { get; set; }
         public Cell[][] Cells { get; private set; }
-
+        public int GridWidth { get; private set; }
+        public int GridHeight { get; private set; }
         public List<Being> Population { get; private set; }
 
-        public SimEnvironment(int gridWidth, int gridHeight, GraphicsEngine engine)
+        Simulation simulation;
+
+        public SimEnvironment(int gridWidth, int gridHeight, GraphicsEngine engine, Simulation simulation)
             : base(null)
         {
+            this.simulation = simulation;
+            GridWidth = gridWidth;
+            GridHeight = gridHeight;
             Cells = new Cell[gridHeight][];
             for (int i = 0; i < gridHeight; i++)
             {
@@ -79,14 +85,14 @@ namespace LifeGame
             get { return 0; }
         }
 
-        public override float Amplitude // birds?  -> no, useless
+        public override float Amplitude // can be a thunder
         {
-            get { return 0; }
+            get { throw new NotImplementedException(); }
         }
 
-        public override float Pitch // birds?  -> no, useless
+        public override float Pitch  // can be a thunder
         {
-            get { return 0; }
+            get { throw new NotImplementedException(); }
         }
 
         public override float SmellIntensity // if rainy?
@@ -101,10 +107,15 @@ namespace LifeGame
 
         public override float Speed
         {
-            get { throw new NotImplementedException(); }
+            get { return 0; }
         }
 
         public override float Temperature
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override bool CanContainBeing
         {
             get { throw new NotImplementedException(); }
         }
@@ -119,10 +130,6 @@ namespace LifeGame
         //No, just overlayed bitmaps, but then the system for selecting the cells with mouse must consider the altitude (and it's not so straight forward)
         public int Altitude { get; set; }
         public Thing Item { get; set; }
-        /// <summary>
-        /// Items count
-        /// </summary>
-        public int Count { get; set; }
 
         public Cell(int x, int y, SimEnvironment environment, GraphicsEngine engine)
         {

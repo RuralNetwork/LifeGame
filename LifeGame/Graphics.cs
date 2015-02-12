@@ -28,11 +28,14 @@ namespace LifeGame
         //When a new Map is created, there will be limits, then, since we know how big it is, we center it
         //Viewbox was too limited as per the child it could have, stackpanel puts everything with a DOM logic
         //canvas was the only thing that let me do what I wanted, if there is something better we can change it now, later it will be too painful
-        private Canvas _canvas{get; set;}
-        public GraphicsEngine(Canvas canvas) {
+        private Canvas _canvas { get; set; }
+        public GraphicsEngine(Canvas canvas)
+        {
             _canvas = canvas;
+
         }
-        public void setViewbox(Canvas newCanvas){
+        public void setViewbox(Canvas newCanvas)
+        {
             _canvas = newCanvas;
         }
         private PointCollection getPointCollection(int x, int y)
@@ -60,7 +63,8 @@ namespace LifeGame
             //Adds the polygon to the canvas
             this._canvas.Children.Add(poligono);
         }
-        public void startSimulation(){
+        public void startSimulation()
+        {
             Debug.Write("Simulation started\n");
         }
     }

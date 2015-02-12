@@ -7,10 +7,18 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
+    [Flags] // this attribute is useless (most of they are) but helps creating the inline documentation
+    public enum BoolProps
+    {
+        CanContainBeing = 1,
+        CanBeCarried,
+
+    }
 
     /// <summary>
     /// Element that can interact with a being
     /// </summary>
+    // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public abstract class Thing
     {
         protected SimEnvironment environment;
@@ -43,6 +51,11 @@ namespace LifeGame
         //smell
         public abstract float SmellIntensity { get; }
         public abstract float Smell { get; }
+
+
+
+        public abstract bool CanContainBeing { get; }
+        public bool BoolProperties { get; set; }
 
         
         public delegate void Effects(Being actor);

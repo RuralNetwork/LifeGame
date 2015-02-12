@@ -45,7 +45,6 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-        private SimEnvironment Environment { get; set; }
         private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
         public MainWindow()
@@ -61,8 +60,7 @@ namespace LifeGame
             //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
             
             Engine = new GraphicsEngine(mainpanel);
-            Environment= new SimEnvironment(10,10,Engine);
-            Simulation = new Simulation(Environment, Engine);
+            Simulation = new Simulation(100, 100, Engine);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

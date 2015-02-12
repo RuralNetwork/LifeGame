@@ -17,34 +17,37 @@ namespace LifeGame
         Slow,
         //Medium: every move after the other, not really able to percieve the movements, but the animation still runs, smth like 20ms
         Medium,
-        /// <summary>
-        /// A hall of fame based simulation type. the best genomes will be inserted in the next offsprings after the old owners dies.
-        /// </summary>
         //Fast: graphicengine stops, doesn't update the screen anymore, each action is performed after the other, basically no game thick, as soon as it can, it just does the next thing
         Fast
     }
+
+    //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     public class Simulation
     {
-        public int PopulationCount;
-
-        private SimEnvironment environment;
-        private GraphicsEngine engine;
-
-        //instead of using a SortedDictionary I use a Dictionary and store the fittest genomes in an hall of fame
-        Dictionary<float, NNGenome> NNGenomeList; // key: 
-        List<NNGenome> hallOfFame;
-
-        SimulationType Type { get; set; }
+        /// <summary>
+        /// Tells if should be used PopulationCount and the hall of fame genome list to maintain the population.
+        /// </summary>
+        public bool IsInTrainingMode { get; set; }
+        public int PopulationCount { get; set; }
         public bool IsRunning { get; private set; }
+        public SimulationType Type { get; set; }
         /// <summary>
         /// History of events.
         /// </summary>
-        List<Event> Events { get; set; }
+        public List<Event> Events { get; set; }
+        public SimEnvironment Environment { get; private set; }
 
-        public Simulation(SimEnvironment environment, GraphicsEngine engine)
+
+        GraphicsEngine engine;
+        List<Genome> hallOfFame;
+        FastRandom rand = new FastRandom();
+
+
+        public Simulation(int width, int height, GraphicsEngine engine)
         {
-            this.environment = environment;
+            Environment = new SimEnvironment(width, height, engine, this);
             this.engine = engine;
+            hallOfFame = new List<Genome>(10);
         }
 
         public void RunPause()
@@ -55,13 +58,36 @@ namespace LifeGame
         //for now i put some code here, until we better define the methods for progressing the simulation 
         public void Update()
         {
-            //code for SimulationType.Fast
-            environment.Update();
-            if (environment.Population.Count< PopulationCount)
+            Environment.Update();
+
+            if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
             {
-                
+                if (Environment.Population.Count > PopulationCount)
+                {
+                    Environment.Population.InsertionSort((a, b) => -a.FitnessHistory.Mean.CompareTo(b.FitnessHistory.Mean)); // the minus -> decrescent
+                    Environment.Population.RemoveRange(PopulationCount, Environment.Population.Count - PopulationCount);
+                }
+                else if (Environment.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
+                {                                                       // because creating a new genome (even copying an existing one) is very expensive
+                    int idx;
+                    while (Environment.Population.Count < PopulationCount)
+                    {
+                        while (true)
+                        {
+                            idx = rand.Next(Environment.Population.Count);
+                            var loc = Environment.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
+                            if (loc.X >= 0 && loc.Y >= 0 && loc.X < Environment.GridWidth && loc.Y < Environment.GridHeight)
+                            {
+                                idx = rand.Next(10); // hallOfFame count
+                                var genome = hallOfFame[idx];
+                                Environment.Population.Add(new Being(Environment, loc, genome));
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
-            //if fixed size population (should be used while the beings don't know how reproduce yet)
 
         }
     }

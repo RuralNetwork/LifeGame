@@ -24,6 +24,7 @@ namespace LifeGame
     /// </remarks>
     public struct GridPoint
     {
+        static FastRandom rand = new FastRandom();
 
         public int X { get; set; }
         public int Y { get; set; }
@@ -57,34 +58,38 @@ namespace LifeGame
             return new GridPoint((int)Math.Round(x), (int)(x % 2 == 0 ? Math.Round(y) : y));
         }
 
-        public GridPoint Top()
+        public GridPoint GetNearCell(CellDirection direction = CellDirection.Random)
         {
-            return new GridPoint(X, Y - 1);
+            if (direction == CellDirection.Random) direction = (CellDirection)rand.Next(6);
+            switch (direction)
+            {
+                case CellDirection.Top:
+                    return new GridPoint(X, Y - 1);
+                case CellDirection.TopRight:
+                    return new GridPoint(X + 1, X % 2 == 0 ? Y - 1 : Y);
+                case CellDirection.BottomRight:
+                    return new GridPoint(X + 1, X % 2 == 0 ? Y : Y + 1);
+                case CellDirection.Bottom:
+                    return new GridPoint(X, Y + 1);
+                case CellDirection.BottomLeft:
+                    return new GridPoint(X - 1, X % 2 == 0 ? Y : Y + 1);
+                case CellDirection.TopLeft:
+                    return new GridPoint(X - 1, X % 2 == 0 ? Y - 1 : Y);
+                default:
+                    break;
+            }
+            return new GridPoint();
         }
+    }
 
-        public GridPoint TopRight()
-        {
-            return new GridPoint(X + 1, X % 2 == 0 ? Y - 1 : Y);
-        }
-
-        public GridPoint BottomRight()
-        {
-            return new GridPoint(X + 1, X % 2 == 0 ? Y : Y + 1);
-        }
-
-        public GridPoint Bottom()
-        {
-            return new GridPoint(X, Y + 1);
-        }
-
-        public GridPoint BottomLeft()
-        {
-            return new GridPoint(X - 1, X % 2 == 0 ? Y : Y + 1);
-        }
-
-        public GridPoint TopLeft()
-        {
-            return new GridPoint(X - 1, X % 2 == 0 ? Y - 1 : Y);
-        }
+    public enum CellDirection
+    {
+        Top,
+        TopRight,
+        BottomRight,
+        Bottom,
+        BottomLeft,
+        TopLeft,
+        Random,
     }
 }

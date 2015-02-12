@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-
     public class NNGenome
     {
         const int INPUTS_COUNT = 135;
@@ -69,8 +68,6 @@ namespace LifeGame
         // SortedList: sorted,   search by index: O(log n),                     search by key: O(log n), add: O(n) (O(1) if sorted)
         // TODO: test if it's better to switch to SortedDictionary (consider faster manipulation but slower access)
 
-        public FloatCircularBuffer FitnessHistory { get; private set; }
-
         /// <summary>
         /// Initialize a random genome
         /// </summary>
@@ -93,20 +90,41 @@ namespace LifeGame
                 addLink();
             }
 
-            FitnessHistory = new FloatCircularBuffer(10);
-
         }
+        /// <summary>
+        /// Create a new genome mutating a genome
+        /// </summary>
+        //public NNGenome()
+        //{
+        //    NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
+        //    NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
+        //    for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
+        //    {
+        //        NodeGeneList.Add(i, new NodeGene(NodeType.Input));
+        //    }
+        //    for (uint i = INPUTS_AND_BIAS_COUNT; i < OUTPUTS_COUNT + INPUTS_AND_BIAS_COUNT; i++)
+        //    {
+        //        NodeGeneList.Add(i, new NodeGene(NodeType.Output));
+        //    }
+
+        //    LinkGeneList = new SortedList<uint, LinkGene>(5);
+        //    for (int i = 0; i < 5; i++)// choose how many links to add for starting the simulation
+        //    {
+        //        addLink();
+        //    }
+
+        //}
 
         /// <summary>
         /// Create a new genome recombining two genomes.
         /// </summary>
         // for now this is unfinisced: the recombination applies only over weights and not over morphology of the net
         // the structure is copied from the fittest genome
-        public NNGenome(NNGenome parent1, NNGenome parent2)
+        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2)
         {
             //determine fittest parent
             NNGenome fitPar, weakPar;
-            if (parent1.FitnessHistory.Mean > parent2.FitnessHistory.Mean)
+            if (fitness1 > fitness2)
             {
                 fitPar = parent1;
                 weakPar = parent2;
@@ -205,7 +223,6 @@ namespace LifeGame
 
             LinkGeneList = linkGeneList;
             NodeGeneList = nodeGeneList;
-            FitnessHistory = new FloatCircularBuffer(10);
         }
 
         void mutate()
