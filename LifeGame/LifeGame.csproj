@@ -59,6 +59,7 @@
     </ApplicationDefinition>
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
+    <Compile Include="SimulationState.cs" />
     <Compile Include="Things\Berry.cs" />
     <Compile Include="Math_stuff\Extensions.cs" />
     <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
@@ -80,12 +81,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Things\Action.cs" />
+    <Compile Include="Being\Action.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SimEnvironment.cs" />
+    <Compile Include="Things\SimEnvironment.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

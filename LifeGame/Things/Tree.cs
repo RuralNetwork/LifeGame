@@ -53,8 +53,8 @@ namespace LifeGame.Things
             get { throw new NotImplementedException(); }
         }
 
-        public Tree(SimEnvironment environment)
-            : base(environment)
+        public Tree(Simulation simulation)
+            : base(simulation)
         {
 
         }
@@ -75,11 +75,6 @@ namespace LifeGame.Things
         }
 
         public override float Temperature
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override bool CanContainBeing
         {
             get { throw new NotImplementedException(); }
         }

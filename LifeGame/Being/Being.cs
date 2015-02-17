@@ -31,7 +31,7 @@ namespace LifeGame
         /// </summary>
         float HerbCarn;
     }
-    // The beings are contained in Cell.Items and they are moved to other cells when they do Walk action
+
     public class Being : Thing
     {
         public FloatCircularBuffer FitnessHistory { get; private set; }
@@ -39,18 +39,23 @@ namespace LifeGame
         public MutableStats MutableStats { get; set; }
         public Genome Genome { get; private set; }
 
-        public GridPoint Location { get; set; }
         public Vector LastWalkDir { get; set; }
         public Thing CarriedObj { get; set; }
 
-        //public int ID { get; private set; }
+        public int ID { get; private set; }// this ID is used to display the beings
 
-        public Being(SimEnvironment environment, GridPoint location, Genome genome)
-            : base(environment)
+        public Being(Simulation simulation, GridPoint location, Genome genome)
+            : base(simulation)
         {
             Location = location;
             FitnessHistory = new FloatCircularBuffer(1000);// should countain the fitness for every tick of the lifespan
             Genome = genome;
+            if (simulation.lastID == 4 * 10e9)
+            {
+                simulation.lastID = 0;
+            }
+            ID = simulation.lastID;
+            simulation.lastID++;
         }
 
         public override void Update()
@@ -122,11 +127,6 @@ namespace LifeGame
         }
 
         public override float Temperature
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override bool CanContainBeing
         {
             get { throw new NotImplementedException(); }
         }

@@ -11,7 +11,8 @@ namespace LifeGame
     public enum BoolProps
     {
         CanContainBeing = 1,
-        CanBeCarried,
+        CanBeCarried = 2,
+        CanSeeThrogh = 4,
 
     }
 
@@ -21,7 +22,10 @@ namespace LifeGame
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public abstract class Thing
     {
-        protected SimEnvironment environment;
+        public GridPoint Location { get; set; }
+        public int Altitude { get; private set; }
+        protected Simulation simulation;
+
         // Sight
         public abstract float R { get; }
         public abstract float G { get; }
@@ -53,17 +57,15 @@ namespace LifeGame
         public abstract float Smell { get; }
 
 
+        public BoolProps BoolProperties { get; set; }
 
-        public abstract bool CanContainBeing { get; }
-        public bool BoolProperties { get; set; }
 
-        
         public delegate void Effects(Being actor);
         public readonly Dictionary<ActionType, Effects> Interactions;
 
-        public Thing(SimEnvironment environment)
+        public Thing(Simulation simulation)
         {
-            this.environment = environment;
+            this.simulation = simulation;
         }
 
         public abstract void Update();

@@ -39,9 +39,6 @@ using System.Windows.Media.Animation;
 
 namespace LifeGame
 {
-    /// <summary>
-    /// Logica di interazione per MainWindow.xaml
-    /// </summary>
 
     public partial class MainWindow : Window
     {
@@ -56,17 +53,21 @@ namespace LifeGame
             //-----------------------------------------------------
 
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
-            //Graphics should know nothing about environment, Simulation manages the relation between environment and graphic
-            //So basically, init of the graphic engine, init of the environment with the width and the height of the board, then initialize the simulation 
-            
+
             Engine = new GraphicsEngine(mainpanel);
-            Simulation = new Simulation(100, 100, Engine);
+            var simState = new SimulationState();
+            //TODO: create simState with Engine
+
+            Simulation = new Simulation(100, 100, Engine, simState);
+
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Debug.Write("Button clicked\n");
-            for(int x=0;x<10;x++){
+            for (int x = 0; x < 10; x++)
+            {
                 for (int y = 0; y < 10; y++)
                 {
                     Engine.addCell(x, y);

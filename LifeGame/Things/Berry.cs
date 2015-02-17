@@ -29,7 +29,7 @@ namespace LifeGame.Things
         }
         public override float Temperature
         {
-            get { return environment.Temperature; }
+            get { return 0;/* simulation.State.Temperature;*/ }
         }
 
         public override float Speed { get { return 0; } }
@@ -52,7 +52,7 @@ namespace LifeGame.Things
             get { throw new NotImplementedException(); }
         }
 
-        public Berry(SimEnvironment environment)
+        public Berry(Simulation environment)
             : base(environment)
         {
             Quantity = 100;
@@ -66,11 +66,6 @@ namespace LifeGame.Things
         public override void Draw()
         {
             throw new NotImplementedException();
-        }
-
-        public override bool CanContainBeing
-        {
-            get { throw new NotImplementedException(); }
         }
     }
 }
