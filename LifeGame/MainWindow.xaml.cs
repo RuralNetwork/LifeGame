@@ -47,19 +47,23 @@ namespace LifeGame
         public MainWindow()
         {
             InitializeComponent();
-            //---------------------Test Space------------------------
-
-
-            //-----------------------------------------------------
-
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
+            //---------------------Test Space------------------------
+            
+           // var window = new Window();
+            //visualHost prova = new visualHost();
+            //window.Content = prova;
+            //this.Content = prova;
+            //Application.Current.Run(window);
+            
+            //-------------------------------------------------------
 
             Engine = new GraphicsEngine(mainpanel);
             var simState = new SimulationState();
             //TODO: create simState with Engine
 
             Simulation = new Simulation(100, 100, Engine, simState);
-
+            
 
         }
 
