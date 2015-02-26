@@ -27,7 +27,7 @@ namespace LifeGame
     /// <summary>
     /// Can be performed by a being
     /// </summary>
-    public class Action
+    public class Action//                            questo è rimasto indietro, deve essere tutto rifatto
     {
 
         public ActionType Type { get; set; }

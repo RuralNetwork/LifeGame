@@ -25,6 +25,9 @@ namespace LifeGame
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     public class Simulation
     {
+        public int lastID; // used and managed by the beings
+        public int TimeTick { get; set; }
+
         /// <summary>
         /// Tells if should be used PopulationCount and the hall of fame genome list to maintain the population.
         /// </summary>
@@ -41,16 +44,16 @@ namespace LifeGame
         GraphicsEngine engine;
         List<Genome> hallOfFame;
         FastRandom rand = new FastRandom();
-        public int lastID; // used and managed by the beings
 
         public int GridWidth { get; private set; }
         public int GridHeight { get; private set; }
 
-        public SimulationState State { get; private set; } // last finished state
-        SimulationState newState; //a state that is being created
+        public SimulationState State { get; set; } // last finished state
+        public SimulationState _newState; //a state that is being created
+        public List<Tuple<GridPoint, Thing>> _newThingsQueue = new List<Tuple<GridPoint, Thing>>(); // needed when a cell become another Thing
 
 
-        public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine, SimulationState simState)// <- simState must be create swr else
+        public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
         {
             this.engine = engine;
             thread = new Thread(Update);
@@ -63,20 +66,15 @@ namespace LifeGame
             GridWidth = gridWidth;
             GridHeight = gridHeight;
 
-            //Create state
-            State = new SimulationState();
-            State.Environment = new SimEnvironment(this);
-
-
-            for (int i = 0; i < PopulationCount; i++)
-            {
-
-            }
 
         }
 
         public void RunPause()
         {
+            if (State == null)
+            {
+                throw new Exception("State must be initialized");
+            }
             IsRunning = !IsRunning;
             if (IsRunning)
             {
@@ -86,10 +84,11 @@ namespace LifeGame
 
         public void Update()
         {
-            newState = new SimulationState();
 
             while (IsRunning)
             {
+                TimeTick++;
+                _newState = new SimulationState(this);
 
                 State.Update();
 
@@ -99,23 +98,23 @@ namespace LifeGame
 
                     if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
                     {
-                        if (State.Population.Count > PopulationCount)
+                        if (_newState.Population.Count > PopulationCount)
                         {
-                            State.Population.InsertionSort((a, b) => -a.FitnessHistory.Mean.CompareTo(b.FitnessHistory.Mean)); // the minus -> decrescent
-                            State.Population.RemoveRange(PopulationCount, State.Population.Count - PopulationCount);
+                            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
+                            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
                         }
-                        else if (State.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
+                        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
                         {                                                       // because creating a new genome (even copying an existing one) is very expensive
                             int idx;
-                            while (State.Population.Count < PopulationCount)
+                            while (_newState.Population.Count < PopulationCount)
                             {
                                 while (true)
                                 {
-                                    idx = rand.Next(State.Population.Count);
-                                    var loc = State.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
+                                    idx = rand.Next(_newState.Population.Count);
+                                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
                                     if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
                                     {
-                                        State.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
+                                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
                                         break;
                                     }
                                 }
@@ -123,9 +122,8 @@ namespace LifeGame
                         }
                     }
                 }
+                State = _newState;// apply changes 
             }
-
-            State = newState;// apply changes 
         }
 
         //public void Draw()

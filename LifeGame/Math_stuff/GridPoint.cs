@@ -12,13 +12,13 @@ namespace LifeGame
     /// <remarks>
     /// The grid should look as below:
     /// <code>
-    ///    0  1  2  3
-    ///    __    __
-    ///   /  \__/  \__
-    /// 0 \__/  \__/  \ ---
-    ///   /  \__/  \__/
-    /// 1 \__/  \__/  \ ---
-    ///      \__/  \__/
+    ///     0   1   2   3
+    ///    ___     ___
+    ///   /   \___/   \___
+    /// 0 \___/   \___/   \ ---
+    ///   /   \___/   \___/
+    /// 1 \___/   \___/   \ ---
+    ///       \___/   \___/
     /// 
     /// </code>
     /// </remarks>
@@ -39,7 +39,7 @@ namespace LifeGame
         {
             get
             {
-                return X % 2 == 0 ? (float)Y : (float)Y + 0.5f;
+                return (X % 2 == 0 ? (float)Y : (float)Y + 0.5f) * 0.8660254037844f;//<- sqrt(3)/2
             }
         }
 
@@ -58,23 +58,33 @@ namespace LifeGame
             return new GridPoint((int)Math.Round(x), (int)(x % 2 == 0 ? Math.Round(y) : y));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="angle">angle in radians, interval ]-2PI,inf[ , from +x axis, counterclockwise</param>
+        /// <returns></returns>
+        public GridPoint GetNearCell(float angle)
+        {
+            return GetNearCell((CellDirection)((int)Math.Round((angle <= 0f ? angle + 2 * (float)Math.PI : angle) * 3 / Math.PI - 0.5f) % 6));
+        }
+
         public GridPoint GetNearCell(CellDirection direction = CellDirection.Random)
         {
             if (direction == CellDirection.Random) direction = (CellDirection)rand.Next(6);
             switch (direction)
             {
-                case CellDirection.Top:
-                    return new GridPoint(X, Y - 1);
                 case CellDirection.TopRight:
                     return new GridPoint(X + 1, X % 2 == 0 ? Y - 1 : Y);
-                case CellDirection.BottomRight:
-                    return new GridPoint(X + 1, X % 2 == 0 ? Y : Y + 1);
-                case CellDirection.Bottom:
-                    return new GridPoint(X, Y + 1);
-                case CellDirection.BottomLeft:
-                    return new GridPoint(X - 1, X % 2 == 0 ? Y : Y + 1);
+                case CellDirection.Top:
+                    return new GridPoint(X, Y - 1);
                 case CellDirection.TopLeft:
                     return new GridPoint(X - 1, X % 2 == 0 ? Y - 1 : Y);
+                case CellDirection.BottomLeft:
+                    return new GridPoint(X - 1, X % 2 == 0 ? Y : Y + 1);
+                case CellDirection.Bottom:
+                    return new GridPoint(X, Y + 1);
+                case CellDirection.BottomRight:
+                    return new GridPoint(X + 1, X % 2 == 0 ? Y : Y + 1);
                 default:
                     break;
             }
@@ -84,12 +94,12 @@ namespace LifeGame
 
     public enum CellDirection
     {
-        Top,
-        TopRight,
-        BottomRight,
-        Bottom,
-        BottomLeft,
-        TopLeft,
-        Random,
+        TopRight = 0,
+        Top = 1,
+        TopLeft = 2,
+        BottomLeft = 3,
+        Bottom = 4,
+        BottomRight = 5,
+        Random = 6,
     }
 }

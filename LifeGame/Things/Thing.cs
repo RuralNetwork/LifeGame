@@ -13,6 +13,8 @@ namespace LifeGame
         CanContainBeing = 1,
         CanBeCarried = 2,
         CanSeeThrogh = 4,
+        Eatable = 8,
+
 
     }
 
@@ -22,54 +24,51 @@ namespace LifeGame
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public abstract class Thing
     {
-        public GridPoint Location { get; set; }
-        public int Altitude { get; private set; }
         protected Simulation simulation;
 
-        // Sight
-        public abstract float R { get; }
-        public abstract float G { get; }
-        public abstract float B { get; }
-
-        //Shouldn't this be speed? it's a float, if you set every input as a number between 0 and 1,
-        //but this one is either 0 or 1, the network won't understand that easily what is going on
-        //even though NN are not understable by humans, so mine is just a guess based on my experiments
-
-        //If you want to change names, just do it, then do a refractoring
-        //this should be a float because things can have different velocities, ex the movements of leafs is
-        //slower than a running being
-        public abstract float Speed { get; }
-
-        //feel
-        //Since it's a sensation and not a state, it sould be Pain and Temperature, not Painful and Warmth
-
-        //Theese are not sensations, theese are qualities of objects that the beings can feel
-        public abstract float Painful { get; }// ex: the roses are painful when touched
-        public abstract float Weight { get; }
-        public abstract float Temperature { get; }// this is right to be temperature
-
-        //hearing
-        public abstract float Amplitude { get; }
-        public abstract float Pitch { get; }
-
-        //smell
-        public abstract float SmellIntensity { get; }
-        public abstract float Smell { get; }
+        // properties own by all things
+        public int Altitude { get; private set; } // beings actually don't use this
+        public float Height { get; set; }
+        public float Alpha { get; private set; }// this can be either the transparency of the thing or the proportion of visual covered
+        // We assume the things to occupy all cell's area, so if a thing should be narrow in real life, it will have a low value of Alpha.
+        // this obviously is unrelated to the GUI
+        public float Weigth { get; set; }
+        public Color Color { get; set; }// TODO: this will be changed to a series of intensities for every frequency.
+        //                                 then the beings can evolve to perceive some of these frequencies
+        public float Painful { get; set; }
+        public float Temperature { get; set; }// this will be included in the frequency graph
+        public float Amplitude { get; set; }
+        public float Pitch { get; set; }
+        public float SmellIntensity { get; set; }
+        public Vector3D Smell { get; set; }// I use Henning's smell prism (but it is old, if we find something more recent is better)
 
 
         public BoolProps BoolProperties { get; set; }
+        public delegate void Effects(Being actor, float energy);
+        public Dictionary<ActionType, Effects> Interactions { get; private set; }
+        public Thing InnerThing { get; set; }// this is a Being for a terrain Thing, the carried object for a Being
+        //in the simulation there are two types of interaction:
+        // 1) Thing->Being
+        // 2) Being->Thing  (this include Being->Being)
+        // (Thing->Thing is managed from above by SimulationState)
+        // While any Thing know how a Being's body react to stimuli, a Being can't know about the Thing, because every Thing react in a different way.
 
 
-        public delegate void Effects(Being actor);
-        public readonly Dictionary<ActionType, Effects> Interactions;
 
         public Thing(Simulation simulation)
         {
             this.simulation = simulation;
         }
 
-        public abstract void Update();
-        public abstract void Draw();
+        public abstract void Update(Thing container = null);
+        public abstract void Draw(bool isCarriedObj = false);
+
+        public Thing Clone()
+        {
+            return (Thing)MemberwiseClone();// this automatically creates a shallow copy of the current object, 
+            // actually this is good because in this way there will be only one instance of the dictionary for every Thing of the same type.
+            // shallow copy -> only value types and object references
+        }
     }
 
     //TODO: add derived abstract classes such as eatable, collectible...

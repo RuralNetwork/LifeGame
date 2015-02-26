@@ -48,18 +48,23 @@ namespace LifeGame
         {
             InitializeComponent();
             //---------------------Test Space------------------------
-
+            var angle = -2*(float)Math.PI/3-0.01f;
+            angle = angle <= 0f ? angle + 2 * (float)Math.PI : angle;
+            var cellDir = (CellDirection)((int)Math.Round(angle * 3 / Math.PI - 0.5f) % 6);
 
             //-----------------------------------------------------
 
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
 
             Engine = new GraphicsEngine(mainpanel);
-            var simState = new SimulationState();
+
+            Simulation = new Simulation(100, 100, Engine);
+
             //TODO: create simState with Engine
+            var simState = new SimulationState(null);
+            Simulation.State = simState;
 
-            Simulation = new Simulation(100, 100, Engine, simState);
-
+            Simulation.RunPause();
 
         }
 

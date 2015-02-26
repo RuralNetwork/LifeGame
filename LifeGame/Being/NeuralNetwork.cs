@@ -13,7 +13,8 @@ namespace LifeGame
         public float Weight { get; set; }
     }
 
-    //TODO: test if is better to have one bias node or the bias in every node, for best evolution speed/computation speed
+    //TODO: - test if is better to have one bias node or the bias in every node, for best evolution speed/computation speed
+    //      - to emulate the memory mechanics we can modify the weights according to the signal strenght that pass through the links
     public class NeuralNetwork
     {
         // parameters to be adjusted
@@ -30,14 +31,17 @@ namespace LifeGame
         //                                                                                                                                   TOT: 135
 
         const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
-        const int OUTPUTS_COUNT = 20;
-        // 2 component action direction, walk, sleep, eat, breed, fight, take, drop, {R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell} carried object
+        const int OUTPUTS_COUNT = 10;
+        // walk, sleep, eat, breed, fight, take, drop, 2 component action direction, energy
 
 
         public Link[] Links { get; private set; }
 
         float[] preActivationArray;
         public float[] State { get; private set; } // postActivationArray;
+
+        public SignalArray Input { get; private set; }
+        public SignalArray Output { get; private set; }
 
         int linkCount, nodeCount;
 
@@ -74,11 +78,16 @@ namespace LifeGame
             State[0] = 1;                 // bias
             this.linkCount = linkCount;
             this.nodeCount = nodeCount;
+
+            Input = new SignalArray(State, 1, INPUTS_COUNT);
+            Output = new SignalArray(State, INPUTS_AND_BIAS_COUNT, OUTPUTS_COUNT);
         }
+
+
 
         public void Calculate()
         {
-            //make local copy/reference for performance
+            //make local copy/reference for performance   <-- TO TEST
             var linkCount = this.linkCount;
             var nodeCount = this.nodeCount;
             var links = Links;
@@ -97,6 +106,33 @@ namespace LifeGame
                     // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
 
                     preActArr[j] = 0f;
+                }
+            }
+        }
+
+        public class SignalArray   // fished out from github's mod history
+        {
+            float[] wrappedArray;
+            int offset;
+            int length;
+
+            public SignalArray(float[] wrappedArray, int offset, int length)
+            {
+                this.wrappedArray = wrappedArray;
+                this.offset = offset;
+                this.length = length;
+
+            }
+
+            public float this[int index]
+            {
+                get
+                {
+                    return wrappedArray[offset + index];
+                }
+                set
+                {
+                    wrappedArray[offset + index] = value;
                 }
             }
         }

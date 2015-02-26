@@ -4,51 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows.Media;
 
 namespace LifeGame
 {
-    //Why should there be this if Being inherits from Thing, and all these things are defined in Thing
-    public struct MutableStats
-    {
-        public float Health { get; set; }// can be healed
-        public float Integrity { get; set; } // cannot be healed
-        public float Thirst { get; set; }
-        public float Hunger { get; set; }
-        public float Warmth { get; set; }
-        public float Wet { get; set; }
-        public float Weight { get; set; }
-        public float Height { get; set; }
-        float R { get; set; }
-    }
 
-    public struct Phenome
+    public class Phenome
     {
         public float Sex { get; private set; }
-        float HeightMul; //height multiplicator: assume that a being can grow during life, consider if we should change to static height
-        float SightMul;
-        /// <summary>
-        /// Herbivore: from 0 up; carnivore: from 1 down
-        /// </summary>
-        float HerbCarn;
+        public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
+        public Color Color { get; set; }// switched to constant color during lifespan
     }
 
     public class Being : Thing
     {
-        public FloatCircularBuffer FitnessHistory { get; private set; }
+        // mutable properties
+        public float Health { get; set; }// can be healed
+        public float Integrity { get; set; } // cannot be healed
+        public float Thirst { get; set; }
+        public float Hunger { get; set; }
+        public float Wet { get; set; }
 
-        public MutableStats MutableStats { get; set; }
+        // theese classes will be copied by reference in the next state, it's ok because other things can't modify them, so there will be no conflicts
+        public Average FitnessMean { get; private set; }
         public Genome Genome { get; private set; }
+        public NeuralNetwork Brain { get; private set; }
+        public Phenome Phenome { get; private set; }
 
-        public Vector LastWalkDir { get; set; }
-        public Thing CarriedObj { get; set; }
+
+        public int Direction { get; private set; }
 
         public int ID { get; private set; }// this ID is used to display the beings
 
-        public Being(Simulation simulation, GridPoint location, Genome genome)
+        public Being(Simulation simulation, Genome genome)
             : base(simulation)
         {
-            Location = location;
-            FitnessHistory = new FloatCircularBuffer(1000);// should countain the fitness for every tick of the lifespan
+            FitnessMean = new Average();
             Genome = genome;
             if (simulation.lastID == 4 * 10e9)
             {
@@ -58,77 +49,66 @@ namespace LifeGame
             simulation.lastID++;
         }
 
-        public override void Update()
+
+        public override void Update(Thing container)//           INCOMPLETE
         {
-            CarriedObj.Update();
-
-            var inputs = new List<float>();
-            var dir = LastWalkDir.Normalized;
+            InnerThing.Update(this);
 
 
-            // run n cycles of his neural net
-            // then do the choosen action + walk
+
+            Brain.Calculate();
+
+            float max = 0;
+            int n = 0;
+            for (int i = 0; i < 7; i++)
+            {
+                if (Brain.Output[i] > max)
+                {
+                    max = Brain.Output[i];
+                    n = i;
+                }
+            }
+            var act = (ActionType)n;
+            var dir = new Vector(Brain.Output[7].InverseSigmoid(), Brain.Output[8].InverseSigmoid());
+            var mag = dir.Magnitude;
+            var energy = Brain.Output[9].InverseSigmoid();
+            switch (act)
+            {
+                case ActionType.Walk:
+                    //if (energy<)
+                    //{
+
+                    //}
+                    break;
+                case ActionType.Sleep:
+                    break;
+                case ActionType.Eat:
+                    break;
+                case ActionType.Breed:
+                    break;
+                case ActionType.Fight:
+                    break;
+                case ActionType.Take:
+                    break;
+                case ActionType.Drop:
+                    break;
+                default:
+                    break;
+            }
+            if (mag < 0)
+            {
+
+            }
+
+
         }
 
-        public override void Draw()
+        public override void Draw(bool isCarriedObj = false)
         {
-            CarriedObj.Draw();
-            //Debug.WriteLine("Drew %d\n", ID);
-        }
-
-        public override float R
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float G
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float B
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Painful //if it has fougth or tried to eat someone else
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Weight // the corpse? -> no it becomes a corpse thing, it doesn't perform actions
-        {
-            get { return 0; }
-        }
-
-        public override float Amplitude
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Pitch // could change with age or actions (eg mating call)
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float SmellIntensity
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Smell
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Speed
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Temperature
-        {
-            get { throw new NotImplementedException(); }
+            if (InnerThing != null)
+            {
+                InnerThing.Draw(true);
+            }
         }
     }
 }

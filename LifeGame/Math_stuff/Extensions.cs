@@ -33,5 +33,10 @@ namespace LifeGame
                 }
             }
         }
+
+        public static float InverseSigmoid(this float x)
+        {
+            return (float)Math.Log(-x / (x - 1f));
+        }
     }
 }

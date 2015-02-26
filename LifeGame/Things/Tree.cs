@@ -8,50 +8,6 @@ namespace LifeGame.Things
 {
     class Tree : Thing
     {
-        public override float R
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float G
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float B
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Painful
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Weight
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Amplitude
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Pitch
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float SmellIntensity
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Smell
-        {
-            get { throw new NotImplementedException(); }
-        }
 
         public Tree(Simulation simulation)
             : base(simulation)
@@ -59,24 +15,14 @@ namespace LifeGame.Things
 
         }
 
-        public override void Update()
+        public override void Update(Thing container = null)
         {
             throw new NotImplementedException();
         }
 
-        public override void Draw()
+        public override void Draw(bool isCarriedObj = false)
         {
             throw new NotImplementedException();
-        }
-
-        public override float Speed
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override float Temperature
-        {
-            get { throw new NotImplementedException(); }
         }
     }
 }

@@ -20,6 +20,8 @@ namespace LifeGame
 {
     public class NNGenome
     {
+        Simulation simulation;
+
         const int INPUTS_COUNT = 135;
         const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
         const int OUTPUTS_COUNT = 20;
@@ -71,8 +73,10 @@ namespace LifeGame
         /// <summary>
         /// Initialize a random genome
         /// </summary>
-        public NNGenome()
+        public NNGenome(Simulation simulation)
         {
+            this.simulation = simulation;
+
             NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
             NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
             for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
@@ -94,8 +98,10 @@ namespace LifeGame
         /// <summary>
         /// Create a new genome mutating a genome
         /// </summary>
-        //public NNGenome()
+        //public NNGenome( Simulation simulation)
         //{
+            //this.simulation = simulation;
+
         //    NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
         //    NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
         //    for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
@@ -120,8 +126,10 @@ namespace LifeGame
         /// </summary>
         // for now this is unfinisced: the recombination applies only over weights and not over morphology of the net
         // the structure is copied from the fittest genome
-        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2)
+        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2, Simulation simulation)
         {
+            this.simulation = simulation;
+
             //determine fittest parent
             NNGenome fitPar, weakPar;
             if (fitness1 > fitness2)
@@ -227,7 +235,7 @@ namespace LifeGame
 
         void mutate()
         {
-            switch ((true/*here the SimulationType flag*/? stdMutationRW : alwaysMutateRW).Spin())
+            switch ((simulation.IsInTrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
             {
                 case 0:
                     mutateWeight();

@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
     <Compile Include="SimulationState.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Math_stuff\Vector.cs" />
     <Compile Include="Things\Tree.cs" />
+    <Compile Include="Math_stuff\Vector3D.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

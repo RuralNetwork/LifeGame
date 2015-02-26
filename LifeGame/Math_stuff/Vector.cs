@@ -29,7 +29,7 @@ namespace LifeGame
         {
             get
             {
-                float mag = Magnitude;
+                float mag = this.Magnitude;
                 return new Vector(X / mag, Y / mag);
             }
         }
