@@ -47,14 +47,19 @@ namespace LifeGame
         public MainWindow()
         {
             InitializeComponent();
+            Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
             var angle = -2*(float)Math.PI/3-0.01f;
             angle = angle <= 0f ? angle + 2 * (float)Math.PI : angle;
             var cellDir = (CellDirection)((int)Math.Round(angle * 3 / Math.PI - 0.5f) % 6);
 
-            //-----------------------------------------------------
+           // var window = new Window();
+            //visualHost prova = new visualHost();
+            //window.Content = prova;
+            //this.Content = prova;
+            //Application.Current.Run(window);
 
-            Debug.Write("\n******************\nComponents Initialized\n******************\n");
+            //-------------------------------------------------------
 
             Engine = new GraphicsEngine(mainpanel);
 
