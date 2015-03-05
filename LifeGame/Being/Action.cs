@@ -18,43 +18,40 @@ namespace LifeGame
         Fight,
         Take,
         Drop,
-        // Communicate love?
-        // communicate hatred?
-        // ...
 
     }
 
-    /// <summary>
-    /// Can be performed by a being
-    /// </summary>
-    public class Action//                            questo è rimasto indietro, deve essere tutto rifatto
-    {
+    ///// <summary>
+    ///// Can be performed by a being
+    ///// </summary>
+    //public class Action//                            questo è rimasto indietro, deve essere tutto rifatto
+    //{
 
-        public ActionType Type { get; set; }
+    //    public ActionType Type { get; set; }
 
-        public Dictionary<string, byte> Parameters { get; set; }
+    //    public Dictionary<string, byte> Parameters { get; set; }
 
-        /// <summary>
-        /// Who is performing the action
-        /// </summary>
-        public Being Actor { get; set; }
+    //    /// <summary>
+    //    /// Who is performing the action
+    //    /// </summary>
+    //    public Being Actor { get; set; }
 
-        /// <summary>
-        /// Who/What is undergoing the action
-        /// </summary>
-        public Thing CoActor { get; set; }
+    //    /// <summary>
+    //    /// Who/What is undergoing the action
+    //    /// </summary>
+    //    public Thing CoActor { get; set; }
 
-        public Action(ActionType type, Being actor, Thing coactor)
-        {
-            Type = type;
-            Actor = actor;
-            CoActor = coactor;
-        }
+    //    public Action(ActionType type, Being actor, Thing coactor)
+    //    {
+    //        Type = type;
+    //        Actor = actor;
+    //        CoActor = coactor;
+    //    }
 
-        public void Perform()
-        {
-            CoActor.Interactions[this.Type](Actor); // <-- this is a delegate call  ( Effects(Being actor) )
-        }
+    //    public void Perform()
+    //    {
+    //        CoActor.Interactions[this.Type](Actor); // <-- this is a delegate call  ( Effects(Being actor) )
+    //    }
 
-    }
+    //}
 }

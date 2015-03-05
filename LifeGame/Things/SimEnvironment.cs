@@ -10,20 +10,20 @@ namespace LifeGame
 {
     public class SimEnvironment : Thing
     {
-        public SimEnvironment(Simulation simulation)
-            : base(simulation)
+        public SimEnvironment(Simulation simulation, GridPoint location)
+            : base(simulation, location)
         {
 
         }
 
         public override void Update(Thing container = null)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void Draw(bool isCarriedObj = false)
         {
-            throw new NotImplementedException();
+
         }
     }
 

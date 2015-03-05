@@ -18,30 +18,40 @@ namespace LifeGame
 
     }
 
+    public enum ThingProperty
+    {
+        Altitude, // beings actually don't use this
+        Height,
+        Alpha,// this can be either the transparency of the thing or the proportion of visual covered
+        // We assume the things to occupy all cell's area, so if a thing should be narrow in real life, it will have a low value of Alpha.
+        // this obviously is unrelated to the GUI
+        Weigth,
+        Color1,// TODO: this will be changed to a series of intensities for every frequency.
+        Color2,// then the beings can evolve to perceive some of these frequencies
+        Color3,
+        Painful,
+        Temperature,// this will be included in the frequency graph
+        Amplitude,
+        Pitch,
+        SmellIntensity,
+        Smell1,// I use Henning's smell prism (but it is old, if we find something more recent is better)
+        Smell2,
+        Smell3
+    }
+
     /// <summary>
     /// Element that can interact with a being
     /// </summary>
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
-    public abstract class Thing
+    public partial class Thing
     {
+
         protected Simulation simulation;
 
-        // properties own by all things
-        public int Altitude { get; private set; } // beings actually don't use this
-        public float Height { get; set; }
-        public float Alpha { get; private set; }// this can be either the transparency of the thing or the proportion of visual covered
-        // We assume the things to occupy all cell's area, so if a thing should be narrow in real life, it will have a low value of Alpha.
-        // this obviously is unrelated to the GUI
-        public float Weigth { get; set; }
-        public Color Color { get; set; }// TODO: this will be changed to a series of intensities for every frequency.
-        //                                 then the beings can evolve to perceive some of these frequencies
-        public float Painful { get; set; }
-        public float Temperature { get; set; }// this will be included in the frequency graph
-        public float Amplitude { get; set; }
-        public float Pitch { get; set; }
-        public float SmellIntensity { get; set; }
-        public Vector3D Smell { get; set; }// I use Henning's smell prism (but it is old, if we find something more recent is better)
+        public GridPoint Location;
 
+        public Dictionary<ThingProperty, float> Properties { get; private set; }
+        List<float> internalProps;
 
         public BoolProps BoolProperties { get; set; }
         public delegate void Effects(Being actor, float energy);
@@ -53,22 +63,74 @@ namespace LifeGame
         // (Thing->Thing is managed from above by SimulationState)
         // While any Thing know how a Being's body react to stimuli, a Being can't know about the Thing, because every Thing react in a different way.
 
+        public List<ThingMod> ModQueue { get; set; }
+
+        delegate void UpdateDelegate();
+        UpdateDelegate updateDel;
 
 
-        public Thing(Simulation simulation)
+        public Thing(Simulation simulation, GridPoint location)
         {
             this.simulation = simulation;
+            Interactions = new Dictionary<ActionType, Effects>();
+            Properties = new Dictionary<ThingProperty, float>();
+            for (int i = 0; i < 15; i++)//                              !!!!update this if the number of properties change
+            {
+                Properties.Add((ThingProperty)i, 0);
+            }
+
+            Location = location;
         }
 
-        public abstract void Update(Thing container = null);
-        public abstract void Draw(bool isCarriedObj = false);
-
-        public Thing Clone()
+        /// <summary>
+        /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
+        /// </summary>
+        /// <param name="container"></param>
+        public virtual void Update(Thing container = null)
         {
-            return (Thing)MemberwiseClone();// this automatically creates a shallow copy of the current object, 
-            // actually this is good because in this way there will be only one instance of the dictionary for every Thing of the same type.
-            // shallow copy -> only value types and object references
+            updateDel();
+            if (InnerThing != null)
+            {
+                InnerThing.Update();
+            }
         }
+
+        public virtual void Draw(bool isCarriedObj = false)
+        {
+            // chiama qui quello che ti serve per disegnare, che hai definito nel file ThingImplementations
+            // tieni conto se il Thing è trasportato da un Being ( il parametro isCarriedObj)
+
+            if (InnerThing != null)
+            {
+                InnerThing.Draw();
+            }
+        }
+
+        public void Apply()
+        {
+            var typeChanged = false;
+            foreach (var mod in ModQueue)
+            {
+
+                if (typeChanged)
+                {
+                    break;
+                }
+            }
+            if (InnerThing != null)
+            {
+                InnerThing.Apply();
+            }
+
+
+        }
+
+        //public Thing Clone()
+        //{
+        //    return (Thing)MemberwiseClone();// this automatically creates a shallow copy of the current object, 
+        //    // actually this is good because in this way there will be only one instance of the dictionary for every Thing of the same type.
+        //    // shallow copy -> only value types and object references
+        //}
     }
 
     //TODO: add derived abstract classes such as eatable, collectible...

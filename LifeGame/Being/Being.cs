@@ -19,6 +19,7 @@ namespace LifeGame
     public class Being : Thing
     {
         // mutable properties
+        public int Direction { get; private set; }
         public float Health { get; set; }// can be healed
         public float Integrity { get; set; } // cannot be healed
         public float Thirst { get; set; }
@@ -32,12 +33,11 @@ namespace LifeGame
         public Phenome Phenome { get; private set; }
 
 
-        public int Direction { get; private set; }
 
         public int ID { get; private set; }// this ID is used to display the beings
 
-        public Being(Simulation simulation, Genome genome)
-            : base(simulation)
+        public Being(Simulation simulation,GridPoint location, Genome genome)
+            : base(simulation, location)
         {
             FitnessMean = new Average();
             Genome = genome;
@@ -101,6 +101,10 @@ namespace LifeGame
             }
 
 
+            if (InnerThing != null)
+            {
+                InnerThing.Update();
+            }
         }
 
         public override void Draw(bool isCarriedObj = false)

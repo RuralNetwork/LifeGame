@@ -60,8 +60,8 @@
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
-    <Compile Include="SimulationState.cs" />
-    <Compile Include="Things\Berry.cs" />
+    <Compile Include="Things\ThingImplementations.cs" />
+    <Compile Include="Things\ThingMod.cs" />
     <Compile Include="Math_stuff\Extensions.cs" />
     <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
     <Compile Include="Math_stuff\FloatCircularBuffer.cs" />
@@ -77,7 +77,6 @@
     <Compile Include="Being\Being.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Math_stuff\Vector.cs" />
-    <Compile Include="Things\Tree.cs" />
     <Compile Include="Math_stuff\Vector3D.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
