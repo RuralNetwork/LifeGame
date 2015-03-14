@@ -60,13 +60,14 @@ namespace LifeGame
             //Application.Current.Run(window);
 
             //-------------------------------------------------------
-
+            mainpanel.Height = mainwindow.Height;
+            mainpanel.Width = mainwindow.Width;
             Engine = new GraphicsEngine(mainpanel);
 
             Simulation = new Simulation(100, 100, Engine);
 
 
-            Simulation.RunPause();
+            Simulation.TogglePause();
 
         }
 
@@ -77,10 +78,15 @@ namespace LifeGame
             {
                 for (int y = 0; y < 10; y++)
                 {
-                    Engine.addCell(x, y);
+                    Engine.addCell(new GridPoint(x,y));
                 }
             }//Engine.addCell(0, 0);
             //this.Simulation;
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Debug.Write(mainwindow.Height);
         }
     }
 }
