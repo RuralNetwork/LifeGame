@@ -74,11 +74,17 @@ namespace LifeGame
             for (int i = 0; i < GridWidth; i++)
             {
                 Terrain[i] = new Thing[GridHeight];
+                for (int j = 0; j < GridHeight; j++)
+                {
+                    Terrain[i][j] = new Thing(this, engine, new GridPoint(i, j));
+                }
             }
+            //Populate the terrain
+
 
         }
 
-        public void RunPause()
+        public void TogglePause()
         {
             IsRunning = !IsRunning;
             if (IsRunning)
@@ -86,14 +92,14 @@ namespace LifeGame
                 thread.Start();
             }
         }
-
+        //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update()
         {
             while (IsRunning)
             {
                 TimeTick++;
-
-                Environment.Update();
+                
+                //Environment.Update();
                 foreach (var arr in Terrain)
                 {
                     foreach (var thing in arr)

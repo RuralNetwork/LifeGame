@@ -10,8 +10,8 @@ namespace LifeGame
 {
     public class SimEnvironment : Thing
     {
-        public SimEnvironment(Simulation simulation, GridPoint location)
-            : base(simulation, location)
+        public SimEnvironment(Simulation simulation, GraphicsEngine engine, GridPoint location)
+            : base(simulation, engine, location)
         {
 
         }

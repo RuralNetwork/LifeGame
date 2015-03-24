@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-    [Flags] // this attribute is useless (most of they are) but helps creating the inline documentation
+    [Flags] // this attribute is useless (most of them are) but helps creating the inline documentation
     public enum BoolProps
     {
         CanContainBeing = 1,
@@ -47,8 +47,8 @@ namespace LifeGame
     public partial class Thing
     {
 
-        protected Simulation simulation;
-
+        protected Simulation Simulation;
+        private GraphicsEngine Engine;
         public GridPoint Location;
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
@@ -68,11 +68,14 @@ namespace LifeGame
 
         delegate void UpdateDelegate();
         UpdateDelegate updateDel;
+        private LifeGame.Simulation simulation;
+        private GridPoint location;
 
+        
 
-        public Thing(Simulation simulation, GridPoint location)
+        public Thing(Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
-            this.simulation = simulation;
+            Simulation = simulation;
             Interactions = new Dictionary<ActionType, Effects>();
             Properties = new Dictionary<ThingProperty, float>();
             for (int i = 0; i < 15; i++)//                              !!!!update this if the number of properties change
@@ -81,6 +84,17 @@ namespace LifeGame
             }
 
             Location = location;
+            Engine = engine;
+
+            //Draw initial thing
+            engine.addCell(location);
+        }
+
+        public Thing(LifeGame.Simulation simulation, GridPoint location)
+        {
+            // TODO: Complete member initialization
+            this.simulation = simulation;
+            this.location = location;
         }
 
         /// <summary>
@@ -89,7 +103,7 @@ namespace LifeGame
         /// <param name="container"></param>
         public virtual void Update(Thing container = null)
         {
-            updateDel();
+            //updateDel();
             if (InnerThing != null)
             {
                 InnerThing.Update();
@@ -110,14 +124,14 @@ namespace LifeGame
         public void Apply()
         {
             var typeChanged = false;
-            foreach (var mod in ModQueue)
+            /*foreach (var mod in ModQueue)
             {
 
                 if (typeChanged)
                 {
                     break;
                 }
-            }
+            }*/
             if (InnerThing != null)
             {
                 InnerThing.Apply();
