@@ -20,12 +20,12 @@ namespace LifeGame
         // parameters to be adjusted
         const int CYCLES_COUNT = 10;
         const int INPUTS_COUNT = 135;
-        // environment:                                   R, G, B,         painful,         warmth,                   smellintensity, smell       7
-        // carried object:                                R, G, B, moving, painful, weight, warmth, amplitude, pitch, smellintensity, smell       11
-        // current cell:                                  R, G, B, moving, painful,         warmth, amplitude, pitch, smellintensity, smell       10
-        // 5 visible nearby cells:                        R, G, B, moving, painful,         warmth, amplitude, pitch, smellintensity, smell       50
-        // 5 average of cells for each direction:         R, G, B, moving,                          amplitude, pitch, smellintensity, smell       40
-        // autoperception:                                                          weight, warmth,                   smellintensity, smell, 
+        // environment:                                   R, G, B,         painful,         Temperature,                   smellintensity, smell       7
+        // carried object:                                R, G, B, moving, painful, weight, Temperature, amplitude, pitch, smellintensity, smell       11
+        // current cell:                                  R, G, B, moving, painful,         Temperature, amplitude, pitch, smellintensity, smell       10
+        // 5 visible nearby cells:                        R, G, B, moving, painful,         Temperature, amplitude, pitch, smellintensity, smell       50
+        // 5 average of cells for each direction:         R, G, B, moving,                               amplitude, pitch, smellintensity, smell       40
+        // autoperception:                                                                  Temperature,                   smellintensity, smell, 
         //                                                health, integrity, thirst, hunger, wet, height, sex, direction sine & cosine            13
         // circadian, circa-annual sine & cosine:                                                                                                 4
         //                                                                                                                                   TOT: 135

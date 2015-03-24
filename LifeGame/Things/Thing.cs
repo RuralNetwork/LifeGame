@@ -29,6 +29,7 @@ namespace LifeGame
         Color1,// TODO: this will be changed to a series of intensities for every frequency.
         Color2,// then the beings can evolve to perceive some of these frequencies
         Color3,
+        Moving,
         Painful,
         Temperature,// this will be included in the frequency graph
         Amplitude,

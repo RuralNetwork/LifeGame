@@ -65,7 +65,7 @@ namespace LifeGame
         /// <returns></returns>
         public GridPoint GetNearCell(float angle)
         {
-            return GetNearCell((CellDirection)((int)Math.Round((angle <= 0f ? angle + 2 * (float)Math.PI : angle) * 3 / Math.PI - 0.5f) % 6));
+            return GetNearCell((CellDirection)angle.AngleToDirection());
         }
 
         public GridPoint GetNearCell(CellDirection direction = CellDirection.Random)

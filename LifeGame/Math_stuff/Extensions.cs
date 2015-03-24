@@ -38,5 +38,30 @@ namespace LifeGame
         {
             return (float)Math.Log(-x / (x - 1f));
         }
+
+        /// <summary>
+        /// Convert an integer [0, 5] to an angle [0, 2PI]
+        /// </summary>
+        public static float DirectionToAngle(this int dir)
+        {
+            return ((float)dir + 0.5f) * (float)Math.PI / 3;
+        }
+
+        /// <summary>
+        /// Convert an angle [0, 2PI] to an integer [0, 5]
+        /// </summary>
+        public static int AngleToDirection(this float angle)
+        {
+           return (int)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
+        }
+        /// <summary>
+        /// Mod function extended to negative numbers
+        /// </summary>
+        /// <param name="max">the divisor</param>
+        /// <returns></returns>
+        public static int Cycle(this int n, int max)
+        {
+            return n >= 0 && n > max ? n : (n < 0 ? n + max : n - max);
+        }
     }
 }

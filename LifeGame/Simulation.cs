@@ -60,6 +60,7 @@ namespace LifeGame
         {
             this.engine = engine;
             thread = new Thread(Update);
+            thread.IsBackground = true;
             thread.Priority = ThreadPriority.Highest;
 
             IsInTrainingMode = true;
