@@ -29,10 +29,17 @@ namespace LifeGame
         //Viewbox was too limited as per the child it could have, stackpanel puts everything with a DOM logic
         //canvas was the only thing that let me do what I wanted, if there is something better we can change it now, later it will be too painful
         private Canvas _canvas { get; set; }
+        //For any callback use this as type
+        public delegate void Del(GraphicsEngine engine); 
         public double canvasHeight { get; set; }
+        public double canvasWidth { get; set; }
+        public int hexaW = 40;
+        public int hexaH = 34;
         public GraphicsEngine(Canvas canvas)
         {
             _canvas = canvas;
+            canvasHeight = canvas.Height;
+            canvasWidth = canvas.Width;
             //tentativo di parent
             //var parent = canvas.Parent;
 
@@ -41,6 +48,7 @@ namespace LifeGame
         {
             _canvas = newCanvas;
         }
+        //Get the points to make a hexagon
         private PointCollection getPointCollection(int x, int y)
         {
             PointCollection series = new PointCollection();
@@ -52,15 +60,56 @@ namespace LifeGame
             series.Add(new System.Windows.Point(0, 17));
             return series;
         }
+        
+        public void messageBox(int x, int y, int w, int h, string message, int life=0, Del callbackOK=null, Del callbackNO=null)
+        {
+            //If x and y are null, put it in the center
+            var rect = new System.Windows.Shapes.Rectangle();
+            if (x == null && y == null)
+            {
+                Double X = (double)((this.canvasWidth / 2) - (w / 2));
+                Double Y = (double)((this.canvasHeight / 2) - (h / 2));
+
+                TranslateTransform translate = new TranslateTransform(X, Y);
+            }
+            else
+            {
+                TranslateTransform translate = new TranslateTransform((double)x, (double)y);
+            }
+            rect.Height = h;
+            rect.Width = w;
+
+            rect.Fill = System.Windows.Media.Brushes.Beige;
+
+            this._canvas.Children.Add(rect);
+            if (life > 0)
+            {
+                //Fade out after a bit
+            }
+            else
+            {
+                //Put buttons
+
+                if (callbackOK != null)
+                {
+                    callbackOK(this);
+                }
+
+            }
+
+            
+        }
         public void addCell(GridPoint location/*,ImageBrush sprite or something, it's possible*/)
         {
             Polygon poligono = new Polygon();
-            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (location.X % 2 == 0 ? 0 : 17)));
+            
 
             poligono.Points = this.getPointCollection(location.X, location.Y);
             poligono.Stroke = System.Windows.Media.Brushes.Black;
             poligono.StrokeThickness = 1;
 
+            //Set the position inside the canvas
+            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
 
             poligono.AddHandler(Polygon.MouseMoveEvent, new RoutedEventHandler(cellaMouseEnter));
@@ -72,6 +121,7 @@ namespace LifeGame
             Polygon poligono = e.Source as Polygon;
             poligono.Fill = System.Windows.Media.Brushes.Aqua;
         }
+
         public void startSimulation()
         {
             Debug.Write("Simulation started\n");

@@ -66,23 +66,30 @@ namespace LifeGame
             mainpanel.Width = mainwindow.Width;
             Engine = new GraphicsEngine(mainpanel);
 
-            Simulation = new Simulation(100, 100, Engine);
-
-
-            Simulation.TogglePause();
+            
 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Debug.Write("Button clicked\n");
+            mainpanel.Height = mainwindow.Height;
+            mainpanel.Width = mainwindow.Width;
+            Engine.canvasHeight = mainpanel.Height;
+            Engine.canvasWidth = mainpanel.Width;
+            Simulation = new Simulation(32, 15, Engine);
+
+
+            Simulation.TogglePause();
+            startSimulation.Visibility = Visibility.Hidden;
+
+            /*Debug.Write("Button clicked\n");
             for (int x = 0; x < 10; x++)
             {
                 for (int y = 0; y < 10; y++)
                 {
                     Engine.addCell(new GridPoint(x,y));
                 }
-            }//Engine.addCell(0, 0);
+            }*///Engine.addCell(0, 0);
             //this.Simulation;
         }
 

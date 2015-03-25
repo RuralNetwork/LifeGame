@@ -33,6 +33,7 @@ namespace LifeGame
         public Being(Simulation simulation, GridPoint location, Genome genome)
             : base(simulation, location)
         {
+            _simulazione = simulation;
             FitnessMean = new Average();
             Genome = genome;
             if (simulation.lastID == 4 * 10e9)
@@ -45,6 +46,7 @@ namespace LifeGame
             Brain.State[1] = Sex; //               
         }
 
+        public Simulation _simulazione;
 
         public override void Update(Thing container)//           INCOMPLETE
         {
@@ -71,19 +73,20 @@ namespace LifeGame
             //carried object
             if (InnerThing != null)
             {
+                //Simulation mi dava inaccessibile a causa del livello di protezione, evidentemente è private
                 Brain.State[++i] = Properties[ThingProperty.Color1];
                 Brain.State[++i] = Properties[ThingProperty.Color2];
                 Brain.State[++i] = Properties[ThingProperty.Color3];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Moving];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Painful];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Weigth];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Temperature];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Amplitude];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Pitch];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.SmellIntensity];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Smell1];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Smell2];
-                Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Smell3];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Moving];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Painful];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Weigth];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Temperature];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Amplitude];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Pitch];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.SmellIntensity];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Smell1];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Smell2];
+                Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Smell3];
             }
             else
             {
@@ -95,8 +98,8 @@ namespace LifeGame
 
             // environment smell (current cell, near cells, environment)
             var size = 5;
-            var width = simulation.GridWidth;
-            var height = simulation.GridHeight;
+            var width = _simulazione.GridWidth;
+            var height = _simulazione.GridHeight;
             var maxx = Location.X + size <= width ? Location.X + size : 0;
             var maxy = Location.Y + size <= height ? Location.Y + size : 0;
             var result1 = 0f;
@@ -109,20 +112,20 @@ namespace LifeGame
                 {
                     var gridY = y.Cycle(height);
                     var d = (float)Math.Sqrt(Math.Pow(x - Location.X, 2) + Math.Pow(x - Location.Y, 2));
-                    result1 += simulation.Terrain[gridX][gridY].Properties[ThingProperty.Smell1] /
-                        simulation.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
-                    result2 += simulation.Terrain[gridX][gridY].Properties[ThingProperty.Smell2] /
-                        simulation.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
-                    result3 += simulation.Terrain[gridX][gridY].Properties[ThingProperty.Smell3] /
-                        simulation.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
+                    result1 += _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.Smell1] /
+                        _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
+                    result2 += _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.Smell2] /
+                        _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
+                    result3 += _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.Smell3] /
+                        _simulazione.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
                 }
             }
-            result1 += simulation.Environment.Properties[ThingProperty.Smell1] /
-                simulation.Environment.Properties[ThingProperty.SmellIntensity];
-            result2 += simulation.Environment.Properties[ThingProperty.Smell2] /
-                simulation.Environment.Properties[ThingProperty.SmellIntensity];
-            result3 += simulation.Environment.Properties[ThingProperty.Smell3] /
-                simulation.Environment.Properties[ThingProperty.SmellIntensity];
+            result1 += _simulazione.Environment.Properties[ThingProperty.Smell1] /
+                _simulazione.Environment.Properties[ThingProperty.SmellIntensity];
+            result2 += _simulazione.Environment.Properties[ThingProperty.Smell2] /
+                _simulazione.Environment.Properties[ThingProperty.SmellIntensity];
+            result3 += _simulazione.Environment.Properties[ThingProperty.Smell3] /
+                _simulazione.Environment.Properties[ThingProperty.SmellIntensity];
 
             Brain.State[++i] = result1;
             Brain.State[++i] = result2;
@@ -137,22 +140,22 @@ namespace LifeGame
             Brain.State[++i] = Properties[ThingProperty.Color1];
             Brain.State[++i] = Properties[ThingProperty.Color2];
             Brain.State[++i] = Properties[ThingProperty.Color3];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Moving];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Painful];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Temperature];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Amplitude];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Pitch];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Moving];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Painful];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Temperature];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Amplitude];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Pitch];
 
 
 
 
 
             //environment
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Color1];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Color2];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Color3];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Painful];
-            Brain.State[++i] = simulation.Environment.Properties[ThingProperty.Temperature];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Color1];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Color2];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Color3];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Painful];
+            Brain.State[++i] = _simulazione.Environment.Properties[ThingProperty.Temperature];
 
             Brain.Calculate();
 

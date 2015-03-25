@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Diagnostics;
 
 namespace LifeGame
 {
@@ -66,18 +68,26 @@ namespace LifeGame
             IsInTrainingMode = true;
             PopulationCount = 100;
             hallOfFame = new List<Genome>(10);
-
-            GridWidth = gridWidth;
-            GridHeight = gridHeight;
-
-            Terrain = new Thing[GridWidth][];
-            for (int i = 0; i < GridWidth; i++)
+            //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
+            if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
             {
-                Terrain[i] = new Thing[GridHeight];
-                for (int j = 0; j < GridHeight; j++)
+                GridWidth = gridWidth;
+                GridHeight = gridHeight;
+
+                Terrain = new Thing[GridWidth][];
+                for (int i = 0; i < GridWidth; i++)
                 {
-                    Terrain[i][j] = new Thing(this, engine, new GridPoint(i, j));
+                    Terrain[i] = new Thing[GridHeight];
+                    for (int j = 0; j < GridHeight; j++)
+                    {
+                        Terrain[i][j] = new Thing(this, engine, new GridPoint(i, j));
+                    }
                 }
+            }
+            else
+            {
+                Debug.Write("Non bene");
+                //engine.messageBox(null, null, 200, 20, "Mondo troppo largo, il massimo è:engine.canvasWidth/(engine.hexaW)+((canvasWidth/(engine.hexaW)-1))");
             }
             //Populate the terrain
 
@@ -100,7 +110,7 @@ namespace LifeGame
                 TimeTick++;
                 
                 //Environment.Update();
-                foreach (var arr in Terrain)
+                /*foreach (var arr in Terrain)
                 {
                     foreach (var thing in arr)
                     {
@@ -115,7 +125,7 @@ namespace LifeGame
                         thing.Apply();
                     }
                 }
-
+                */
                 //// Manage population.
                 //if (Type == SimulationType.Fast)
                 //{
