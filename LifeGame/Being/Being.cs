@@ -33,6 +33,7 @@ namespace LifeGame
         public Being(Simulation simulation, GraphicsEngine engine, GridPoint location, Genome genome)
             : base(simulation, engine, location)
         {
+            _simulazione = simulation;
             FitnessMean = new Average();
             Genome = genome;
             if (simulation.lastID == 4 * 10e9)
@@ -45,6 +46,7 @@ namespace LifeGame
             Brain.State[1] = Sex; //               
         }
 
+        public Simulation _simulazione;
 
         public override void Update(Thing container)//           INCOMPLETE
         {

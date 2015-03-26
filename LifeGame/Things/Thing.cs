@@ -70,8 +70,9 @@ namespace LifeGame
         UpdateDelegate updateDel;
         private GridPoint location;
 
+        //Flag that is set to true when graphical update is needed
+        private bool changed = false;
         
-
         public Thing(Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
             Simulation = simulation;
@@ -100,12 +101,15 @@ namespace LifeGame
             {
                 InnerThing.Update();
             }
+            if (changed)
+            {
+                this.Draw();
+        }
         }
 
         public virtual void Draw(bool isCarriedObj = false)
         {
-            // chiama qui quello che ti serve per disegnare, che hai definito nel file ThingImplementations
-            // tieni conto se il Thing è trasportato da un Being ( il parametro isCarriedObj)
+            // 
 
             if (InnerThing != null)
             {
