@@ -68,7 +68,6 @@ namespace LifeGame
 
         delegate void UpdateDelegate();
         UpdateDelegate updateDel;
-        private LifeGame.Simulation simulation;
         private GridPoint location;
 
         
@@ -88,13 +87,6 @@ namespace LifeGame
 
             //Draw initial thing
             engine.addCell(location);
-        }
-
-        public Thing(LifeGame.Simulation simulation, GridPoint location)
-        {
-            // TODO: Complete member initialization
-            this.simulation = simulation;
-            this.location = location;
         }
 
         /// <summary>
