@@ -66,13 +66,12 @@ namespace LifeGame
 
         public List<ThingMod> ModQueue { get; set; }
 
-        delegate void UpdateDelegate();
-        UpdateDelegate updateDel;
-        private GridPoint location;
+        protected delegate void UpdateDelegate();
+        protected UpdateDelegate updateDel;
 
         //Flag that is set to true when graphical update is needed
         private bool changed = false;
-        
+
         public Thing(Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
             Simulation = simulation;
@@ -104,7 +103,7 @@ namespace LifeGame
             if (changed)
             {
                 this.Draw();
-        }
+            }
         }
 
         public virtual void Draw(bool isCarriedObj = false)

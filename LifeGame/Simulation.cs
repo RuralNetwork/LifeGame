@@ -46,8 +46,8 @@ namespace LifeGame
         GraphicsEngine engine;
         FastRandom rand = new FastRandom();
 
-        public int GridWidth { get; private set; }
-        public int GridHeight { get; private set; }
+        public int GridWidth { get; private set; }// this must be an even number to permit the world to wrap around itself
+        public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
         public List<Being> Population { get; private set; }

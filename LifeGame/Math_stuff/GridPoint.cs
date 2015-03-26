@@ -39,7 +39,7 @@ namespace LifeGame
         {
             get
             {
-                return (X % 2 == 0 ? (float)Y : (float)Y + 0.5f) * 0.8660254037844f;//<- sqrt(3)/2
+                return (X % 2 == 0 ? (float)Y : (float)Y + 0.5f) * 1.154700538379f;//<- 2/sqrt(3)
             }
         }
 
@@ -57,6 +57,7 @@ namespace LifeGame
         {
             return new GridPoint((int)Math.Round(x), (int)(x % 2 == 0 ? Math.Round(y) : y));
         }
+
 
         /// <summary>
         /// 

@@ -53,7 +53,7 @@ namespace LifeGame
             InnerThing.Update(this);
 
             float f1;
-            //autoperception
+            //       autoperception
             var i = 1;// 0=bias,  1=sex
             Brain.State[++i] = Properties[ThingProperty.Height];
             Brain.State[++i] = Properties[ThingProperty.Temperature];
@@ -70,7 +70,7 @@ namespace LifeGame
             Brain.State[++i] = (float)Math.Sin(f1);
             Brain.State[++i] = (float)Math.Cos(f1);
 
-            //carried object
+            //      carried object
             if (InnerThing != null)
             {
                 Brain.State[++i] = Properties[ThingProperty.Color1];
@@ -95,22 +95,45 @@ namespace LifeGame
                 }
             }
 
-            // environment smell (current cell, near cells, environment)
-            var size = 5;
-            var width = Simulation.GridWidth;
-            var height = Simulation.GridHeight;
-            var maxx = Location.X + size <= width ? Location.X + size : 0;
-            var maxy = Location.Y + size <= height ? Location.Y + size : 0;
+            //    common useful variables initialization
+
             var result1 = 0f;
             var result2 = 0f;
             var result3 = 0f;
-            for (int x = Location.X - size; x <= maxx; x++)
+            var result4 = 0f;
+            var result5 = 0f;
+            var result6 = 0f;
+            var result7 = 0f;
+            var result8 = 0f;
+            var result9 = 0f;
+            var result10 = 0f;
+            var result11 = 0f;
+            var result12 = 0f;
+            const int size = 5;//                      <-- change this
+            var width = Simulation.GridWidth;
+            var height = Simulation.GridHeight;
+            var matrixY = new float[2 * size + 1][];// precalculate cartesian Y of cells, relative to current location; the X doesn't need conversions
+            for (int x = -size; x <= size; x++)
             {
-                var gridX = x.Cycle(width);
-                for (int y = Location.Y - size; y <= maxy; y++)
+                matrixY[x + size] = new float[2 * size + 1];
+                for (int y = -size; y <= size; y++)
                 {
-                    var gridY = y.Cycle(height);
-                    var d = (float)Math.Sqrt(Math.Pow(x - Location.X, 2) + Math.Pow(x - Location.Y, 2));
+                    matrixY[x + size][y + size] = new GridPoint(Location.X + x, Location.Y + y).CartesianY - Location.CartesianY;
+                }
+            }
+
+            //       environment smell (current cell, near cells, environment)
+            for (int x = -size; x <= size; x++)
+            {
+                var gridX = (Location.X + x).Cycle(width);
+                for (int y = -size; y <= size; y++)
+                {
+                    var gridY = (Location.Y + y).Cycle(height);
+                    var d = (float)Math.Sqrt(x * x + matrixY[x + size][y + size] * matrixY[x + size][y + size]);
+                    // function: x = 1 / (d + 1)
+                    // this function is lightweight and i get what i want:
+                    // for d=0, x=1
+                    // for d>0, x is progressively smaller
                     result1 += Simulation.Terrain[gridX][gridY].Properties[ThingProperty.Smell1] /
                         Simulation.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
                     result2 += Simulation.Terrain[gridX][gridY].Properties[ThingProperty.Smell2] /
@@ -119,6 +142,7 @@ namespace LifeGame
                         Simulation.Terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
                 }
             }
+            //add environment smell to results
             result1 += Simulation.Environment.Properties[ThingProperty.Smell1] /
                 Simulation.Environment.Properties[ThingProperty.SmellIntensity];
             result2 += Simulation.Environment.Properties[ThingProperty.Smell2] /
@@ -130,8 +154,10 @@ namespace LifeGame
             Brain.State[++i] = result2;
             Brain.State[++i] = result3;
 
-            //environment hearing(current cell, near cells, environment)
-
+            //       environment hearing(current cell, near cells, environment)
+            result1 = 0f;
+            result2 = 0f;
+            result3 = 0f;
 
 
             //current cell
