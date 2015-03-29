@@ -63,5 +63,13 @@ namespace LifeGame
         {
             return n >= 0 && n > max ? n : (n < 0 ? n + max : n - max);
         }
+
+        /// <summary>
+        /// The true modulus operator
+        /// </summary>
+        public static float Modulus(this float a, float b)
+        {
+            return a - b * (float)Math.Floor(a / b);
+        }
     }
 }

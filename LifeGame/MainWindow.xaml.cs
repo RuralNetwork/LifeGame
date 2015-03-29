@@ -50,11 +50,11 @@ namespace LifeGame
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
 
-            int a = (0.1f).AngleToDirection();
-            float b = (0).DirectionToAngle();
-
-            int c = 0;
-            int d = ++c;
+            var a = (int)(-4.6);
+            var b = Math.Round(-4.6);
+            var c = Math.Floor(-3.5);
+            var d = 1 / 3;
+            var e = -5.2f % 2f;
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;
