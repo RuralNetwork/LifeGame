@@ -71,7 +71,10 @@ namespace LifeGame
             else
             {
                 bool b;
-                if (y - gridY < 0.5f)
+                x -= gridX;
+                y -= gridY;
+
+                if (y < 0.5f)
                 {
                     b = (y < -1.5f * x + 1);
                     gridY += (b || evenX ? 0 : 1);

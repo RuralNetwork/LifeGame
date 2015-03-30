@@ -58,6 +58,10 @@ namespace LifeGame
             //...
 
 
+            //Berry:
+            dict = new Dictionary<ActionType, Effects>();
+            //dict.Add(ActionType)
+
         }
     }
 }
