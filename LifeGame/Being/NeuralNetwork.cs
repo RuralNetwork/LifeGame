@@ -40,9 +40,6 @@ namespace LifeGame
         float[] preActivationArray;
         public float[] State { get; private set; } // postActivationArray;
 
-        public SignalArray Input { get; private set; }
-        public SignalArray Output { get; private set; }
-
         int linkCount, nodeCount;
 
 
@@ -78,9 +75,6 @@ namespace LifeGame
             State[0] = 1;                 // bias
             this.linkCount = linkCount;
             this.nodeCount = nodeCount;
-
-            Input = new SignalArray(State, 1, INPUTS_COUNT);
-            Output = new SignalArray(State, INPUTS_AND_BIAS_COUNT, OUTPUTS_COUNT);
         }
 
 
@@ -106,33 +100,6 @@ namespace LifeGame
                     // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
 
                     preActArr[j] = 0f;
-                }
-            }
-        }
-
-        public class SignalArray   // fished out from github's mod history
-        {
-            float[] wrappedArray;
-            int offset;
-            int length;
-
-            public SignalArray(float[] wrappedArray, int offset, int length)
-            {
-                this.wrappedArray = wrappedArray;
-                this.offset = offset;
-                this.length = length;
-
-            }
-
-            public float this[int index]
-            {
-                get
-                {
-                    return wrappedArray[offset + index];
-                }
-                set
-                {
-                    wrappedArray[offset + index] = value;
                 }
             }
         }

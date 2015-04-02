@@ -18,6 +18,9 @@ namespace LifeGame
 
     }
 
+    /// <summary>
+    /// Properties that are common to all Things
+    /// </summary>
     public enum ThingProperty
     {
         Altitude, // beings actually don't use this
@@ -37,7 +40,8 @@ namespace LifeGame
         SmellIntensity,
         Smell1,// I use Henning's smell prism (but it is old, if we find something more recent is better)
         Smell2,
-        Smell3
+        Smell3,
+        Wet
     }
 
     /// <summary>
@@ -49,13 +53,15 @@ namespace LifeGame
 
         protected Simulation Simulation;
         private GraphicsEngine Engine;
-        public GridPoint Location;
+        public GridPoint Location { get; set; }
+
+        static FastRandom rand = new FastRandom();
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
         List<float> internalProps;
 
         public BoolProps BoolProperties { get; set; }
-        public delegate void Effects(Being actor, float energy);
+        public delegate void Effects(Being actor);
         public Dictionary<ActionType, Effects> Interactions { get; private set; }
         public Thing InnerThing { get; set; }// this is a Being for a terrain Thing, the carried object for a Being
         //in the simulation there are two types of interaction:
@@ -118,6 +124,10 @@ namespace LifeGame
 
         public void Apply()
         {
+            // spesso viene richiesta la creazione di nuovi Thing, ma non esistendo lo spazio vuoto, 
+            // si dovrà fare sempre un confronto tra la cella target e gli oggetti contenuti nella ModQueue.
+            // la stessa cosa vale per 
+
             var typeChanged = false;
             /*foreach (var mod in ModQueue)
             {

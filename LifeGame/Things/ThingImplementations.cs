@@ -31,11 +31,11 @@ namespace LifeGame
         {
             //Earth:
             var dict = new Dictionary<ActionType, Effects>();
-            dict.Add(ActionType.Walk, (b, e) =>
+            dict.Add(ActionType.Walk, b =>
             {
-                //...
+               // b.DeltaEnergy-=
             });
-            dict.Add(ActionType.Sleep, (b, e) =>
+            dict.Add(ActionType.Sleep, b =>
             {
                 //...
             });
