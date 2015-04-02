@@ -23,7 +23,6 @@ namespace LifeGame
     /// </summary>
     public enum ThingProperty
     {
-        Altitude, // beings actually don't use this
         Height,
         Alpha,// this can be either the transparency of the thing or the proportion of visual covered
         // We assume the things to occupy all cell's area, so if a thing should be narrow in real life, it will have a low value of Alpha.
@@ -55,6 +54,8 @@ namespace LifeGame
         private GraphicsEngine Engine;
         public GridPoint Location { get; set; }
 
+        public ThingType Type { get; private set; }
+
         static FastRandom rand = new FastRandom();
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
@@ -78,12 +79,15 @@ namespace LifeGame
         //Flag that is set to true when graphical update is needed
         private bool changed = false;
 
-        public Thing(Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
+        public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
+            Type = type;
             Simulation = simulation;
-            Interactions = new Dictionary<ActionType, Effects>();
+            Interactions = interactionsDicts[(int)type];
+            internalProps = new List<float>(nInternalProps[(int)type]);
+            updateDel = updateDels[(int)type];
             Properties = new Dictionary<ThingProperty, float>();
-            for (int i = 0; i < 15; i++)//                              !!!!update this if the number of properties change
+            for (int i = 0; i < 16; i++)//                              !!!!update this if the number of properties change
             {
                 Properties.Add((ThingProperty)i, 0);
             }

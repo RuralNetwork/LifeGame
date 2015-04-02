@@ -9,12 +9,15 @@ namespace LifeGame
     //questo enum serve solo come riferimento per gli indici, vediamo se tenerlo o no in futuro
     public enum ThingType
     {
-        Earth = 0,
-        Grass = 1,
-        Water = 2,
-        Bush = 3,
-        Berry = 4,
-        Tree = 5,
+        Environment,
+        Being,
+        Earth,
+        Grass,
+        Water,
+        Bush,
+        Berry,
+        Tree,
+        Mountain,
     }
 
     // Per poter passare da un tipo di Thing all'altro avrei dovuto usare qualche strana roba con il Reflection, che è sempre una cosa pesante.

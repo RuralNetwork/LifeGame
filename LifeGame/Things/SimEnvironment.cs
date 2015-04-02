@@ -32,8 +32,8 @@ namespace LifeGame
         public Tuple<int, float, int> LockWeather { private get; set; }
 
 
-        public SimEnvironment(Simulation simulation, GraphicsEngine engine, GridPoint location)
-            : base(simulation, engine, location)
+        public SimEnvironment(Simulation simulation, GraphicsEngine engine)
+            : base(ThingType.Environment, simulation, engine, default(GridPoint))
         {
             // questi valori non devono essere verosimili, ci serve una simulazione che appaia veloce facendo scorrere il tempo velocemente
             DayTicks = 240;
@@ -46,9 +46,9 @@ namespace LifeGame
             float tick = Simulation.TimeTick;
             //sun motion
             var sunAng = -(float)(Math.Cos(tick / 120 * Math.PI));// * 0.3 * Math.PI   // questa è l'altezza del sole durante il giorno
-            var transSpeed=0.1f;// lower is faster
+            var transSpeed = 0.1f;// lower is faster
             var color = sunAng / (transSpeed + Math.Abs(sunAng)) / 2 + 0.5f; // fast sigmoid function: x / (k + abs(x)) / 2 + 0.5
-            
+
         }
 
         public override void Draw(bool isCarriedObj = false)

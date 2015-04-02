@@ -80,7 +80,7 @@ namespace LifeGame
                     Terrain[i] = new Thing[GridHeight];
                     for (int j = 0; j < GridHeight; j++)
                     {
-                        Terrain[i][j] = new Thing(this, engine, new GridPoint(i, j));
+                        Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                     }
                 }
             }
@@ -108,7 +108,7 @@ namespace LifeGame
             while (IsRunning)
             {
                 TimeTick++;
-                
+
                 //Environment.Update();
                 /*foreach (var arr in Terrain)
                 {

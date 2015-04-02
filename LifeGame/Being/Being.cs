@@ -43,7 +43,7 @@ namespace LifeGame
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
         public Being(Simulation simulation, GraphicsEngine engine, GridPoint location, Genome genome)
-            : base(simulation, engine, location)
+            : base(ThingType.Being, simulation, engine, location)
         {
             FitnessMean = new Average();
             Genome = genome;
@@ -55,6 +55,7 @@ namespace LifeGame
             simulation.lastID++;
 
             Brain.State[1] = Sex;
+
         }
 
         public override void Update(Thing container)
