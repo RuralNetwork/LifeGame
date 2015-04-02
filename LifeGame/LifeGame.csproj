@@ -57,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="dialoguebox.xaml.cs">
+      <DependentUpon>dialoguebox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
@@ -78,6 +81,10 @@
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Math_stuff\Vector.cs" />
     <Compile Include="Math_stuff\Vector3D.cs" />
+    <Page Include="dialoguebox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

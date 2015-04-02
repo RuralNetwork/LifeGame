@@ -77,7 +77,11 @@ namespace LifeGame
             Engine.canvasHeight = mainpanel.Height;
             Engine.canvasWidth = mainpanel.Width;
             Simulation = new Simulation(32, 15, Engine);
-
+            //The function to call the mesagebox, then I'll implement it inside the graphical engine
+            var prova = new dialoguebox("testo");
+            mainpanel.Children.Add(prova);
+            //Here to center the box
+            Canvas.SetLeft(prova, 50);
 
             Simulation.TogglePause();
             startSimulation.Visibility = Visibility.Hidden;
