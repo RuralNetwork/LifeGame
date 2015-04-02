@@ -6,9 +6,6 @@
 //           -<                     U             //              || \\                   \ \  
 //                                                "               ""  "                    \_\
 
-// Opera: "Studio di cromosomi"
-// Tecnica: "Monospace su canvas"
-
 using System;
 using System.Collections;
 using System.Collections.Generic;

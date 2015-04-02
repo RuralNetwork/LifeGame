@@ -49,12 +49,8 @@ namespace LifeGame
             InitializeComponent();
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
-
-            var a = (int)(-4.6);
-            var b = Math.Round(-4.6);
-            var c = Math.Floor(-3.5);
-            var d = 1 / 3;
-            var e = -5.2f % 2f;
+            var a = (float)Math.Atan2(-2f, -1000000000f);
+            var b = (a > 0 ? a : a + (float)Math.PI);
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;
@@ -66,7 +62,7 @@ namespace LifeGame
             mainpanel.Width = mainwindow.Width;
             Engine = new GraphicsEngine(mainpanel);
 
-            
+
 
         }
 
@@ -89,7 +85,8 @@ namespace LifeGame
                 {
                     Engine.addCell(new GridPoint(x,y));
                 }
-            }*///Engine.addCell(0, 0);
+            }*/
+            //Engine.addCell(0, 0);
             //this.Simulation;
         }
 

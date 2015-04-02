@@ -13,11 +13,21 @@ namespace LifeGame
     {
         // mutable properties
         public int Direction { get; private set; }
+        public float Energy { get; set; }
+        public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
+        /// <summary>
+        /// The maximum health is the Integrity value.
+        /// It decreases due to hunger or thirst.
+        /// In normal condition it slowly increase.
+        /// When health reaches 0, the being dies.
+        /// </summary>
         public float Health { get; set; }// can be healed
+        /// <summary>
+        /// Always decreases during lifetime, due to age or wounds
+        /// </summary>
         public float Integrity { get; set; } // cannot be healed
         public float Thirst { get; set; }
         public float Hunger { get; set; }
-        public float Wet { get; set; }
         public float Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
@@ -75,10 +85,17 @@ namespace LifeGame
             bState[++i] = Integrity;
             bState[++i] = Thirst;
             bState[++i] = Hunger;
-            bState[++i] = Wet;
+            bState[++i] = Properties[ThingProperty.Wet];
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
+            f1 = Simulation.TimeTick / Simulation.Environment.DayTicks * 2 * (float)Math.PI;
+            bState[++i] = (float)Math.Sin(f1);
+            bState[++i] = (float)Math.Cos(f1);
+            f1 = Simulation.TimeTick / Simulation.Environment.YearTicks * 2 * (float)Math.PI;
+            bState[++i] = (float)Math.Sin(f1);
+            bState[++i] = (float)Math.Cos(f1);
+
 
             //      carried object
             if (InnerThing != null)
@@ -235,27 +252,51 @@ namespace LifeGame
             bState[++i] = envProps[ThingProperty.Color3];
             bState[++i] = envProps[ThingProperty.Painful];
             bState[++i] = envProps[ThingProperty.Temperature];
+            Debug.Write("Input count: " + i);
 
             Brain.Calculate();
 
             // choose action
             float max = 0;
             int n = 0;
-            for (i = 0; i < 7; i++)
+            for (int j = 0; j < 7; i++)
             {
-                if (Brain.Output[i] > max)
+                if (bState[++i] > max)
                 {
-                    max = Brain.Output[i];
+                    max = bState[i];
                     n = i;
                 }
             }
             var act = (ActionType)n;
-            var dirVec = new Vector(Brain.Output[7].InverseSigmoid(), Brain.Output[8].InverseSigmoid());
+            var dirVec = new Vector(bState[++i].InverseSigmoid(), bState[++i].InverseSigmoid());
             var mag = dirVec.Magnitude;
-            var energy = Brain.Output[9].InverseSigmoid();
+            int target = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));
+            var energy = bState[++i].InverseSigmoid();
+            var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
+            var cDir = (CellDirection)(ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
+            GridPoint cellPt = (target == 2 ? Location.GetNearCell(cDir) : Location);
             switch (act)
             {
                 case ActionType.Walk:
+                    if (target == 2)
+                    {
+                        DeltaEnergy = energy; // DeltaEnergy is decreased by the things the being interact with
+                        cellPt = Location;
+                        var lastFreeCellPt = Location;
+                        while (DeltaEnergy > 0)
+                        {
+                            var cell = terrain[cellPt.X][cellPt.Y];
+                            cell.Interactions[act](this);
+                            if (cell.InnerThing != null)
+                            {
+                                cell.InnerThing.Interactions[ActionType.Walk](this);
+                            }
+                            else
+                            {
+                                lastFreeCellPt = cellPt;
+                            }
+                        }
+                    }
                     // last free cell
                     break;
                 case ActionType.Sleep:
@@ -273,11 +314,17 @@ namespace LifeGame
                 default:
                     break;
             }
-            if (mag < 0)
+
+            // being changes
+            // these properties do not change through ModQueue because they can't be detected by other beings
+            Energy -= energy;
+            //Hunger -=energy*enviro
+
+            //Death
+            if (Health < 0)
             {
 
             }
-
 
             if (InnerThing != null)
             {
