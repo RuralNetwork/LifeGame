@@ -28,19 +28,20 @@ namespace LifeGame
     public partial class Thing
     {
         static List<Dictionary<ActionType, Effects>> interactionsDicts = new List<Dictionary<ActionType, Effects>>();
-        static List<int> nInternalProps = new List<int>();
         static List<UpdateDelegate> updateDels = new List<UpdateDelegate>();
+        static List<Dictionary<ThingProperty, float>> defProps = new List<Dictionary<ThingProperty, float>>();// default properties
+
         static Thing()
         {
             //Earth:
             var dict = new Dictionary<ActionType, Effects>();
-            dict.Add(ActionType.Walk, b =>
+            dict.Add(ActionType.Walk, (t, b) =>
             {
-               // b.DeltaEnergy-=
+                b.DeltaEnergy -= t.Properties[ThingProperty.Wet] * 0.01f;
             });
-            dict.Add(ActionType.Sleep, b =>
+            dict.Add(ActionType.Sleep, (t, b) =>
             {
-                //...
+                // b.Energy
             });
             //...
             interactionsDicts.Add(dict);
@@ -50,7 +51,7 @@ namespace LifeGame
                 //...
             });
 
-            nInternalProps.Add(3);//?
+           // defProps.Add(new float[0]);
 
             //parte di drawing qui
 

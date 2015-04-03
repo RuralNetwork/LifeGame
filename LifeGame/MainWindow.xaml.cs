@@ -51,6 +51,8 @@ namespace LifeGame
             //---------------------Test Space------------------------
             var a = (float)Math.Atan2(-2f, -1000000000f);
             var b = (a > 0 ? a : a + (float)Math.PI);
+            var c = 5;
+            var d = (ThingProperty)c;
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;

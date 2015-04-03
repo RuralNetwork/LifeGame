@@ -8,26 +8,34 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-
-    public class Being : Thing
+    /// <summary>
+    /// This enum is an extension of ThingProperty and should be used with Properties dictionary
+    /// </summary>
+    enum BeingMutableProp : int
     {
-        // mutable properties
-        public int Direction { get; private set; }
-        public float Energy { get; set; }
-        public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
+        Energy = 100,
         /// <summary>
         /// The maximum health is the Integrity value.
         /// It decreases due to hunger or thirst.
         /// In normal condition it slowly increase.
         /// When health reaches 0, the being dies.
         /// </summary>
-        public float Health { get; set; }// can be healed
+        Health = 101,// can be healed
         /// <summary>
         /// Always decreases during lifetime, due to age or wounds
         /// </summary>
-        public float Integrity { get; set; } // cannot be healed
-        public float Thirst { get; set; }
-        public float Hunger { get; set; }
+        Integrity = 102, // cannot be healed
+        Thirst = 103,
+        Hunger = 104,
+    }
+
+
+    public class Being : Thing
+    {
+        // mutable properties
+        public CellDirection Direction { get; private set; }
+        public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
+
         public float Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
@@ -73,6 +81,8 @@ namespace LifeGame
             var locY = Location.Y;
             var ccProps = terrain[locX][locY].Properties;
 
+
+            //================================================ INPUT ========================================================
             float f1;
             //       autoperception
             var i = 1;// 0=bias,  1=sex
@@ -82,11 +92,11 @@ namespace LifeGame
             bState[++i] = Properties[ThingProperty.Smell1];
             bState[++i] = Properties[ThingProperty.Smell2];
             bState[++i] = Properties[ThingProperty.Smell3];
-            bState[++i] = Health;
-            bState[++i] = Integrity;
-            bState[++i] = Thirst;
-            bState[++i] = Hunger;
             bState[++i] = Properties[ThingProperty.Wet];
+            bState[++i] = Properties[(ThingProperty)BeingMutableProp.Health];
+            bState[++i] = Properties[(ThingProperty)BeingMutableProp.Integrity];
+            bState[++i] = Properties[(ThingProperty)BeingMutableProp.Thirst];
+            bState[++i] = Properties[(ThingProperty)BeingMutableProp.Hunger];
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
@@ -227,7 +237,7 @@ namespace LifeGame
                 }
             }
             // cycle from rightmost to leftmost (excluding back direction), relative to current (forward) direction
-            int dir = (Direction + 4) % 6;
+            int dir = ((int)Direction + 4) % 6;
             for (int j = 0; j < 5; j++)
             {
                 bState[++i] = results[dirIdxs[dir] * 3];
@@ -257,6 +267,7 @@ namespace LifeGame
 
             Brain.Calculate();
 
+            //================================================ OUTPUT ========================================================
             // choose action
             float max = 0;
             int n = 0;
@@ -273,9 +284,11 @@ namespace LifeGame
             var mag = dirVec.Magnitude;
             int target = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));
             var energy = bState[++i].InverseSigmoid();
+            DeltaEnergy = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
-            var cDir = (CellDirection)(ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
+            var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
             GridPoint cellPt = (target == 2 ? Location.GetNearCell(cDir) : Location);
+            var cell = terrain[cellPt.X][cellPt.Y];
             switch (act)
             {
                 case ActionType.Walk:
@@ -286,11 +299,12 @@ namespace LifeGame
                         var lastFreeCellPt = Location;
                         while (DeltaEnergy > 0)
                         {
-                            var cell = terrain[cellPt.X][cellPt.Y];
-                            cell.Interactions[act](this);
+                            cell = terrain[cellPt.X][cellPt.Y];
+                            cell.Interact(ActionType.Walk, this);
+                            if (DeltaEnergy < 0) break;
                             if (cell.InnerThing != null)
                             {
-                                cell.InnerThing.Interactions[ActionType.Walk](this);
+                                cell.InnerThing.Interact(ActionType.Walk, this);
                             }
                             else
                             {
@@ -301,8 +315,11 @@ namespace LifeGame
                     // last free cell
                     break;
                 case ActionType.Sleep:
+                    energy = 0;// prevent loss of energy
+                    cell.Interact(ActionType.Sleep, this);
                     break;
                 case ActionType.Eat:
+
                     break;
                 case ActionType.Breed:
                     break;
@@ -318,14 +335,15 @@ namespace LifeGame
 
             // being changes
             // these properties do not change through ModQueue because they can't be detected by other beings
-            Energy -= energy;
+            Direction = cDir;
+            //Energy -= energy;
             //Hunger -=energy*enviro
 
             //Death
-            if (Health < 0)
-            {
+            //if (Health < 0)
+            //{
 
-            }
+            //}
 
             if (InnerThing != null)
             {

@@ -7,21 +7,22 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-    [Flags] // this attribute is useless (most of them are) but helps creating the inline documentation
-    public enum BoolProps
-    {
-        CanContainBeing = 1,
-        CanBeCarried = 2,
-        CanSeeThrogh = 4,
-        Eatable = 8,
+    //obsolete
+    //[Flags] // this attribute is useless (most of them are) but helps creating the inline documentation
+    //public enum BoolProps
+    //{
+    //    CanContainBeing = 1,
+    //    CanBeCarried = 2,
+    //    CanSeeThrogh = 4,
+    //    Eatable = 8,
 
 
-    }
+    //}
 
     /// <summary>
     /// Properties that are common to all Things
     /// </summary>
-    public enum ThingProperty
+    public enum ThingProperty : int
     {
         Height,
         Alpha,// this can be either the transparency of the thing or the proportion of visual covered
@@ -49,6 +50,8 @@ namespace LifeGame
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public partial class Thing
     {
+        //constant
+        static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
 
         protected Simulation Simulation;
         private GraphicsEngine Engine;
@@ -59,11 +62,10 @@ namespace LifeGame
         static FastRandom rand = new FastRandom();
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
-        List<float> internalProps;
 
-        public BoolProps BoolProperties { get; set; }
-        public delegate void Effects(Being actor);
-        public Dictionary<ActionType, Effects> Interactions { get; private set; }
+        //public BoolProps BoolProperties { get; set; }
+        public delegate void Effects(Thing target, Being actor);
+        Dictionary<ActionType, Effects> interactions { get; set; }
         public Thing InnerThing { get; set; }// this is a Being for a terrain Thing, the carried object for a Being
         //in the simulation there are two types of interaction:
         // 1) Thing->Being
@@ -76,6 +78,7 @@ namespace LifeGame
         protected delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
+        public bool MustDraw = true;// mettere false quando non deve disegnare
         //Flag that is set to true when graphical update is needed
         private bool changed = false;
 
@@ -83,14 +86,9 @@ namespace LifeGame
         {
             Type = type;
             Simulation = simulation;
-            Interactions = interactionsDicts[(int)type];
-            internalProps = new List<float>(nInternalProps[(int)type]);
+            interactions = interactionsDicts[(int)type];
+            Properties  = defProps[(int)type];
             updateDel = updateDels[(int)type];
-            Properties = new Dictionary<ThingProperty, float>();
-            for (int i = 0; i < 16; i++)//                              !!!!update this if the number of properties change
-            {
-                Properties.Add((ThingProperty)i, 0);
-            }
 
             Location = location;
             Engine = engine;
@@ -110,7 +108,7 @@ namespace LifeGame
             {
                 InnerThing.Update();
             }
-            if (changed)
+            if (MustDraw && changed)
             {
                 this.Draw();
             }
@@ -149,14 +147,9 @@ namespace LifeGame
 
         }
 
-        //public Thing Clone()
-        //{
-        //    return (Thing)MemberwiseClone();// this automatically creates a shallow copy of the current object, 
-        //    // actually this is good because in this way there will be only one instance of the dictionary for every Thing of the same type.
-        //    // shallow copy -> only value types and object references
-        //}
+        public void Interact(ActionType action, Being actor)
+        {
+            interactions[action](this, actor);
+        }
     }
-
-    //TODO: add derived abstract classes such as eatable, collectible...
-    //      in order to share properties and actions
 }

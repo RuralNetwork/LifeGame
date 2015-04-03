@@ -42,7 +42,7 @@ namespace LifeGame
         /// <summary>
         /// Convert an integer [0, 5] to an angle [0, 2PI]
         /// </summary>
-        public static float DirectionToAngle(this int dir)
+        public static float DirectionToAngle(this CellDirection dir)
         {
             return ((float)dir + 0.5f) * (float)Math.PI / 3;
         }
@@ -50,9 +50,9 @@ namespace LifeGame
         /// <summary>
         /// Convert an angle [0, 2PI] to an integer [0, 5]
         /// </summary>
-        public static int AngleToDirection(this float angle)
+        public static CellDirection AngleToDirection(this float angle)
         {
-           return (int)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
+           return (CellDirection)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
         }
         /// <summary>
         /// Mod function extended to negative numbers
