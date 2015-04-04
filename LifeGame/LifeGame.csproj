@@ -60,6 +60,7 @@
     <Compile Include="dialoguebox.xaml.cs">
       <DependentUpon>dialoguebox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Enums.cs" />
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
@@ -89,7 +90,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Being\Action.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

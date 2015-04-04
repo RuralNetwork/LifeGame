@@ -14,15 +14,6 @@ namespace LifeGame
         // This class should contains time of the event, the message(actor, action), all the data from the previous n ticks and the data from the following n ticks
         // This class will manage also the UI, input and visualization
     }
-    public enum SimulationType
-    {
-        //Slow: show every move, game tick is every 200ms, maybe 500ms or even less, 100mx
-        Slow,
-        //Medium: every move after the other, not really able to percieve the movements, but the animation still runs, smth like 20ms
-        Medium,
-        //Fast: graphicengine stops, doesn't update the screen anymore, each action is performed after the other, basically no game thick, as soon as it can, it just does the next thing
-        Fast
-    }
 
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     public class Simulation

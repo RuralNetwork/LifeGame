@@ -7,42 +7,6 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-    //obsolete
-    //[Flags] // this attribute is useless (most of them are) but helps creating the inline documentation
-    //public enum BoolProps
-    //{
-    //    CanContainBeing = 1,
-    //    CanBeCarried = 2,
-    //    CanSeeThrogh = 4,
-    //    Eatable = 8,
-
-
-    //}
-
-    /// <summary>
-    /// Properties that are common to all Things
-    /// </summary>
-    public enum ThingProperty : int
-    {
-        Height,
-        Alpha,// this can be either the transparency of the thing or the proportion of visual covered
-        // We assume the things to occupy all cell's area, so if a thing should be narrow in real life, it will have a low value of Alpha.
-        // this obviously is unrelated to the GUI
-        Weigth,
-        Color1,// TODO: this will be changed to a series of intensities for every frequency.
-        Color2,// then the beings can evolve to perceive some of these frequencies
-        Color3,
-        Moving,
-        Painful,
-        Temperature,// this will be included in the frequency graph
-        Amplitude,
-        Pitch,
-        SmellIntensity,
-        Smell1,// I use Henning's smell prism (but it is old, if we find something more recent is better)
-        Smell2,
-        Smell3,
-        Wet
-    }
 
     /// <summary>
     /// Element that can interact with a being
@@ -82,13 +46,22 @@ namespace LifeGame
         //Flag that is set to true when graphical update is needed
         private bool changed = false;
 
+        public int ID { get; private set; }// devi dirmi come vengono gestiti graficamente i Thing eliminati, così posso vedere come riciclare gli ID
+
         public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
             Type = type;
             Simulation = simulation;
             interactions = interactionsDicts[(int)type];
-            Properties  = defProps[(int)type];
+            Properties  = defPropsDicts[(int)type];
             updateDel = updateDels[(int)type];
+
+            if (simulation.lastID == 4 * 10e9)
+            {
+                simulation.lastID = 0;
+            }
+            ID = simulation.lastID;
+            simulation.lastID++;
 
             Location = location;
             Engine = engine;

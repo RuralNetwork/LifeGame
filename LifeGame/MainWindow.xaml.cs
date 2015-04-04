@@ -49,10 +49,9 @@ namespace LifeGame
             InitializeComponent();
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
-            var a = (float)Math.Atan2(-2f, -1000000000f);
-            var b = (a > 0 ? a : a + (float)Math.PI);
-            var c = 5;
-            var d = (ThingProperty)c;
+            var a = new Genome(null, null) { Fitness = 1 };
+            var b = a;
+            a = new Genome(null, null);
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;

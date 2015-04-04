@@ -8,26 +8,6 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-    /// <summary>
-    /// This enum is an extension of ThingProperty and should be used with Properties dictionary
-    /// </summary>
-    enum BeingMutableProp : int
-    {
-        Energy = 100,
-        /// <summary>
-        /// The maximum health is the Integrity value.
-        /// It decreases due to hunger or thirst.
-        /// In normal condition it slowly increase.
-        /// When health reaches 0, the being dies.
-        /// </summary>
-        Health = 101,// can be healed
-        /// <summary>
-        /// Always decreases during lifetime, due to age or wounds
-        /// </summary>
-        Integrity = 102, // cannot be healed
-        Thirst = 103,
-        Hunger = 104,
-    }
 
 
     public class Being : Thing
@@ -36,17 +16,13 @@ namespace LifeGame
         public CellDirection Direction { get; private set; }
         public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
 
+        //immutable properties
         public float Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
-        // theese classes will be copied by reference in the next state, it's ok because other things can't modify them, so there will be no conflicts
         public Average FitnessMean { get; private set; }
         public Genome Genome { get; private set; }
         public NeuralNetwork Brain { get; private set; }
-
-
-
-        public int ID { get; private set; }// this ID is used to display the beings
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
@@ -55,12 +31,6 @@ namespace LifeGame
         {
             FitnessMean = new Average();
             Genome = genome;
-            if (simulation.lastID == 4 * 10e9)
-            {
-                simulation.lastID = 0;
-            }
-            ID = simulation.lastID;
-            simulation.lastID++;
 
             Brain.State[1] = Sex;
 
@@ -312,7 +282,6 @@ namespace LifeGame
                             }
                         }
                     }
-                    // last free cell
                     break;
                 case ActionType.Sleep:
                     energy = 0;// prevent loss of energy
@@ -334,8 +303,8 @@ namespace LifeGame
             }
 
             // being changes
-            // these properties do not change through ModQueue because they can't be detected by other beings
-            Direction = cDir;
+            Direction = cDir;// this doesn't need to be changed through ModQueue because it can't be detected and can't be changed elsewhere
+
             //Energy -= energy;
             //Hunger -=energy*enviro
 
