@@ -52,6 +52,7 @@ namespace LifeGame
             var a = new Genome(null, null) { Fitness = 1 };
             var b = a;
             a = new Genome(null, null);
+            var c = (int)BeingMutableProp.Health;
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;

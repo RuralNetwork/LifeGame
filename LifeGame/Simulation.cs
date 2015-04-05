@@ -18,6 +18,8 @@ namespace LifeGame
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     public class Simulation
     {
+        Stopwatch watch = Stopwatch.StartNew();
+
         public int lastID; // used and managed by the beings
         public int TimeTick { get; set; }
 
@@ -46,7 +48,10 @@ namespace LifeGame
 
         public Thing[][] Terrain { get; set; }
 
-
+        /// <summary>
+        /// This is the update and draw speed
+        /// </summary>
+        public float FPS = 2;
 
 
         public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
@@ -59,6 +64,8 @@ namespace LifeGame
             IsInTrainingMode = true;
             PopulationCount = 100;
             hallOfFame = new List<Genome>(10);
+
+            Environment = new SimEnvironment(this, engine);
             //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
             if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
             {
@@ -98,68 +105,81 @@ namespace LifeGame
         {
             while (IsRunning)
             {
-                TimeTick++;
-
-                //Environment.Update();
-                /*foreach (var arr in Terrain)
+                if (watch.Elapsed.TotalSeconds > 1 / FPS)
                 {
-                    foreach (var thing in arr)
-                    {
-                        thing.Update();
-                    }
-                }
 
-                foreach (var arr in Terrain)
-                {
-                    foreach (var thing in arr)
-                    {
-                        thing.Apply();
-                    }
-                }
-                */
-                //// Manage population.
-                //if (Type == SimulationType.Fast)
-                //{
+                    TimeTick++;
 
-                //    if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
-                //    {
-                //        if (_newState.Population.Count > PopulationCount)
-                //        {
-                //            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
-                //            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
-                //        }
-                //        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
-                //        {                                                       // because creating a new genome (even copying an existing one) is very expensive
-                //            int idx;
-                //            while (_newState.Population.Count < PopulationCount)
-                //            {
-                //                while (true)
-                //                {
-                //                    idx = rand.Next(_newState.Population.Count);
-                //                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
-                //                    if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
-                //                    {
-                //                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
-                //                        break;
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
+                    Environment.Update();
+                    foreach (var arr in Terrain)
+                    {
+                        foreach (var thing in arr)
+                        {
+                            thing.Update();
+                        }
+                    }
+
+                    foreach (var arr in Terrain)
+                    {
+                        foreach (var thing in arr)
+                        {
+                            thing.Apply();
+                        }
+                    }
+
+                    Environment.Draw();
+                    foreach (var arr in Terrain)
+                    {
+                        foreach (var thing in arr)
+                        {
+                            thing.Draw();
+                        }
+                    }
+
+                    //// Manage population.
+                    //if (Type == SimulationType.Fast)
+                    //{
+
+                    //    if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
+                    //    {
+                    //        if (_newState.Population.Count > PopulationCount)
+                    //        {
+                    //            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
+                    //            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
+                    //        }
+                    //        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
+                    //        {                                                       // because creating a new genome (even copying an existing one) is very expensive
+                    //            int idx;
+                    //            while (_newState.Population.Count < PopulationCount)
+                    //            {
+                    //                while (true)
+                    //                {
+                    //                    idx = rand.Next(_newState.Population.Count);
+                    //                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
+                    //                    if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
+                    //                    {
+                    //                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
+                    //                        break;
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                }
             }
         }
 
-        public void Draw()
-        {
-            foreach (var arr in Terrain)
-            {
-                foreach (var thing in arr)
-                {
-                    thing.Draw();
-                }
-            }
+        //public void Draw()
+        //{
+        //    foreach (var arr in Terrain)
+        //    {
+        //        foreach (var thing in arr)
+        //        {
+        //            thing.Draw();
+        //        }
+        //    }
 
-        }
+        //}
     }
 }

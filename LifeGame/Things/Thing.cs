@@ -42,10 +42,6 @@ namespace LifeGame
         protected delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
-        public bool MustDraw = true;// mettere false quando non deve disegnare
-        //Flag that is set to true when graphical update is needed
-        private bool changed = false;
-
         public int ID { get; private set; }// devi dirmi come vengono gestiti graficamente i Thing eliminati, così posso vedere come riciclare gli ID
 
         public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
@@ -53,8 +49,9 @@ namespace LifeGame
             Type = type;
             Simulation = simulation;
             interactions = interactionsDicts[(int)type];
-            Properties  = defPropsDicts[(int)type];
+            Properties = propsDicts[(int)type];
             updateDel = updateDels[(int)type];
+            ModQueue = new List<ThingMod>(10);
 
             if (simulation.lastID == 4 * 10e9)
             {
@@ -74,26 +71,12 @@ namespace LifeGame
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>
         /// <param name="container"></param>
-        public virtual void Update(Thing container = null)
+        public virtual void Update()
         {
-            //updateDel();
+            updateDel();
             if (InnerThing != null)
             {
                 InnerThing.Update();
-            }
-            if (MustDraw && changed)
-            {
-                this.Draw();
-            }
-        }
-
-        public virtual void Draw(bool isCarriedObj = false)
-        {
-            // 
-
-            if (InnerThing != null)
-            {
-                InnerThing.Draw();
             }
         }
 
@@ -104,20 +87,45 @@ namespace LifeGame
             // la stessa cosa vale per 
 
             var typeChanged = false;
-            /*foreach (var mod in ModQueue)
+            foreach (var mod in ModQueue)
             {
-
-                if (typeChanged)
+                if (mod.Type == ModType.ThingType)
                 {
+                    typeChanged = true;
                     break;
                 }
-            }*/
+            }
+
+            if (typeChanged)
+            {
+                var being = InnerThing;
+                var things = new List<Thing>();
+                foreach (var mod in ModQueue)
+                {
+                    if (mod.Type == ModType.ThingType)
+                    {
+                        things.Add(mod.Thing);
+                        break;
+                    }
+                }
+                //for
+            }
             if (InnerThing != null)
             {
                 InnerThing.Apply();
             }
 
 
+        }
+
+        public virtual void Draw(bool isCarriedObj = false)
+        {
+            // 
+
+            if (InnerThing != null)
+            {
+                InnerThing.Draw();
+            }
         }
 
         public void Interact(ActionType action, Being actor)

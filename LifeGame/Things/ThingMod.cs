@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace LifeGame
 {
-    public enum ModType
-    {
-        Property,
-        ThingType,// used in cell things, to change type
-        InnerThing// used to switch between null and Thing instance, used to move beings or create/delete carried objects
-    }
 
     /// <summary>
     /// Thing modification. In every Thing, there is the list ModQueue, that store an array of ThingMod
@@ -20,7 +14,6 @@ namespace LifeGame
     {
         public ModType Type { get; private set; }
 
-        public int NewType { get; private set; }
         public Thing Thing { get; private set; }
         /// <summary>
         /// List of changes that a Thing has undergone, rapresented by a float that can be positive or negative

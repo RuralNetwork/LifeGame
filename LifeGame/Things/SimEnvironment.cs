@@ -41,7 +41,7 @@ namespace LifeGame
         }
 
         // SimEnvironment doen't need an apply method, it is not influenced by anything.
-        public override void Update(Thing container = null)
+        public override void Update()
         {
             float tick = Simulation.TimeTick;
             //sun motion

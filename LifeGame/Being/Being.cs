@@ -36,9 +36,9 @@ namespace LifeGame
 
         }
 
-        public override void Update(Thing container)
+        public override void Update()
         {
-            InnerThing.Update(this);
+            InnerThing.Update();
 
 
             //Aliases
