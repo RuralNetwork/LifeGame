@@ -99,27 +99,61 @@ namespace LifeGame
 
             
         }
-        public void addCell(GridPoint location/*,ImageBrush sprite or something, it's possible*/)
+        public void addCell(Thing obj,GridPoint location)
         {
             Polygon poligono = new Polygon();
             
-
             poligono.Points = this.getPointCollection(location.X, location.Y);
+            poligono.Name = "thing"+obj.ID;
+            //This should store the object he represents
+            poligono.DataContext = obj;
             poligono.Stroke = System.Windows.Media.Brushes.Black;
             poligono.StrokeThickness = 1;
-
+            
+            poligono.Fill = new SolidColorBrush(switchColor(obj.Type));
+            
             //Set the position inside the canvas
             TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
 
-            poligono.AddHandler(Polygon.MouseMoveEvent, new RoutedEventHandler(cellaMouseEnter));
+            poligono.AddHandler(Polygon.MouseUpEvent, new RoutedEventHandler(cellaMouseEnter));
+
             //Adds the polygon to the canvas
             this._canvas.Children.Add(poligono);
+            //Links the polygon to the thing
+            obj.polygon = poligono; //la fantasia con i nomi...
+        }
+        private System.Windows.Media.Color switchColor(ThingType type)
+        {
+            System.Windows.Media.Color earth = System.Windows.Media.Color.FromRgb(205, 179, 128);
+            System.Windows.Media.Color water = System.Windows.Media.Color.FromRgb(105, 210, 231);
+            System.Windows.Media.Color color;
+            switch (type)
+            {
+                case ThingType.Earth:
+                    color = earth;
+                    break;
+                case ThingType.Water:
+                    color = water;
+                    break;
+                default:
+                    color = System.Windows.Media.Color.FromRgb(255, 255, 255);
+                    break;
+            }
+            return color;
+        }
+        public void updateCell(Thing obj)
+        {
+            obj.polygon.Fill = new SolidColorBrush(switchColor(obj.Type));
         }
         private void cellaMouseEnter(object sender, RoutedEventArgs e)
         {
             Polygon poligono = e.Source as Polygon;
-            poligono.Fill = System.Windows.Media.Brushes.Aqua;
+            /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
+            Debug.Write("Over a polygon "+poligono.Name+"\n");
+            Thing cosa = poligono.DataContext as Thing;
+            cosa.showID();
+            cosa.changeType(ThingType.Water);
         }
 
         public void startSimulation()

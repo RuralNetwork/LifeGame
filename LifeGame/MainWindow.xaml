@@ -3,16 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="600" Width="1000">
     <Grid Margin="0">
-        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="358,389,358,108" VerticalAlignment="Center" Width="276" Height="72" Click="Button_Click" FontSize="24"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="328*"/>
+            <ColumnDefinition Width="337*"/>
+            <ColumnDefinition Width="247*"/>
+            <ColumnDefinition x:Name="toolbox" Width="80*"/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="createWorld" Content="Create World" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,200" VerticalAlignment="Bottom" Width="276" Height="71" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
+        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="0,0,0,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand"/>
 
-        <Canvas x:Name="mainpanel" Margin="0" HorizontalAlignment="left" VerticalAlignment="Top">
-            
-        </Canvas>
-        <Button Content="Window Size" HorizontalAlignment="Left" Margin="211,213,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-
-
-
-
+        <Canvas x:Name="mainpanel" Margin="0" HorizontalAlignment="left" VerticalAlignment="Top" Height="0" Width="0"></Canvas>
+        <TextBlock x:Name="opening_title" Grid.Column="1" HorizontalAlignment="Center" Margin="30,100,31,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="276" FontSize="52" Text="Life Game" TextAlignment="Center"/>
+        
 
     </Grid>
 </Window>

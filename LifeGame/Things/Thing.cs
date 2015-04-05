@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace LifeGame
 {
@@ -42,7 +44,9 @@ namespace LifeGame
         protected delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
-        public int ID { get; private set; }// devi dirmi come vengono gestiti graficamente i Thing eliminati, così posso vedere come riciclare gli ID
+
+        public int ID { get; private set; }// devo ancora pensare a come eliminarli, perchè queste proprietà sono in comune anche con i Being
+        public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
         public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
@@ -64,9 +68,20 @@ namespace LifeGame
             Engine = engine;
 
             //Draw initial thing
-            engine.addCell(location);
+            engine.addCell(this,location);
         }
-
+        /// <summary>
+        /// In order to test if graphics and back-end are linked
+        /// </summary>
+        public void showID()
+        {
+            Debug.Write("My ID is: " + this.ID + "\n");
+        }
+        public void changeType(ThingType type)
+        {
+            this.Type = type;
+            Engine.updateCell(this);
+        }
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>
@@ -90,14 +105,14 @@ namespace LifeGame
             foreach (var mod in ModQueue)
             {
                 if (mod.Type == ModType.ThingType)
-                {
+            {
                     typeChanged = true;
                     break;
                 }
             }
 
-            if (typeChanged)
-            {
+                if (typeChanged)
+                {
                 var being = InnerThing;
                 var things = new List<Thing>();
                 foreach (var mod in ModQueue)
@@ -105,8 +120,8 @@ namespace LifeGame
                     if (mod.Type == ModType.ThingType)
                     {
                         things.Add(mod.Thing);
-                        break;
-                    }
+                    break;
+                }
                 }
                 //for
             }
