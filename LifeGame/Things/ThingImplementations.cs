@@ -24,7 +24,7 @@ namespace LifeGame
             Dictionary<ThingProperty, float> propDict;
             Dictionary<ActionType, Effects> interactDict;
 
-            //---------------- Environment:
+            //---------------- Environment: 
             propDict = new Dictionary<ThingProperty, float>();
             propDict.Add(ThingProperty.Color1, 0);
             propDict.Add(ThingProperty.Color2, 0);
@@ -88,6 +88,8 @@ namespace LifeGame
             propDict.Add(ThingProperty.Smell3, 0);
             propDict.Add(ThingProperty.SmellIntensity, 0);
             propDict.Add(ThingProperty.Wet, 0);
+            //Eartch prop definition, I added this, is this right?
+            defPropsDicts.Add(propDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
             interactDict.Add(ActionType.Walk, WalkThrough);

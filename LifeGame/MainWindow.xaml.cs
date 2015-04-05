@@ -60,7 +60,7 @@ namespace LifeGame
 
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
-            mainpanel.Width = mainwindow.Width;
+            mainpanel.Width = mainwindow.Width-toolbox.Width.Value;
             Engine = new GraphicsEngine(mainpanel);
 
 
@@ -69,19 +69,21 @@ namespace LifeGame
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            mainpanel.Height = mainwindow.Height;
-            mainpanel.Width = mainwindow.Width;
-            Engine.canvasHeight = mainpanel.Height;
-            Engine.canvasWidth = mainpanel.Width;
-            Simulation = new Simulation(32, 15, Engine);
             //The function to call the mesagebox, then I'll implement it inside the graphical engine
-            var prova = new dialoguebox("testo");
+            /*var prova = new dialoguebox("testo");
             mainpanel.Children.Add(prova);
             //Here to center the box
-            Canvas.SetLeft(prova, 50);
+            Canvas.SetLeft(prova, 50);*/
 
             Simulation.TogglePause();
-            startSimulation.Visibility = Visibility.Hidden;
+            //toggling text
+            if(((string)startSimulation.Content)==(string)"Start Simulation"){
+                  startSimulation.Content = "Stop Simulation";
+            }
+            else
+            {
+                startSimulation.Content = "Start Simulation";
+            }
 
             /*Debug.Write("Button clicked\n");
             for (int x = 0; x < 10; x++)
@@ -98,6 +100,19 @@ namespace LifeGame
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Debug.Write(mainwindow.Height);
+        }
+
+        private void createWorld_Click(object sender, RoutedEventArgs e)
+        {
+            mainpanel.Height = mainwindow.Height-(startSimulation.Height+20);
+            mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
+            Engine.canvasHeight = mainpanel.Height-(startSimulation.Height + 20);
+            Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
+            Simulation = new Simulation(31, 13, Engine);
+
+            opening_title.Visibility = Visibility.Hidden;
+            createWorld.Visibility = Visibility.Hidden;
+            startSimulation.IsEnabled = true;
         }
     }
 }

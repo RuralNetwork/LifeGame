@@ -60,8 +60,8 @@ namespace LifeGame
             PopulationCount = 100;
             hallOfFame = new List<Genome>(10);
             //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
-            if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
-            {
+            //Not needed ATM if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
+            //{
                 GridWidth = gridWidth;
                 GridHeight = gridHeight;
 
@@ -74,12 +74,12 @@ namespace LifeGame
                         Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                     }
                 }
-            }
-            else
+           // }
+            /*else
             {
                 Debug.Write("Non bene");
                 //engine.messageBox(null, null, 200, 20, "Mondo troppo largo, il massimo è:engine.canvasWidth/(engine.hexaW)+((canvasWidth/(engine.hexaW)-1))");
-            }
+            }*/
             //Populate the terrain
 
 
