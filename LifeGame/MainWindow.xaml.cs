@@ -19,6 +19,12 @@
 ///   \___/   \___/   \         /   \         /   \                   /   \___/   \___/   \
 ///       \___/   \___/         \___/         \___/                   \___/   \___/   \___/
 ///       
+// NOTE: Training fitness function will be, in order:
+// Average hungry and thirst levels
+// Average health level
+// Number of successful reproductions
+// (sum of lifespan of offsprings) Facoltative
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,10 +55,12 @@ namespace LifeGame
             InitializeComponent();
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
-            var a = new Genome(null, null) { Fitness = 1 };
+            string a = "ciao";
             var b = a;
-            a = new Genome(null, null);
-            var c = (int)BeingMutableProp.Health;
+            b = "addio";
+            var c = new List<Thing>();
+            //c.Add(null);
+           var d= c.Contains(null);
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;
@@ -61,7 +69,7 @@ namespace LifeGame
             Bitmap bitm = LifeGame.Properties.Resources.erba_prova;
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
-            mainpanel.Width = mainwindow.Width-toolbox.Width.Value;
+            mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
             Engine = new GraphicsEngine(mainpanel);
 
 
@@ -78,8 +86,9 @@ namespace LifeGame
 
             Simulation.TogglePause();
             //toggling text
-            if(((string)startSimulation.Content)==(string)"Start Simulation"){
-                  startSimulation.Content = "Stop Simulation";
+            if (((string)startSimulation.Content) == (string)"Start Simulation")
+            {
+                startSimulation.Content = "Stop Simulation";
             }
             else
             {
@@ -105,9 +114,9 @@ namespace LifeGame
 
         private void createWorld_Click(object sender, RoutedEventArgs e)
         {
-            mainpanel.Height = mainwindow.Height-(startSimulation.Height+20);
+            mainpanel.Height = mainwindow.Height - (startSimulation.Height + 20);
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
-            Engine.canvasHeight = mainpanel.Height-(startSimulation.Height + 20);
+            Engine.canvasHeight = mainpanel.Height - (startSimulation.Height + 20);
             Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
             Simulation = new Simulation(31, 13, Engine);
 

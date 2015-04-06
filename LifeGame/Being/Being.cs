@@ -26,6 +26,7 @@ namespace LifeGame
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
+
         public Being(Simulation simulation, GraphicsEngine engine, GridPoint location, Genome genome)
             : base(ThingType.Being, simulation, engine, location)
         {
@@ -43,7 +44,7 @@ namespace LifeGame
 
             //Aliases
             var terrain = Simulation.Terrain;
-            var envProps = Simulation.Environment.Properties;
+            var environment = Simulation.Environment;
             var bState = Brain.State;
             var width = Simulation.GridWidth;
             var height = Simulation.GridHeight;
@@ -81,19 +82,19 @@ namespace LifeGame
             //      carried object
             if (InnerThing != null)
             {
-                bState[++i] = Properties[ThingProperty.Color1];
-                bState[++i] = Properties[ThingProperty.Color2];
-                bState[++i] = Properties[ThingProperty.Color3];
-                bState[++i] = envProps[ThingProperty.Moving];
-                bState[++i] = envProps[ThingProperty.Painful];
-                bState[++i] = envProps[ThingProperty.Weigth];
-                bState[++i] = envProps[ThingProperty.Temperature];
-                bState[++i] = envProps[ThingProperty.Amplitude];
-                bState[++i] = envProps[ThingProperty.Pitch];
-                bState[++i] = envProps[ThingProperty.SmellIntensity];
-                bState[++i] = envProps[ThingProperty.Smell1];
-                bState[++i] = envProps[ThingProperty.Smell2];
-                bState[++i] = envProps[ThingProperty.Smell3];
+                bState[++i] = InnerThing.Properties[ThingProperty.Color1];
+                bState[++i] = InnerThing.Properties[ThingProperty.Color2];
+                bState[++i] = InnerThing.Properties[ThingProperty.Color3];
+                bState[++i] = InnerThing.Properties[ThingProperty.Moving];
+                bState[++i] = InnerThing.Properties[ThingProperty.Painful];
+                bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
+                bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
+                bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
+                bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
+                bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
+                bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
+                bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
+                bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
             }
             else
             {
@@ -137,13 +138,10 @@ namespace LifeGame
                         terrain[gridX][gridY].Properties[ThingProperty.SmellIntensity] / (d + 1);
                 }
             }
-            //add environment smell to results
-            bState[++i] = results[0] + envProps[ThingProperty.Smell1] /
-                envProps[ThingProperty.SmellIntensity];
-            bState[++i] = results[1] + envProps[ThingProperty.Smell2] /
-                envProps[ThingProperty.SmellIntensity];
-            bState[++i] = results[2] + envProps[ThingProperty.Smell3] /
-                envProps[ThingProperty.SmellIntensity];
+            //apply results
+            bState[++i] = results[0];
+            bState[++i] = results[1];
+            bState[++i] = results[2];
 
             //       environment hearing(near cells)
             results[0] = 0f;
@@ -228,11 +226,8 @@ namespace LifeGame
             bState[++i] = ccProps[ThingProperty.Pitch];
 
             //environment
-            bState[++i] = envProps[ThingProperty.Color1];
-            bState[++i] = envProps[ThingProperty.Color2];
-            bState[++i] = envProps[ThingProperty.Color3];
-            bState[++i] = envProps[ThingProperty.Painful];
-            bState[++i] = envProps[ThingProperty.Temperature];
+            bState[++i] = environment.Painful;
+            bState[++i] = environment.Temperature;
             Debug.Write("Input count: " + i);
 
             Brain.Calculate();
@@ -282,6 +277,7 @@ namespace LifeGame
                             }
                         }
                     }
+
                     break;
                 case ActionType.Sleep:
                     energy = 0;// prevent loss of energy
@@ -317,6 +313,41 @@ namespace LifeGame
             if (InnerThing != null)
             {
                 InnerThing.Update();
+            }
+        }
+
+        public override void Apply()
+        {
+            foreach (var prop in PropsQueue)
+            {
+                Properties[prop.Key] += prop.Value;
+            }
+            PropsQueue.Clear();
+
+            if (InnerThingQueue.Count > 0)
+            {
+                if (InnerThingQueue[0] == null)// being removed
+                {
+                    InnerThing = null;
+                }
+                else
+                {
+                    //only the bigger thing will be carried, the others will simply disappear
+                    if (InnerThing == null) InnerThing = InnerThingQueue[0];
+                    foreach (var thing in InnerThingQueue)
+                    {
+                        if (thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha] >
+                            InnerThing.Properties[ThingProperty.Height] * InnerThing.Properties[ThingProperty.Alpha])
+                        {
+                            InnerThing = thing;
+                        }
+                    }
+                }
+                InnerThingQueue.Clear();
+            }
+            else if (InnerThing != null)
+            {
+                InnerThing.Apply();
             }
         }
 

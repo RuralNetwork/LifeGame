@@ -11,8 +11,19 @@ namespace LifeGame
 
     // Siccome il colore del cielo è inutile, il colore Del SimEnviroment sarà un fattore per determinare come i Thing vengono percepiti.
     // Formula: thingColor*envColor/255, per ogni componente
-    public class SimEnvironment : Thing
+    public class SimEnvironment
     {
+        Simulation simulation;
+        GraphicsEngine engine;
+
+        //Properties
+        public float Color1 { get; set; }
+        public float Color2 { get; set; }
+        public float Color3 { get; set; }
+        public float Painful { get; set; }
+        public float Temperature { get; set; }
+
+
         public int DayTicks { get; set; }
         public int YearTicks { get; set; }
 
@@ -33,17 +44,18 @@ namespace LifeGame
 
 
         public SimEnvironment(Simulation simulation, GraphicsEngine engine)
-            : base(ThingType.Environment, simulation, engine, default(GridPoint))
         {
+            this.simulation = simulation;
+            this.engine = engine;
             // questi valori non devono essere verosimili, ci serve una simulazione che appaia veloce facendo scorrere il tempo velocemente
             DayTicks = 240;
             YearTicks = 24000;
         }
 
         // SimEnvironment doen't need an apply method, it is not influenced by anything.
-        public override void Update()
+        public void Update()
         {
-            float tick = Simulation.TimeTick;
+            float tick = simulation.TimeTick;
             //sun motion
             var sunAng = -(float)(Math.Cos(tick / 120 * Math.PI));// * 0.3 * Math.PI   // questa è l'altezza del sole durante il giorno
             var transSpeed = 0.1f;// lower is faster
@@ -51,7 +63,7 @@ namespace LifeGame
 
         }
 
-        public override void Draw(bool isCarriedObj = false)
+        public void Draw(bool isCarriedObj = false)
         {
 
         }

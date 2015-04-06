@@ -12,7 +12,6 @@
 
     public enum ThingType
     {
-        Environment,
         Being,
         Earth,
         Grass,
@@ -112,10 +111,9 @@
         Hunger
     }
 
-    public enum ModType
-    {
-        Property,
-        ThingType,// used in cell things, to change type
-        InnerThing// used to switch between null and Thing instance, used to move beings or create/delete carried objects
-    }
+    //public enum ModType
+    //{
+    //    Property,
+    //    InnerThing// used to switch between null and Thing instance, used to move beings or create/delete carried objects
+    //}
 }

@@ -53,6 +53,10 @@ namespace LifeGame
         /// </summary>
         public float FPS = 2;
 
+        public bool MustDraw = true;
+
+        public List<Thing>[][] ModCellsQueue;
+
 
         public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
         {
@@ -69,19 +73,22 @@ namespace LifeGame
             //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
             //Not needed ATM if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
             //{
-                GridWidth = gridWidth;
-                GridHeight = gridHeight;
+            GridWidth = gridWidth;
+            GridHeight = gridHeight;
 
-                Terrain = new Thing[GridWidth][];
-                for (int i = 0; i < GridWidth; i++)
+            Terrain = new Thing[GridWidth][];
+            ModCellsQueue = new List<Thing>[GridWidth][];
+            for (int i = 0; i < GridWidth; i++)
+            {
+                Terrain[i] = new Thing[GridHeight];
+                ModCellsQueue[i] = new List<Thing>[GridHeight];
+                for (int j = 0; j < GridHeight; j++)
                 {
-                    Terrain[i] = new Thing[GridHeight];
-                    for (int j = 0; j < GridHeight; j++)
-                    {
-                        Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
-                    }
+                    ModCellsQueue[i][j] = new List<Thing>();
+                    Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
-           // }
+            }
+            // }
             /*else
             {
                 Debug.Write("Non bene");
@@ -95,10 +102,6 @@ namespace LifeGame
         public void TogglePause()
         {
             IsRunning = !IsRunning;
-            if (IsRunning)
-            {
-                thread.Start();
-            }
         }
         //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update()
@@ -119,20 +122,45 @@ namespace LifeGame
                         }
                     }
 
-                    foreach (var arr in Terrain)
+                    //Apply
+                    for (int x = 0; x < GridWidth; x++)
                     {
-                        foreach (var thing in arr)
+                        for (int y = 0; y < GridHeight; y++)
                         {
-                            thing.Apply();
+
+                            var modQueue = ModCellsQueue[x][y];
+                            var thing = Terrain[x][y];
+                            if (modQueue.Count > 0)
+                            {
+                                var being = thing.InnerThing;
+                                foreach (var newThing in modQueue)
+                                {
+                                    if (newThing.Properties[ThingProperty.Height] * newThing.Properties[ThingProperty.Alpha] > //criterio: grandezza, non il peso
+                                        thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha])
+                                    {
+                                        thing = newThing;
+                                        thing.InnerThing = being;
+                                    }
+                                }
+                                Terrain[x][y] = thing;
+                                ModCellsQueue[x][y].Clear();
+                            }
+                            else
+                            {
+                                thing.Apply();
+                            }
                         }
                     }
-
-                    Environment.Draw();
-                    foreach (var arr in Terrain)
+                    //Draw
+                    if (MustDraw)
                     {
-                        foreach (var thing in arr)
+                        Environment.Draw();
+                        foreach (var arr in Terrain)
                         {
-                            thing.Draw();
+                            foreach (var thing in arr)
+                            {
+                                thing.Draw();
+                            }
                         }
                     }
 

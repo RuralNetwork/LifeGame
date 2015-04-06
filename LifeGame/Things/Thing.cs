@@ -32,19 +32,20 @@ namespace LifeGame
         //public BoolProps BoolProperties { get; set; }
         public delegate void Effects(Thing target, Being actor);
         Dictionary<ActionType, Effects> interactions { get; set; }
-        public Thing InnerThing { get; set; }// this is a Being for a terrain Thing, the carried object for a Being
+        public Thing InnerThing { get; set; }// this is a Being for a terrain Thing
         //in the simulation there are two types of interaction:
         // 1) Thing->Being
         // 2) Being->Thing  (this include Being->Being)
         // (Thing->Thing is managed from above by SimulationState)
         // While any Thing know how a Being's body react to stimuli, a Being can't know about the Thing, because every Thing react in a different way.
 
-        public List<ThingMod> ModQueue { get; set; }
+        public List<Thing> InnerThingQueue { get; private set; }
+        public Dictionary<ThingProperty, float> PropsQueue { get; private set; }
 
         protected delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
-
+        public bool IsCarrObj;
         public int ID { get; private set; }// devo ancora pensare a come eliminarli, perchè queste proprietà sono in comune anche con i Being
         public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
@@ -55,7 +56,8 @@ namespace LifeGame
             interactions = interactionsDicts[(int)type];
             Properties = propsDicts[(int)type];
             updateDel = updateDels[(int)type];
-            ModQueue = new List<ThingMod>(10);
+            InnerThingQueue = new List<Thing>();
+            PropsQueue = new Dictionary<ThingProperty, float>();
 
             if (simulation.lastID == 4 * 10e9)
             {
@@ -68,7 +70,7 @@ namespace LifeGame
             Engine = engine;
 
             //Draw initial thing
-            engine.addCell(this,location);
+            engine.addCell(this, location);
         }
         /// <summary>
         /// In order to test if graphics and back-end are linked
@@ -88,6 +90,7 @@ namespace LifeGame
         /// <param name="container"></param>
         public virtual void Update()
         {
+            PropsQueue = new Dictionary<ThingProperty, float>();
             updateDel();
             if (InnerThing != null)
             {
@@ -95,51 +98,78 @@ namespace LifeGame
             }
         }
 
-        public void Apply()
+        public virtual void Apply()
         {
-            // spesso viene richiesta la creazione di nuovi Thing, ma non esistendo lo spazio vuoto, 
-            // si dovrà fare sempre un confronto tra la cella target e gli oggetti contenuti nella ModQueue.
-            // la stessa cosa vale per 
 
-            var typeChanged = false;
-            foreach (var mod in ModQueue)
+            foreach (var prop in PropsQueue)
             {
-                if (mod.Type == ModType.ThingType)
-            {
-                    typeChanged = true;
-                    break;
-                }
+                Properties[prop.Key] += prop.Value;
             }
+            PropsQueue.Clear();
 
-                if (typeChanged)
+            // If InnerThing!=null then surely InnerThingQueue will be empty (unless there's a bug)
+            // If InnerThing==null then there could be more than one thing that wants to go here,
+            // only the bigger one will succeed, others will be placed in random near cells.
+
+            if (InnerThingQueue.Count > 0)// also exclude carried objects
+            {
+                if (InnerThingQueue[0] == null)// being removed
                 {
-                var being = InnerThing;
-                var things = new List<Thing>();
-                foreach (var mod in ModQueue)
+                    InnerThing = null;
+                }
+                else // cell already free, ready to be occupied
                 {
-                    if (mod.Type == ModType.ThingType)
+                    foreach (var being in InnerThingQueue)
                     {
-                        things.Add(mod.Thing);
-                    break;
-                }
-                }
-                //for
-            }
-            if (InnerThing != null)
-            {
-                InnerThing.Apply();
-            }
+                        being.Apply();
+                    }
+                    InnerThing = InnerThingQueue[0];
+                    int idx = 0;
+                    for (int i = 1; i < InnerThingQueue.Count; i++)
+                    {
+                        if (InnerThingQueue[i].Properties[ThingProperty.Weigth] > InnerThing.Properties[ThingProperty.Weigth])// the heaviest wins
+                        {
+                            InnerThing = InnerThingQueue[i];
+                            idx = i;
+                        }
+                    }
+                    InnerThingQueue.RemoveAt(idx);
+                    InnerThing.Location = Location;
 
-
+                    // Find near free cells (free either now and in next step) to put the remaining beings in the queue using a chaotic path
+                    foreach (var being in InnerThingQueue)
+                    {
+                        var newLoc = Location;
+                        Thing newCell;
+                        do
+                        {
+                            newLoc = newLoc.GetNearCell();
+                            newCell = Simulation.Terrain[newLoc.X][newLoc.Y];
+                        } while (newCell.InnerThing != null || newCell.InnerThingQueue.Count != 0);
+                        newCell.InnerThing = being;
+                    }
+                }
+                InnerThingQueue.Clear();
+            }
         }
 
         public virtual void Draw(bool isCarriedObj = false)
         {
-            // 
-
             if (InnerThing != null)
             {
                 InnerThing.Draw();
+            }
+        }
+
+        public void ChangeProp(ThingProperty prop, float deltaValue)
+        {
+            if (PropsQueue.ContainsKey(prop))
+            {
+                PropsQueue[prop] += deltaValue;
+            }
+            else
+            {
+                PropsQueue.Add(prop, deltaValue);
             }
         }
 

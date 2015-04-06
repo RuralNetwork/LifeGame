@@ -24,20 +24,6 @@ namespace LifeGame
             Dictionary<ThingProperty, float> propsDict;
             Dictionary<ActionType, Effects> interactDict;
 
-            //---------------- Environment:
-            propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
-            propsDict.Add(ThingProperty.Painful, 0);
-            propsDict.Add(ThingProperty.Temperature, 0);
-            propsDict.Add(ThingProperty.Wet, 0);
-            propsDicts.Add(propsDict);
-
-            interactionsDicts.Add(new Dictionary<ActionType, Effects>(0));
-
-            updateDels.Add(() => { });
-
             //---------------- Being:
             propsDict = new Dictionary<ThingProperty, float>();
             propsDict.Add(ThingProperty.Height, 0);// Definisco qui le caratteristiche standard di un Being.
