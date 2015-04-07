@@ -14,7 +14,20 @@
 
         <Canvas x:Name="mainpanel" Margin="0" HorizontalAlignment="left" VerticalAlignment="Top" Height="0" Width="0"></Canvas>
         <TextBlock x:Name="opening_title" Grid.Column="1" HorizontalAlignment="Center" Margin="30,100,31,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="276" FontSize="52" Text="Life Game" TextAlignment="Center"/>
-        
+        <Grid x:Name="gridToolbox" Grid.Column="3" HorizontalAlignment="Right" Height="569" VerticalAlignment="Top" Width="40" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="76*"/>
+                <RowDefinition Height="82*"/>
+                <RowDefinition Height="75*"/>
+                <RowDefinition Height="80*"/>
+                <RowDefinition Height="256*"/>
+            </Grid.RowDefinitions>
+            <Button Content="Earth" Name="earth" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Width="40" Grid.Row="0" Click="toggleBrush" Background="Red"/>
+            <Button Content="Grass" Name="grass" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Width="40" Grid.Row="1" Click="toggleBrush" Background="White"/>
+            <Button Content="Water" Name="water" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Width="40" Grid.Row="2" Click="toggleBrush" Background="White"/>
+            <Button Content="Prova" Name="prova" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Width="40" Grid.Row="3" Click="toggleBrush" Background="White"/>
+        </Grid>
+
 
     </Grid>
 </Window>

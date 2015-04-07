@@ -83,7 +83,8 @@ namespace LifeGame
             mainpanel.Children.Add(prova);
             //Here to center the box
             Canvas.SetLeft(prova, 50);*/
-
+            Engine.editing = false;
+            gridToolbox.Visibility = Visibility.Hidden;
             Simulation.TogglePause();
             //toggling text
             if (((string)startSimulation.Content) == (string)"Start Simulation")
@@ -118,11 +119,26 @@ namespace LifeGame
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
             Engine.canvasHeight = mainpanel.Height - (startSimulation.Height + 20);
             Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
+            Engine.editing = true;
             Simulation = new Simulation(31, 13, Engine);
 
             opening_title.Visibility = Visibility.Hidden;
             createWorld.Visibility = Visibility.Hidden;
+            gridToolbox.Visibility = Visibility.Visible;
             startSimulation.IsEnabled = true;
+        }
+
+        private void toggleBrush(object sender, RoutedEventArgs e)
+        {
+            Button current = e.Source as Button;
+            for (int i = 0; i < gridToolbox.Children.Count; i++)
+            {
+                UIElement f = gridToolbox.Children[i];
+                f.GetType().GetProperty("Background").SetValue(f,new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
+            }
+            current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
+            Engine.changeBrush(current.Name);
+
         }
     }
 }
