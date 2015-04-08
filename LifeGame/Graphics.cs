@@ -153,7 +153,7 @@ namespace LifeGame
             Debug.Write("Over a polygon "+poligono.Name+"\n");
             Thing cosa = poligono.DataContext as Thing;
             cosa.showID();
-            cosa.changeType(ThingType.Water);
+            //cosa.changeType(ThingType.Water);
         }
 
         public void startSimulation()

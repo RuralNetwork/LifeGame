@@ -50,7 +50,7 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Walk, WalkThrough);
+            interactDict.Add(ActionType.Walk, walkThrough);
            // interactDict.Add(ActionType.Breed, )
             interactionsDicts.Add(interactDict);
 
@@ -77,7 +77,7 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Walk, WalkThrough);
+            interactDict.Add(ActionType.Walk, walkThrough);
             interactDict.Add(ActionType.Sleep, (t, b) =>
             {
                 // b.Energy
@@ -106,13 +106,17 @@ namespace LifeGame
 
         }
 
-        //=========== Common behavior =========
+        //=========== Common behavior & helper functions =========
 
-        static void WalkThrough(Thing t, Being b)
+        static void walkThrough(Thing t, Being b)
         {
             b.DeltaEnergy -= t.Properties[ThingProperty.Height] * t.Properties[ThingProperty.Alpha] * b.Properties[ThingProperty.Weigth];
             //b.ModQueue.Add(new ThingMod(new Tuple<ThingProperty, float>((ThingProperty)BeingMutableProp.Energy,...........)));
         }
 
+        protected void mute()
+        {
+            ChangeProp(ThingProperty.Amplitude, -Properties[ThingProperty.Amplitude]);
+        }
     }
 }

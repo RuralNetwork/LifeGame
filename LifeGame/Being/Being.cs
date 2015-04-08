@@ -39,7 +39,9 @@ namespace LifeGame
 
         public override void Update()
         {
-            InnerThing.Update();
+
+            mute();
+
 
 
             //Aliases
@@ -247,29 +249,30 @@ namespace LifeGame
             var act = (ActionType)n;
             var dirVec = new Vector(bState[++i].InverseSigmoid(), bState[++i].InverseSigmoid());
             var mag = dirVec.Magnitude;
-            int target = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));
+            int tgtType = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));//target type
             var energy = bState[++i].InverseSigmoid();
+            energy = Math.Min(energy, Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
             DeltaEnergy = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
-            GridPoint cellPt = (target == 2 ? Location.GetNearCell(cDir) : Location);
-            var cell = terrain[cellPt.X][cellPt.Y];
+            GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
+            var target = terrain[cellPt.X][cellPt.Y];
             switch (act)
             {
                 case ActionType.Walk:
-                    if (target == 2)
+                    if (tgtType == 2)
                     {
                         DeltaEnergy = energy; // DeltaEnergy is decreased by the things the being interact with
                         cellPt = Location;
                         var lastFreeCellPt = Location;
                         while (DeltaEnergy > 0)
                         {
-                            cell = terrain[cellPt.X][cellPt.Y];
-                            cell.Interact(ActionType.Walk, this);
+                            target = terrain[cellPt.X][cellPt.Y];
+                            interact(target, ActionType.Walk);
                             if (DeltaEnergy < 0) break;
-                            if (cell.InnerThing != null)
+                            if (target.InnerThing != null)
                             {
-                                cell.InnerThing.Interact(ActionType.Walk, this);
+                                interact(target.InnerThing, ActionType.Walk);
                             }
                             else
                             {
@@ -281,18 +284,27 @@ namespace LifeGame
                     break;
                 case ActionType.Sleep:
                     energy = 0;// prevent loss of energy
-                    cell.Interact(ActionType.Sleep, this);
+                    interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
-
+                case ActionType.Fight:
+                    if (tgtType == 0 && InnerThing != null)
+                    {
+                        interact(InnerThing, act);
+                    }
+                    interact(target, act);
                     break;
                 case ActionType.Breed:
+                    cellPt = Location.GetNearCell(cDir);
+                    target = terrain[cellPt.X][cellPt.Y];
+                    interact(target, ActionType.Breed);
                     break;
-                case ActionType.Fight:
+                case ActionType.MakeSound:
+                    ChangeProp(ThingProperty.Amplitude, 500 * energy);
                     break;
                 case ActionType.Take:
-                    break;
                 case ActionType.Drop:
+                    interact(target, act);
                     break;
                 default:
                     break;
@@ -309,7 +321,6 @@ namespace LifeGame
             //{
 
             //}
-
             if (InnerThing != null)
             {
                 InnerThing.Update();
@@ -357,6 +368,11 @@ namespace LifeGame
             {
                 InnerThing.Draw(true);
             }
+        }
+
+        void interact(Thing target, ActionType action)
+        {
+            target.Interactions[action](target, this);
         }
     }
 }

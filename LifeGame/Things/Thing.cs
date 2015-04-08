@@ -31,7 +31,7 @@ namespace LifeGame
 
         //public BoolProps BoolProperties { get; set; }
         public delegate void Effects(Thing target, Being actor);
-        Dictionary<ActionType, Effects> interactions { get; set; }
+        public Dictionary<ActionType, Effects> Interactions { get; set; }
         public Thing InnerThing { get; set; }// this is a Being for a terrain Thing
         //in the simulation there are two types of interaction:
         // 1) Thing->Being
@@ -53,7 +53,7 @@ namespace LifeGame
         {
             Type = type;
             Simulation = simulation;
-            interactions = interactionsDicts[(int)type];
+            Interactions = interactionsDicts[(int)type];
             Properties = propsDicts[(int)type];
             updateDel = updateDels[(int)type];
             InnerThingQueue = new List<Thing>();
@@ -79,11 +79,12 @@ namespace LifeGame
         {
             Debug.Write("My ID is: " + this.ID + "\n");
         }
-        public void changeType(ThingType type)
-        {
-            this.Type = type;
-            Engine.updateCell(this);
-        }
+
+        //public void changeType(ThingType type)                             // gli esseri non cambiano mai tipo, vengono semplicemente ricreati
+        //{
+        //    this.Type = type;
+        //    Engine.updateCell(this);
+        //}
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>
@@ -91,6 +92,7 @@ namespace LifeGame
         public virtual void Update()
         {
             PropsQueue = new Dictionary<ThingProperty, float>();
+            InnerThingQueue = new List<Thing>();
             updateDel();
             if (InnerThing != null)
             {
@@ -171,11 +173,6 @@ namespace LifeGame
             {
                 PropsQueue.Add(prop, deltaValue);
             }
-        }
-
-        public void Interact(ActionType action, Being actor)
-        {
-            interactions[action](this, actor);
         }
     }
 }

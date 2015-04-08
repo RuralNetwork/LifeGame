@@ -16,10 +16,14 @@
         Earth,
         Grass,
         Water,
+        Sand,
+        Mountain,
         Bush,
         Berry,
         Tree,
-        Mountain,
+        Fruit,
+        Corpse,
+        Meat
     }
 
     /// <summary>
