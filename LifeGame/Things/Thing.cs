@@ -80,11 +80,11 @@ namespace LifeGame
             Debug.Write("My ID is: " + this.ID + "\n");
         }
 
-        //public void changeType(ThingType type)                             // gli esseri non cambiano mai tipo, vengono semplicemente ricreati
-        //{
-        //    this.Type = type;
-        //    Engine.updateCell(this);
-        //}
+        public void changeType(ThingType type)
+        {
+            this.Type = type;
+            Engine.updateCell(this);
+        }
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>
