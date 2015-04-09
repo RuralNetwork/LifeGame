@@ -99,7 +99,7 @@ namespace LifeGame
         {
             OldLoc = Location;
             updateDel();
-            }
+        }
 
         public virtual void Apply()
         {
@@ -112,7 +112,7 @@ namespace LifeGame
                         biggerThing.Item2[ThingProperty.Height] * biggerThing.Item2[ThingProperty.Alpha])
                     {
                         biggerThing = newThing;
-            }
+                    }
                 }
                 Type = biggerThing.Item1;
                 Interactions = interactionsDicts[(int)Type];
@@ -141,9 +141,9 @@ namespace LifeGame
         }
 
         public virtual void Draw(bool isCarriedObj = false)
-                    {
+        {
 
-                    }
+        }
 
 
         /// <summary>
@@ -154,17 +154,17 @@ namespace LifeGame
         ///                     It can be null
         /// </param>
         public void ChangeType(ThingType newType, Dictionary<ThingProperty, float> props)
-                    {
+        {
             var newDict = new Dictionary<ThingProperty, float>();
             foreach (var prop in propsDicts[(int)newType])
-                        {
+            {
                 newDict.Add(prop.Key, prop.Value);
-                    }
+            }
 
             if (props != null)
-                    {
+            {
                 foreach (var prop in props)
-                        {
+                {
                     newDict[prop.Key] = prop.Value;
                 }
             }
@@ -177,22 +177,22 @@ namespace LifeGame
             if (!toOverride)
             {
                 if (PropsQueueDelta.ContainsKey(prop))
-        {
+                {
                     PropsQueueDelta[prop] += deltaValue;
                 }
                 else
-            {
+                {
                     PropsQueueDelta.Add(prop, deltaValue);
+                }
             }
-        }
             else
-        {
+            {
                 if (PropsQueueReset.ContainsKey(prop))
-            {
+                {
                     PropsQueueReset[prop] = deltaValue;
-            }
-            else
-            {
+                }
+                else
+                {
                     PropsQueueReset.Add(prop, deltaValue);
                 }
             }

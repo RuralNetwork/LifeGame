@@ -276,7 +276,7 @@ namespace LifeGame
                     break;
                 case ActionType.Sleep:
                     energy = 0;// prevent loss of energy
-                    interact(target, ActionType.Sleep);
+                    //interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
                 case ActionType.Fight:

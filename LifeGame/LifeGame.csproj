@@ -131,13 +131,10 @@
   <ItemGroup>
     <Resource Include="Remarks.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\grass.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\earth.png" />
+    <Resource Include="Resources\grass.png" />
     <Resource Include="Resources\water.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

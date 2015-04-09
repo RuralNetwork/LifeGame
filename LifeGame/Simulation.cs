@@ -125,6 +125,7 @@ namespace LifeGame
 
                     TimeTick++;
 
+
                     Environment.Update();
                     foreach (var arr in Terrain)
                     {
@@ -132,6 +133,11 @@ namespace LifeGame
                         {
                             thing.Update();
                         }
+                    }
+
+                    foreach (var being in Population)
+                    {
+                        being.Value.Update();
                     }
 
 
