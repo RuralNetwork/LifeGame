@@ -12,6 +12,7 @@ namespace LifeGame
 
     public class Being : Thing
     {
+
         // mutable properties
         public CellDirection Direction { get; private set; }
         public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
@@ -32,6 +33,7 @@ namespace LifeGame
         {
             FitnessMean = new Average();
             Genome = genome;
+            InnerThing = new Thing(ThingType.Null, simulation, engine, location);
 
             Brain.State[1] = Sex;
 
@@ -45,11 +47,11 @@ namespace LifeGame
 
 
             //Aliases
-            var terrain = Simulation.Terrain;
-            var environment = Simulation.Environment;
+            var terrain = simulation.Terrain;
+            var environment = simulation.Environment;
             var bState = Brain.State;
-            var width = Simulation.GridWidth;
-            var height = Simulation.GridHeight;
+            var width = simulation.GridWidth;
+            var height = simulation.GridHeight;
             var locX = Location.X;
             var locY = Location.Y;
             var ccProps = terrain[locX][locY].Properties;
@@ -73,38 +75,28 @@ namespace LifeGame
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            f1 = Simulation.TimeTick / Simulation.Environment.DayTicks * 2 * (float)Math.PI;
+            f1 = simulation.TimeTick / simulation.Environment.DayTicks * 2 * (float)Math.PI;
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            f1 = Simulation.TimeTick / Simulation.Environment.YearTicks * 2 * (float)Math.PI;
+            f1 = simulation.TimeTick / simulation.Environment.YearTicks * 2 * (float)Math.PI;
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
 
 
             //      carried object
-            if (InnerThing != null)
-            {
-                bState[++i] = InnerThing.Properties[ThingProperty.Color1];
-                bState[++i] = InnerThing.Properties[ThingProperty.Color2];
-                bState[++i] = InnerThing.Properties[ThingProperty.Color3];
-                bState[++i] = InnerThing.Properties[ThingProperty.Moving];
-                bState[++i] = InnerThing.Properties[ThingProperty.Painful];
-                bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
-                bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
-                bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
-                bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
-                bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
-            }
-            else
-            {
-                for (int j = 0; j < 13; j++)
-                {
-                    bState[++i] = 0;
-                }
-            }
+            bState[++i] = InnerThing.Properties[ThingProperty.Color1];
+            bState[++i] = InnerThing.Properties[ThingProperty.Color2];
+            bState[++i] = InnerThing.Properties[ThingProperty.Color3];
+            bState[++i] = InnerThing.Properties[ThingProperty.Moving];
+            bState[++i] = InnerThing.Properties[ThingProperty.Painful];
+            bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
+            bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
+            bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
+            bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
+            bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
 
             //    common useful variables initialization
             var results = new float[12];
@@ -300,7 +292,7 @@ namespace LifeGame
                     interact(target, ActionType.Breed);
                     break;
                 case ActionType.MakeSound:
-                    ChangeProp(ThingProperty.Amplitude, 500 * energy);
+                    ChangeProp(ThingProperty.Amplitude, 500 * energy, false);
                     break;
                 case ActionType.Take:
                 case ActionType.Drop:
@@ -329,37 +321,20 @@ namespace LifeGame
 
         public override void Apply()
         {
-            foreach (var prop in PropsQueue)
+            foreach (var prop in PropsQueueDelta)
             {
                 Properties[prop.Key] += prop.Value;
             }
-            PropsQueue.Clear();
 
-            if (InnerThingQueue.Count > 0)
+            foreach (var prop in PropsQueueReset)
             {
-                if (InnerThingQueue[0] == null)// being removed
-                {
-                    InnerThing = null;
-                }
-                else
-                {
-                    //only the bigger thing will be carried, the others will simply disappear
-                    if (InnerThing == null) InnerThing = InnerThingQueue[0];
-                    foreach (var thing in InnerThingQueue)
-                    {
-                        if (thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha] >
-                            InnerThing.Properties[ThingProperty.Height] * InnerThing.Properties[ThingProperty.Alpha])
-                        {
-                            InnerThing = thing;
-                        }
-                    }
-                }
-                InnerThingQueue.Clear();
+                Properties[prop.Key] = prop.Value;
             }
-            else if (InnerThing != null)
-            {
-                InnerThing.Apply();
-            }
+
+            PropsQueueDelta.Clear();
+            PropsQueueReset.Clear();
+
+            InnerThing.Apply();
         }
 
         public override void Draw(bool isCarriedObj = false)

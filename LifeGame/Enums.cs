@@ -12,6 +12,7 @@
 
     public enum ThingType
     {
+        Null,
         Being,
         Earth,
         Grass,

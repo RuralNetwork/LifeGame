@@ -26,7 +26,7 @@ namespace LifeGame
         /// <summary>
         /// Tells if should be used PopulationCount and the hall of fame genome list to maintain the population.
         /// </summary>
-        public bool IsInTrainingMode { get; set; }
+        public bool TrainingMode { get; set; }
         public int PopulationCount { get; set; }
         public bool IsRunning { get; private set; }
         public SimulationType Type { get; set; }
@@ -43,7 +43,6 @@ namespace LifeGame
         public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
-        public List<Being> Population { get; private set; }
         List<Genome> hallOfFame;
 
         public Thing[][] Terrain { get; set; }
@@ -55,7 +54,20 @@ namespace LifeGame
 
         public bool MustDraw = true;
 
-        public List<Thing>[][] ModCellsQueue;
+
+        public List<Being>[][] BeingLocQueue;
+
+        /// <summary>
+        /// Dictionary containing all beings that are currently alive.
+        /// When a Being die, its object will be moved to freeBeingObjs.
+        /// </summary>
+        public Dictionary<int, Being> Population;
+
+        /// <summary>
+        /// Dictionary containing old beings whose properties (+ other stuff related, ex. brain, genome) 
+        /// will be overwritten when new offspring will born; these Being objects will be moved to Population
+        /// </summary>
+        public Dictionary<int, Being> freeBeingObjs;
 
 
         public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
@@ -65,7 +77,7 @@ namespace LifeGame
             thread.IsBackground = true;
             thread.Priority = ThreadPriority.Highest;
 
-            IsInTrainingMode = true;
+            TrainingMode = true;
             PopulationCount = 100;
             hallOfFame = new List<Genome>(10);
 
@@ -77,14 +89,14 @@ namespace LifeGame
             GridHeight = gridHeight;
 
             Terrain = new Thing[GridWidth][];
-            ModCellsQueue = new List<Thing>[GridWidth][];
+            BeingLocQueue = new List<Being>[GridWidth][];
             for (int i = 0; i < GridWidth; i++)
             {
                 Terrain[i] = new Thing[GridHeight];
-                ModCellsQueue[i] = new List<Thing>[GridHeight];
+                BeingLocQueue[i] = new List<Being>[GridHeight];
                 for (int j = 0; j < GridHeight; j++)
                 {
-                    ModCellsQueue[i][j] = new List<Thing>();
+                    BeingLocQueue[i][j] = new List<Being>();
                     Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
             }
@@ -122,35 +134,46 @@ namespace LifeGame
                         }
                     }
 
-                    //Apply
-                    for (int x = 0; x < GridWidth; x++)
-                    {
-                        for (int y = 0; y < GridHeight; y++)
-                        {
 
-                            var modQueue = ModCellsQueue[x][y];
-                            var thing = Terrain[x][y];
-                            if (modQueue.Count > 0)
+                    foreach (var being in Population)
+                    {
+                        being.Value.Apply();
+                    }
+
+                    for (int x = 0; x < BeingLocQueue.Length; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
+                    {
+                        for (int y = 0; y < BeingLocQueue[x].Length; y++)
+                        {
+                            var beingList = BeingLocQueue[x][y];
+                            var biggerBeing = beingList[0];
+                            int idx = 0;
+                            for (int i = 1; i < beingList.Count; i++)
                             {
-                                var being = thing.InnerThing;
-                                foreach (var newThing in modQueue)
+                                if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
                                 {
-                                    if (newThing.Properties[ThingProperty.Height] * newThing.Properties[ThingProperty.Alpha] > //criterio: grandezza, non il peso
-                                        thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha])
-                                    {
-                                        thing = newThing;
-                                        thing.InnerThing = being;
-                                    }
+                                    biggerBeing = beingList[i];
+                                    idx = i;
                                 }
-                                Terrain[x][y] = thing;
-                                ModCellsQueue[x][y].Clear();
                             }
-                            else
+                            beingList.RemoveAt(idx);
+                            var loc = new GridPoint(x, y);
+                            biggerBeing.Location = loc;
+                            foreach (var being in beingList)
                             {
-                                thing.Apply();
+                                var newLoc = loc;
+                                Thing newCell;
+                                do
+                                {
+                                    newLoc = newLoc.GetNearCell();
+                                    newCell = Terrain[newLoc.X][newLoc.Y];
+                                } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
+                                newCell.InnerThing = being;
                             }
+                            beingList.Clear();
                         }
                     }
+
+
                     //Draw
                     if (MustDraw)
                     {
@@ -163,6 +186,25 @@ namespace LifeGame
                             }
                         }
                     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     //// Manage population.
                     //if (Type == SimulationType.Fast)

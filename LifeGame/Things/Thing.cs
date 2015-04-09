@@ -16,62 +16,73 @@ namespace LifeGame
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public partial class Thing
     {
+        static FastRandom rand = new FastRandom();
+
         //constant
         static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
 
-        protected Simulation Simulation;
-        private GraphicsEngine Engine;
+        protected Simulation simulation;
+        protected GraphicsEngine engine;
+
+        public Thing InnerThing { get; set; }
         public GridPoint Location { get; set; }
+        public GridPoint OldLoc { get; private set; }
 
         public ThingType Type { get; private set; }
+        public List<Tuple<ThingType, Dictionary<ThingProperty, float>>> NewTypeQueue { get; private set; }
+        /// <summary>
+        /// Queue containing pending modification to be applied when all object in the simulation have generated their own pending changes.
+        /// </summary>
+        public Dictionary<ThingProperty, float> PropsQueueDelta { get; private set; }
+        public Dictionary<ThingProperty, float> PropsQueueReset { get; private set; }
 
-        static FastRandom rand = new FastRandom();
+        //Dictionary<...,...> -> the keys must be unique
+        //List<Tuple<...,...> -> the keys may not be unique
+
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
 
-        //public BoolProps BoolProperties { get; set; }
         public delegate void Effects(Thing target, Being actor);
         public Dictionary<ActionType, Effects> Interactions { get; set; }
-        public Thing InnerThing { get; set; }// this is a Being for a terrain Thing
-        //in the simulation there are two types of interaction:
-        // 1) Thing->Being
-        // 2) Being->Thing  (this include Being->Being)
-        // (Thing->Thing is managed from above by SimulationState)
-        // While any Thing know how a Being's body react to stimuli, a Being can't know about the Thing, because every Thing react in a different way.
 
-        public List<Thing> InnerThingQueue { get; private set; }
-        public Dictionary<ThingProperty, float> PropsQueue { get; private set; }
 
         protected delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
         public bool IsCarrObj;
-        public int ID { get; private set; }// devo ancora pensare a come eliminarli, perchè queste proprietà sono in comune anche con i Being
+        public int ID { get; private set; }
         public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
         public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
         {
-            Type = type;
-            Simulation = simulation;
-            Interactions = interactionsDicts[(int)type];
-            Properties = propsDicts[(int)type];
-            updateDel = updateDels[(int)type];
-            InnerThingQueue = new List<Thing>();
-            PropsQueue = new Dictionary<ThingProperty, float>();
+            init(type);
+            this.simulation = simulation;
+            PropsQueueDelta = new Dictionary<ThingProperty, float>();
+            PropsQueueReset = new Dictionary<ThingProperty, float>();
+            NewTypeQueue = new List<Tuple<ThingType, Dictionary<ThingProperty, float>>>();
 
-            if (simulation.lastID == 4 * 10e9)
-            {
-                simulation.lastID = 0;
-            }
             ID = simulation.lastID;
             simulation.lastID++;
 
             Location = location;
-            Engine = engine;
+            this.engine = engine;
 
             //Draw initial thing
             engine.addCell(this, location);
         }
+
+        void init(ThingType type)
+        {
+            Type = type;
+            Interactions = interactionsDicts[(int)type];
+            updateDel = updateDels[(int)type];
+            Properties = new Dictionary<ThingProperty, float>();
+            foreach (var prop in propsDicts[(int)type])
+            {
+                Properties.Add(prop.Key, prop.Value);
+            }
+        }
+
         /// <summary>
         /// In order to test if graphics and back-end are linked
         /// </summary>
@@ -80,99 +91,112 @@ namespace LifeGame
             Debug.Write("My ID is: " + this.ID + "\n");
         }
 
-        //public void changeType(ThingType type)                             // gli esseri non cambiano mai tipo, vengono semplicemente ricreati
-        //{
-        //    this.Type = type;
-        //    Engine.updateCell(this);
-        //}
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>
         /// <param name="container"></param>
         public virtual void Update()
         {
-            PropsQueue = new Dictionary<ThingProperty, float>();
-            InnerThingQueue = new List<Thing>();
+            OldLoc = Location;
             updateDel();
-            if (InnerThing != null)
-            {
-                InnerThing.Update();
-            }
         }
 
         public virtual void Apply()
         {
-
-            foreach (var prop in PropsQueue)
+            if (NewTypeQueue.Count > 0)
             {
-                Properties[prop.Key] += prop.Value;
-            }
-            PropsQueue.Clear();
-
-            // If InnerThing!=null then surely InnerThingQueue will be empty (unless there's a bug)
-            // If InnerThing==null then there could be more than one thing that wants to go here,
-            // only the bigger one will succeed, others will be placed in random near cells.
-
-            if (InnerThingQueue.Count > 0)// also exclude carried objects
-            {
-                if (InnerThingQueue[0] == null)// being removed
+                var biggerThing = NewTypeQueue.First();
+                foreach (var newThing in NewTypeQueue)
                 {
-                    InnerThing = null;
-                }
-                else // cell already free, ready to be occupied
-                {
-                    foreach (var being in InnerThingQueue)
+                    if (newThing.Item2[ThingProperty.Height] * newThing.Item2[ThingProperty.Alpha] > //criterio: grandezza, non il peso
+                        biggerThing.Item2[ThingProperty.Height] * biggerThing.Item2[ThingProperty.Alpha])
                     {
-                        being.Apply();
-                    }
-                    InnerThing = InnerThingQueue[0];
-                    int idx = 0;
-                    for (int i = 1; i < InnerThingQueue.Count; i++)
-                    {
-                        if (InnerThingQueue[i].Properties[ThingProperty.Weigth] > InnerThing.Properties[ThingProperty.Weigth])// the heaviest wins
-                        {
-                            InnerThing = InnerThingQueue[i];
-                            idx = i;
-                        }
-                    }
-                    InnerThingQueue.RemoveAt(idx);
-                    InnerThing.Location = Location;
-
-                    // Find near free cells (free either now and in next step) to put the remaining beings in the queue using a chaotic path
-                    foreach (var being in InnerThingQueue)
-                    {
-                        var newLoc = Location;
-                        Thing newCell;
-                        do
-                        {
-                            newLoc = newLoc.GetNearCell();
-                            newCell = Simulation.Terrain[newLoc.X][newLoc.Y];
-                        } while (newCell.InnerThing != null || newCell.InnerThingQueue.Count != 0);
-                        newCell.InnerThing = being;
+                        biggerThing = newThing;
                     }
                 }
-                InnerThingQueue.Clear();
+                Type = biggerThing.Item1;
+                Interactions = interactionsDicts[(int)Type];
+                updateDel = updateDels[(int)Type];
+                Properties = biggerThing.Item2;
+
+                NewTypeQueue.Clear();
+
+                engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
             }
+            else
+            {
+                foreach (var prop in PropsQueueDelta)
+                {
+                    Properties[prop.Key] += prop.Value;
+                }
+
+                foreach (var prop in PropsQueueReset)
+                {
+                    Properties[prop.Key] = prop.Value;
+                }
+            }
+
+            PropsQueueDelta.Clear();
+            PropsQueueReset.Clear();
         }
 
         public virtual void Draw(bool isCarriedObj = false)
         {
-            if (InnerThing != null)
-            {
-                InnerThing.Draw();
-            }
+
         }
 
-        public void ChangeProp(ThingProperty prop, float deltaValue)
+
+        /// <summary>
+        /// Change type of thing.
+        /// </summary>
+        /// <param name="newType"></param>
+        /// <param name="props">Dictionary containing some properties. For all properties not included here it will be taken the default value of the type specified.
+        ///                     It can be null
+        /// </param>
+        public void ChangeType(ThingType newType, Dictionary<ThingProperty, float> props)
         {
-            if (PropsQueue.ContainsKey(prop))
+            var newDict = new Dictionary<ThingProperty, float>();
+            foreach (var prop in propsDicts[(int)newType])
             {
-                PropsQueue[prop] += deltaValue;
+                newDict.Add(prop.Key, prop.Value);
+            }
+
+            if (props != null)
+            {
+                foreach (var prop in props)
+                {
+                    newDict[prop.Key] = prop.Value;
+                }
+            }
+
+            NewTypeQueue.Add(new Tuple<ThingType, Dictionary<ThingProperty, float>>(newType, newDict));
+        }
+
+        public void ChangeProp(ThingProperty prop, float deltaValue, bool toOverride)
+        {
+            if (!toOverride)
+            {
+                if (PropsQueueDelta.ContainsKey(prop))
+                {
+                    PropsQueueDelta[prop] += deltaValue;
+                }
+                else
+                {
+                    PropsQueueDelta.Add(prop, deltaValue);
+                }
             }
             else
             {
-                PropsQueue.Add(prop, deltaValue);
+                if (PropsQueueReset.ContainsKey(prop))
+                {
+                    PropsQueueReset[prop] = deltaValue;
+                }
+                else
+                {
+                    PropsQueueReset.Add(prop, deltaValue);
+                }
             }
+            // else, if a Thing changed type it shouldn't be changed
         }
     }
 }

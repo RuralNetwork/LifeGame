@@ -51,7 +51,7 @@ namespace LifeGame
 
             interactDict = new Dictionary<ActionType, Effects>();
             interactDict.Add(ActionType.Walk, walkThrough);
-           // interactDict.Add(ActionType.Breed, )
+            // interactDict.Add(ActionType.Breed, )
             interactionsDicts.Add(interactDict);
 
             updateDels.Add(() => { });
@@ -116,7 +116,7 @@ namespace LifeGame
 
         protected void mute()
         {
-            ChangeProp(ThingProperty.Amplitude, -Properties[ThingProperty.Amplitude]);
+            ChangeProp(ThingProperty.Amplitude, 0, true);
         }
     }
 }

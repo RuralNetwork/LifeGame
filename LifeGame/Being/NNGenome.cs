@@ -232,7 +232,7 @@ namespace LifeGame
 
         void mutate()
         {
-            switch ((simulation.IsInTrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
+            switch ((simulation.TrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
             {
                 case 0:
                     mutateWeight();
