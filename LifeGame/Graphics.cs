@@ -35,6 +35,11 @@ namespace LifeGame
         public double canvasWidth { get; set; }
         public int hexaW = 40;
         public int hexaH = 34;
+        private BitmapImage grass = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\grass.png"));
+        private BitmapImage earth = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\earth.png"));
+        private BitmapImage water = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\water.png"));
+        public bool editing;
+
         public GraphicsEngine(Canvas canvas)
         {
             _canvas = canvas;
@@ -107,11 +112,14 @@ namespace LifeGame
             poligono.Name = "thing"+obj.ID;
             //This should store the object he represents
             poligono.DataContext = obj;
-            poligono.Stroke = System.Windows.Media.Brushes.Black;
+            poligono.Stroke = System.Windows.Media.Brushes.White;
             poligono.StrokeThickness = 1;
             
-            poligono.Fill = new SolidColorBrush(switchColor(obj.Type));
+            //poligono.Fill = new SolidColorBrush(switchColor(obj.Type));
+            //System.Drawing.Image image = System.Drawing.Image.FromFile("grass.png"); 
             
+            poligono.Fill = switchGround(obj.Type);
+
             //Set the position inside the canvas
             TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
@@ -142,18 +150,51 @@ namespace LifeGame
             }
             return color;
         }
+        private ImageBrush switchGround(ThingType type)
+        {
+            BitmapImage image;
+            ImageBrush brush = new ImageBrush();
+            
+            switch (type)
+            {
+                case ThingType.Earth:
+                    image = earth;
+                    break;
+                case ThingType.Water:
+                    image = water;
+                    break;
+                case ThingType.Grass:
+                    image = grass;
+                    break;
+                default:
+                    image = grass;
+                    break;
+            }
+            brush.ImageSource = image;
+            return brush;
+        }
         public void updateCell(Thing obj)
         {
-            obj.polygon.Fill = new SolidColorBrush(switchColor(obj.Type));
+            obj.polygon.Fill = switchGround(obj.Type);
+        }
+        private ThingType currentType;
+        public void changeBrush(string name)
+        {
+            this.currentType = (ThingType)Enum.Parse(typeof(ThingType), name, true);
         }
         private void cellaMouseEnter(object sender, RoutedEventArgs e)
         {
             Polygon poligono = e.Source as Polygon;
-            /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
-            Debug.Write("Over a polygon "+poligono.Name+"\n");
             Thing cosa = poligono.DataContext as Thing;
+
+            /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
+            //Debug stuff
+            Debug.Write("Over a polygon "+poligono.Name+"\n");
             cosa.showID();
-            //cosa.changeType(ThingType.Water);
+            if (editing)
+            {
+                cosa.changeType(this.currentType);
+            }
         }
 
         public void startSimulation()
