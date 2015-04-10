@@ -100,6 +100,9 @@
     /// </summary>
     enum BeingMutableProp : int
     {
+        /// <summary>
+        /// In Calories
+        /// </summary>
         Energy = 100,// inizia a enumerare da 100
         /// <summary>
         /// The maximum health is the Integrity value.

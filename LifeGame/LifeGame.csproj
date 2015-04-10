@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Constants.cs" />
     <Compile Include="dialoguebox.xaml.cs">
       <DependentUpon>dialoguebox.xaml</DependentUpon>
     </Compile>
@@ -64,8 +65,8 @@
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="Things\ThingImplementations.cs" />
-    <Compile Include="Things\ThingMod.cs" />
     <Compile Include="Math_stuff\Extensions.cs" />
     <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
     <Compile Include="Math_stuff\FloatCircularBuffer.cs" />

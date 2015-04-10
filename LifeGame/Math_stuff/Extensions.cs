@@ -61,7 +61,7 @@ namespace LifeGame
         /// <returns></returns>
         public static int Cycle(this int n, int max)
         {
-            return n >= 0 && n > max ? n : (n < 0 ? n + max : n - max);
+            return n >= 0 && n < max ? n : (n < 0 ? n + max : n - max);
         }
 
         /// <summary>

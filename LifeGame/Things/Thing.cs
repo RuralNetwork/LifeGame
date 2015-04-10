@@ -128,6 +128,7 @@ namespace LifeGame
                 foreach (var prop in PropsQueueDelta)
                 {
                     Properties[prop.Key] += prop.Value;
+                    if (Properties[prop.Key] < 0) Properties[prop.Key] = 0;
                 }
 
                 foreach (var prop in PropsQueueReset)

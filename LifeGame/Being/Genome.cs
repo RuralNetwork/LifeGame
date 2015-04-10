@@ -9,13 +9,19 @@ namespace LifeGame
     public class Genome
     {
         public float Fitness { get; set; }
-        public NNGenome NNGenome { get; private set; }
-        public BodyGenome BodyGenome { get; private set; }
+        public NNGenome NNGenome { get; set; }
+        public BodyGenome BodyGenome { get; set; }
 
         public Genome(NNGenome nnGenome, BodyGenome bodyGenome)
         {
             NNGenome = nnGenome;
             BodyGenome = bodyGenome;
+        }
+
+        public Genome(Simulation simulation)
+        {
+            NNGenome = new NNGenome(simulation);
+            //  BodyGenome=new BodyGenome()
         }
     }
 }

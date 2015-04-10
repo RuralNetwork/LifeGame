@@ -55,12 +55,16 @@ namespace LifeGame
         // SimEnvironment doen't need an apply method, it is not influenced by anything.
         public void Update()
         {
-            float tick = simulation.TimeTick;
-            //sun motion
-            var sunAng = -(float)(Math.Cos(tick / 120 * Math.PI));// * 0.3 * Math.PI   // questa è l'altezza del sole durante il giorno
-            var transSpeed = 0.1f;// lower is faster
-            var color = sunAng / (transSpeed + Math.Abs(sunAng)) / 2 + 0.5f; // fast sigmoid function: x / (k + abs(x)) / 2 + 0.5
+            //float tick = simulation.TimeTick;
+            ////sun motion
+            //var sunAng = -(float)(Math.Cos(tick / 120 * Math.PI));// * 0.3 * Math.PI   // questa è l'altezza del sole durante il giorno
+            //var transSpeed = 0.1f;// lower is faster
+            //var color = sunAng / (transSpeed + Math.Abs(sunAng)) / 2 + 0.5f; // fast sigmoid function: x / (k + abs(x)) / 2 + 0.5
 
+            Color1 = 1;// per ora non esiste l'alternanza giorno/notte, la temperatura è sempre 25° e non ci sono precipitazioni
+            Color2 = 1;
+            Color3 = 1;
+            Temperature = 298f;
         }
 
         public void Draw(bool isCarriedObj = false)

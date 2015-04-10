@@ -19,9 +19,6 @@ namespace LifeGame
     {
         Simulation simulation;
 
-        const int INPUTS_COUNT = 135;
-        const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
-        const int OUTPUTS_COUNT = 20;
 
         // parameters
         const float WEIGHT_RANGE = 5.0f;
@@ -74,13 +71,13 @@ namespace LifeGame
         {
             this.simulation = simulation;
 
-            NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
+            NodeGeneList = new Dictionary<uint, NodeGene>(Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT);
             NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
-            for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
+            for (uint i = 1; i < Constants.INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Input));
             }
-            for (uint i = INPUTS_AND_BIAS_COUNT; i < OUTPUTS_COUNT + INPUTS_AND_BIAS_COUNT; i++)
+            for (uint i = Constants.INPUTS_AND_BIAS_COUNT; i < Constants.OUTPUTS_COUNT + Constants.INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Output));
             }
@@ -340,7 +337,7 @@ namespace LifeGame
                 var srcID = NodeGeneList.Keys.ElementAt(rand.Next(nodeCount));
                 var srcNode = NodeGeneList[srcID];//ind Dictionary, key search is fast
 
-                var tgtID = NodeGeneList.Keys.ElementAt(INPUTS_AND_BIAS_COUNT + rand.Next(nodeCount - INPUTS_AND_BIAS_COUNT));// input and bias nodes can't be targets
+                var tgtID = NodeGeneList.Keys.ElementAt(Constants.INPUTS_AND_BIAS_COUNT + rand.Next(nodeCount - Constants.INPUTS_AND_BIAS_COUNT));// input and bias nodes can't be targets
                 var tgtNode = NodeGeneList[tgtID];
                 //if srcID == tgtID then the link is recursive
 
