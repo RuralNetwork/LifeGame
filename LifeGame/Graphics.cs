@@ -176,7 +176,7 @@ namespace LifeGame
         {
             obj.polygon.Fill = switchGround(obj.Type);
         }
-        private ThingType currentType;
+        private ThingType currentType=ThingType.Earth;
         public void changeBrush(string name)
         {
             this.currentType = (ThingType)Enum.Parse(typeof(ThingType), name, true);
