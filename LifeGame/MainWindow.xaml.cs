@@ -66,7 +66,7 @@ namespace LifeGame
             //window.Content = prova;
             //this.Content = prova;
             //Application.Current.Run(window);
-            Bitmap bitm = LifeGame.Properties.Resources.erba_prova;
+            //Bitmap bitm = LifeGame.Properties.Resources.erba_prova;
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;

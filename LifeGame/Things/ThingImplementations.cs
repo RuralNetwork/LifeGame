@@ -24,11 +24,13 @@ namespace LifeGame
             Dictionary<ThingProperty, float> propsDict;
             Dictionary<ActionType, Effects> interactDict;
 
-            //---------------- Being:
+            //proprietà che non devono essere nulle: weight, amplitude, smellIntensity
+            
+            //---------------- Null:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);// Definisco qui le caratteristiche standard di un Being.
-            propsDict.Add(ThingProperty.Alpha, 0);//  Non essendoci ancora il sistema ereditario dei caratteri fisici,
-            propsDict.Add(ThingProperty.Weigth, 0);// ogni Being nascerà con queste proprietà. 
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0.0001f);
             propsDict.Add(ThingProperty.Color1, 0);
             propsDict.Add(ThingProperty.Color2, 0);
             propsDict.Add(ThingProperty.Color3, 0);
@@ -36,11 +38,38 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
             propsDict.Add(ThingProperty.Pitch, 0);
-            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0.0001f);
             propsDict.Add(ThingProperty.Smell1, 0);
             propsDict.Add(ThingProperty.Smell2, 0);
             propsDict.Add(ThingProperty.Smell3, 0);
-            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0.0001f);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Being:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 1.5f);// Definisco qui le caratteristiche standard di un Being.
+            propsDict.Add(ThingProperty.Alpha, 0.7f);//  Non essendoci ancora il sistema ereditario dei caratteri fisici,
+            propsDict.Add(ThingProperty.Weigth, 30f);// ogni Being nascerà con queste proprietà. 
+            propsDict.Add(ThingProperty.Color1, 0.64f);
+            propsDict.Add(ThingProperty.Color2, 0.44f);
+            propsDict.Add(ThingProperty.Color3, 0.25f);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 310f);
+            propsDict.Add(ThingProperty.Pitch, 440f);
+            propsDict.Add(ThingProperty.Amplitude, 0.0001f);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0.0001f);
             propsDict.Add(ThingProperty.Wet, 0.2f);
             propsDict.Add((ThingProperty)BeingMutableProp.Energy, 1);
             propsDict.Add((ThingProperty)BeingMutableProp.Health, 1);
@@ -51,12 +80,59 @@ namespace LifeGame
 
             interactDict = new Dictionary<ActionType, Effects>();
             interactDict.Add(ActionType.Walk, walkThrough);
-           // interactDict.Add(ActionType.Breed, )
+            // interactDict.Add(ActionType.Breed, )
             interactionsDicts.Add(interactDict);
 
             updateDels.Add(() => { });
 
             //---------------- Earth:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0.29f);
+            propsDict.Add(ThingProperty.Color2, 0.18f);
+            propsDict.Add(ThingProperty.Color3, 0.14f);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0.0001f);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0.0001f);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Walk, walkThrough);
+            interactDict.Add(ActionType.Eat, (t, b) =>
+            {
+
+            });
+            interactDict.Add(ActionType.Fight, (t, b) =>
+            {
+
+            });
+            interactDict.Add(ActionType.Take, (t, b) =>
+            {
+
+            });
+
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() =>
+            {
+                //...
+            });
+
+            // defProps.Add(new float[0]);
+
+
+
+
+            //---------------- Grass:
             propsDict = new Dictionary<ThingProperty, float>();
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
@@ -77,46 +153,285 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Walk, walkThrough);
-            interactDict.Add(ActionType.Sleep, (t, b) =>
-            {
-                // b.Energy
-            });
-            //...
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
 
-            updateDels.Add(() =>
-            {
-                //...
-            });
-
-            // defProps.Add(new float[0]);
+            updateDels.Add(() => { });
 
 
+            //---------------- Water:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
 
-            //---------------- Grass:
-
-            //...
-            //...
-
-
-            //Berry:
             interactDict = new Dictionary<ActionType, Effects>();
-            //dict.Add(ActionType)
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+
+            //---------------- Sand:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Mountain:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Bush:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Berry:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Tree:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Fruit:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Corpse:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
+            //---------------- Meat:
+            propsDict = new Dictionary<ThingProperty, float>();
+            propsDict.Add(ThingProperty.Height, 0);
+            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Weigth, 0);
+            propsDict.Add(ThingProperty.Color1, 0);
+            propsDict.Add(ThingProperty.Color2, 0);
+            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Moving, 0);
+            propsDict.Add(ThingProperty.Painful, 0);
+            propsDict.Add(ThingProperty.Temperature, 0);
+            propsDict.Add(ThingProperty.Pitch, 0);
+            propsDict.Add(ThingProperty.Amplitude, 0);
+            propsDict.Add(ThingProperty.Smell1, 0);
+            propsDict.Add(ThingProperty.Smell2, 0);
+            propsDict.Add(ThingProperty.Smell3, 0);
+            propsDict.Add(ThingProperty.SmellIntensity, 0);
+            propsDict.Add(ThingProperty.Wet, 0);
+            propsDicts.Add(propsDict);
+
+            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Fight, (t, b) => { });
+            interactionsDicts.Add(interactDict);
+
+            updateDels.Add(() => { });
+
 
         }
 
         //=========== Common behavior & helper functions =========
 
+        static public bool CompareThings(Thing thing1, Thing thing2)
+        {
+            return thing1.Properties[ThingProperty.Height] * thing1.Properties[ThingProperty.Alpha] >
+                thing2.Properties[ThingProperty.Height] * thing2.Properties[ThingProperty.Alpha];
+        }
+
         static void walkThrough(Thing t, Being b)
         {
-            b.DeltaEnergy -= t.Properties[ThingProperty.Height] * t.Properties[ThingProperty.Alpha] * b.Properties[ThingProperty.Weigth];
+            b.EnergySpent -= t.Properties[ThingProperty.Height] * t.Properties[ThingProperty.Alpha] * b.Properties[ThingProperty.Weigth];
             //b.ModQueue.Add(new ThingMod(new Tuple<ThingProperty, float>((ThingProperty)BeingMutableProp.Energy,...........)));
         }
 
         protected void mute()
         {
-            ChangeProp(ThingProperty.Amplitude, -Properties[ThingProperty.Amplitude]);
+            ChangeProp(ThingProperty.Amplitude, 0, true);
         }
+
+        protected void rest()
+        {
+
+            ChangeProp(ThingProperty.Moving, 0, true);
+        }
+
+
     }
 }

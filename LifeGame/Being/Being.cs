@@ -12,44 +12,69 @@ namespace LifeGame
 
     public class Being : Thing
     {
+        //consts:
+        public const float CAL2KG = 0.42f;// kg lifted with one calorie  ->  1 / (1kg * 9.81m/s^2 * 1m)
+
+        static RandomBool randBool = new RandomBool();
+
         // mutable properties
         public CellDirection Direction { get; private set; }
-        public float DeltaEnergy; // I had to create this because C# doesn't allow ref parameters in lambda expressions
+        public float EnergySpent; // I had to create this because C# doesn't allow ref parameters in lambda expressions
 
         //immutable properties
         public float Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
         public Average FitnessMean { get; private set; }
-        public Genome Genome { get; private set; }
+        public int Lifespan { get; private set; }
+        public Genome Genome { get; set; }
         public NeuralNetwork Brain { get; private set; }
+        public List<Being> LivingOffsprings { get; private set; }
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
 
-        public Being(Simulation simulation, GraphicsEngine engine, GridPoint location, Genome genome)
-            : base(ThingType.Being, simulation, engine, location)
+        public Being(Simulation simulation, GraphicsEngine engine)
+            : base(ThingType.Being, simulation, engine, default(GridPoint))
         {
-            FitnessMean = new Average();
-            Genome = genome;
-
-            Brain.State[1] = Sex;
-
+            InnerThing = new Thing(ThingType.Null, simulation, engine, default(GridPoint));
+            LivingOffsprings = new List<Being>();
         }
+
+        public void InitOffspring(Genome genome)
+        {
+            Genome = genome;
+            FitnessMean = new Average();
+            Brain = new NeuralNetwork(genome.NNGenome);
+            Brain.State[1] = Sex = (randBool.Next() ? 1f : 02f);
+        }
+
+        public void InitLoad(int lifespan, Average fitness, Genome genome, NeuralNetwork brain, CellDirection direction)
+        {
+            Lifespan = lifespan;
+            FitnessMean = fitness;
+            Genome = genome;
+            Brain = brain;
+            Direction = direction;
+            //sex, heightmul
+        }
+
+
 
         public override void Update()
         {
+            Lifespan++;
 
             mute();
-
+            rest();
 
 
             //Aliases
-            var terrain = Simulation.Terrain;
-            var environment = Simulation.Environment;
+            var terrain = simulation.Terrain;
+            var environment = simulation.Environment;
             var bState = Brain.State;
-            var width = Simulation.GridWidth;
-            var height = Simulation.GridHeight;
+            var width = simulation.GridWidth;
+            var height = simulation.GridHeight;
             var locX = Location.X;
             var locY = Location.Y;
             var ccProps = terrain[locX][locY].Properties;
@@ -73,38 +98,28 @@ namespace LifeGame
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            f1 = Simulation.TimeTick / Simulation.Environment.DayTicks * 2 * (float)Math.PI;
+            f1 = simulation.TimeTick / simulation.Environment.DayTicks * 2 * (float)Math.PI;
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            f1 = Simulation.TimeTick / Simulation.Environment.YearTicks * 2 * (float)Math.PI;
+            f1 = simulation.TimeTick / simulation.Environment.YearTicks * 2 * (float)Math.PI;
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
 
 
             //      carried object
-            if (InnerThing != null)
-            {
-                bState[++i] = InnerThing.Properties[ThingProperty.Color1];
-                bState[++i] = InnerThing.Properties[ThingProperty.Color2];
-                bState[++i] = InnerThing.Properties[ThingProperty.Color3];
-                bState[++i] = InnerThing.Properties[ThingProperty.Moving];
-                bState[++i] = InnerThing.Properties[ThingProperty.Painful];
-                bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
-                bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
-                bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
-                bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
-                bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
-                bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
-            }
-            else
-            {
-                for (int j = 0; j < 13; j++)
-                {
-                    bState[++i] = 0;
-                }
-            }
+            bState[++i] = InnerThing.Properties[ThingProperty.Color1];
+            bState[++i] = InnerThing.Properties[ThingProperty.Color2];
+            bState[++i] = InnerThing.Properties[ThingProperty.Color3];
+            bState[++i] = InnerThing.Properties[ThingProperty.Moving];
+            bState[++i] = InnerThing.Properties[ThingProperty.Painful];
+            bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
+            bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
+            bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
+            bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
+            bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
+            bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
 
             //    common useful variables initialization
             var results = new float[12];
@@ -159,7 +174,7 @@ namespace LifeGame
                         var gridY = (locY + y).Cycle(height);
                         var cartX = (float)x;
                         var cartY = matrixY[x + size][y + size];
-                        var d = (float)Math.Sqrt(cartX * cartY + cartY * cartY);
+                        var d = (float)Math.Sqrt(cartX * cartX + cartY * cartY);
                         //                                                               3 \5 / 4 
                         int flags = (cartY < -1.501f * cartX ? 1 : 0);//                ___ \/ ___
                         flags += (cartY < 1.499f * cartX ? 2 : 0);//                     1  /\  2
@@ -169,6 +184,10 @@ namespace LifeGame
                         results[flags * 2] = terrain[gridX][gridY].Properties[ThingProperty.Pitch] /
                             terrain[gridX][gridY].Properties[ThingProperty.Amplitude] / (d + 1);
                         results[flags * 2 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Amplitude] / (d + 1);
+                        if (float.IsNaN(results[flags * 2]))
+                        {
+
+                        }
 
                     }
                 }
@@ -180,7 +199,7 @@ namespace LifeGame
 
             //environment sight(near cells)             //  questa parte dovrebbe essere molto più complessa (per le occlusioni) ma per ora lascio così
             results = new float[18];
-            for (int x = -size; x <= size; x++)
+            for (int x = -size; x <= size; x++)                    //                        manca il movimento!
             {
                 var gridX = (locX + x).Cycle(width);
                 for (int y = -size; y <= size; y++)
@@ -190,19 +209,19 @@ namespace LifeGame
                         var gridY = (locY + y).Cycle(height);
                         var cartX = (float)x;
                         var cartY = matrixY[x + size][y + size];
-                        var d = (float)Math.Sqrt(cartX * cartY + cartY * cartY);
+                        var d = (float)Math.Sqrt(cartX * cartX + cartY * cartY);
 
 
                         int flags = (cartY < -1.501f * cartX ? 1 : 0);
                         flags += (cartY < 1.499f * cartX ? 2 : 0);
                         flags += (cartY < -0.001 * cartX ? 2 : 0);
 
-                        results[flags * 3] = terrain[gridX][gridY].Properties[ThingProperty.Color1] /
-                            terrain[gridX][gridY].Properties[ThingProperty.Alpha] / (d + 1);
-                        results[flags * 3 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Color2] /
-                            terrain[gridX][gridY].Properties[ThingProperty.Alpha] / (d + 1);
-                        results[flags * 3 + 2] = terrain[gridX][gridY].Properties[ThingProperty.Color3] /
-                            terrain[gridX][gridY].Properties[ThingProperty.Alpha] / (d + 1);
+                        var k = terrain[gridX][gridY].Properties[ThingProperty.Alpha] *
+                            (-1 / (terrain[gridX][gridY].Properties[ThingProperty.Height] + 1) + 1) / (d + 1);
+
+                        results[flags * 3] = terrain[gridX][gridY].Properties[ThingProperty.Color1] * k;
+                        results[flags * 3 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Color2] * k;
+                        results[flags * 3 + 2] = terrain[gridX][gridY].Properties[ThingProperty.Color3] * k;
                     }
                 }
             }
@@ -238,12 +257,12 @@ namespace LifeGame
             // choose action
             float max = 0;
             int n = 0;
-            for (int j = 0; j < 7; i++)
+            for (int j = 0; j < 7; j++)
             {
                 if (bState[++i] > max)
                 {
                     max = bState[i];
-                    n = i;
+                    n = j;
                 }
             }
             var act = (ActionType)n;
@@ -252,7 +271,7 @@ namespace LifeGame
             int tgtType = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));//target type
             var energy = bState[++i].InverseSigmoid();
             energy = Math.Min(energy, Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
-            DeltaEnergy = energy;
+            EnergySpent = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
             GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
@@ -262,14 +281,14 @@ namespace LifeGame
                 case ActionType.Walk:
                     if (tgtType == 2)
                     {
-                        DeltaEnergy = energy; // DeltaEnergy is decreased by the things the being interact with
+                        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
                         cellPt = Location;
                         var lastFreeCellPt = Location;
-                        while (DeltaEnergy > 0)
+                        while (EnergySpent > 0)
                         {
                             target = terrain[cellPt.X][cellPt.Y];
                             interact(target, ActionType.Walk);
-                            if (DeltaEnergy < 0) break;
+                            if (EnergySpent < 0) break;
                             if (target.InnerThing != null)
                             {
                                 interact(target.InnerThing, ActionType.Walk);
@@ -279,16 +298,19 @@ namespace LifeGame
                                 lastFreeCellPt = cellPt;
                             }
                         }
+                        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
+                        //ChangeProp(ThingProperty.Moving,)
                     }
-
                     break;
                 case ActionType.Sleep:
+                    ChangeProp((ThingProperty)BeingMutableProp.Energy, Properties[(ThingProperty)BeingMutableProp.Hunger] * 100f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
+                    ChangeProp((ThingProperty)BeingMutableProp.Hunger, -Properties[(ThingProperty)BeingMutableProp.Hunger] * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
                     energy = 0;// prevent loss of energy
-                    interact(target, ActionType.Sleep);
+                    //interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
                 case ActionType.Fight:
-                    if (tgtType == 0 && InnerThing != null)
+                    if (tgtType == 0)
                     {
                         interact(InnerThing, act);
                     }
@@ -297,14 +319,22 @@ namespace LifeGame
                 case ActionType.Breed:
                     cellPt = Location.GetNearCell(cDir);
                     target = terrain[cellPt.X][cellPt.Y];
-                    interact(target, ActionType.Breed);
+                    var being = (Being)terrain[cellPt.X][cellPt.Y].InnerThing;
+                    if (being != null && being.Sex != this.Sex)
+                    {
+                        interact(being, ActionType.Breed);
+                    }
                     break;
                 case ActionType.MakeSound:
-                    ChangeProp(ThingProperty.Amplitude, 500 * energy);
+                    ChangeProp(ThingProperty.Amplitude, 500 * energy, true);
                     break;
                 case ActionType.Take:
-                case ActionType.Drop:
                     interact(target, act);
+                    break;
+                case ActionType.Drop:
+                    drop(target);
+                    InnerThing.ChangeType(ThingType.Null, null);
+                    energy = 0;
                     break;
                 default:
                     break;
@@ -313,66 +343,72 @@ namespace LifeGame
             // being changes
             Direction = cDir;// this doesn't need to be changed through ModQueue because it can't be detected and can't be changed elsewhere
 
-            //Energy -= energy;
-            //Hunger -=energy*enviro
+            ChangeProp((ThingProperty)BeingMutableProp.Energy, -energy - 10f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.02f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.05f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.001f, false);
 
-            //Death
-            //if (Health < 0)
-            //{
 
-            //}
-            if (InnerThing != null)
-            {
-                InnerThing.Update();
-            }
+            InnerThing.Update();
+
         }
 
         public override void Apply()
         {
-            foreach (var prop in PropsQueue)
+            foreach (var prop in PropsQueueDelta)
             {
                 Properties[prop.Key] += prop.Value;
+                if (Properties[prop.Key] < 0) Properties[prop.Key] = 0;
             }
-            PropsQueue.Clear();
 
-            if (InnerThingQueue.Count > 0)
+            foreach (var prop in PropsQueueReset)
             {
-                if (InnerThingQueue[0] == null)// being removed
-                {
-                    InnerThing = null;
-                }
-                else
-                {
-                    //only the bigger thing will be carried, the others will simply disappear
-                    if (InnerThing == null) InnerThing = InnerThingQueue[0];
-                    foreach (var thing in InnerThingQueue)
-                    {
-                        if (thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha] >
-                            InnerThing.Properties[ThingProperty.Height] * InnerThing.Properties[ThingProperty.Alpha])
-                        {
-                            InnerThing = thing;
-                        }
-                    }
-                }
-                InnerThingQueue.Clear();
+                Properties[prop.Key] = prop.Value;
             }
-            else if (InnerThing != null)
-            {
-                InnerThing.Apply();
-            }
+
+            PropsQueueDelta.Clear();
+            PropsQueueReset.Clear();
+            InnerThing.Apply();
         }
 
         public override void Draw(bool isCarriedObj = false)
         {
-            if (InnerThing != null)
-            {
-                InnerThing.Draw(true);
-            }
+            InnerThing.Draw(true);
         }
 
         void interact(Thing target, ActionType action)
         {
             target.Interactions[action](target, this);
+        }
+
+        //=================== Behaviour functions =============
+        void drop(Thing target)
+        {
+            // NOTE: although it seams not by these formulas, it will be not subtracted any energy
+            var quantity = EnergySpent * CAL2KG / InnerThing.Properties[ThingProperty.Weigth];
+            if (InnerThing.Properties[ThingProperty.Height] * InnerThing.Properties[ThingProperty.Alpha] * quantity >
+                target.Properties[ThingProperty.Height] * target.Properties[ThingProperty.Alpha])
+            {
+                var dict = new Dictionary<ThingProperty, float>();
+                foreach (var prop in InnerThing.Properties)
+                {
+                    dict.Add(prop.Key, prop.Value);
+                }
+                dict[ThingProperty.Height] *= EnergySpent / InnerThing.Properties[ThingProperty.Weigth];
+                dict[ThingProperty.Weigth] *= EnergySpent / InnerThing.Properties[ThingProperty.Weigth];
+                target.ChangeType(InnerThing.Type, dict);
+            }
+
+            if (quantity > 1f)
+            {
+                InnerThing.ChangeType(ThingType.Null, null);
+            }
+            else
+            {
+                InnerThing.ChangeProp(ThingProperty.Height, -InnerThing.Properties[ThingProperty.Height] * quantity, false);
+                InnerThing.ChangeProp(ThingProperty.Weigth, -InnerThing.Properties[ThingProperty.Weigth] * quantity, false);
+            }
         }
     }
 }

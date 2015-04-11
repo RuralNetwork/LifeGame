@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Constants.cs" />
     <Compile Include="dialoguebox.xaml.cs">
       <DependentUpon>dialoguebox.xaml</DependentUpon>
     </Compile>
@@ -64,8 +65,8 @@
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="Things\ThingImplementations.cs" />
-    <Compile Include="Things\ThingMod.cs" />
     <Compile Include="Math_stuff\Extensions.cs" />
     <Compile Include="Math_stuff\KeyedCircularBuffer.cs" />
     <Compile Include="Math_stuff\FloatCircularBuffer.cs" />
@@ -117,6 +118,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -130,35 +132,11 @@
   <ItemGroup>
     <Resource Include="Remarks.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\erba_prova.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\grass.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\earth.png" />
+    <Resource Include="Resources\grass.png" />
     <Resource Include="Resources\water.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\grass_tex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\earth_tex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\down_tex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\water_tex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\down_left_tex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\down_right_tex.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -19,7 +19,6 @@ namespace LifeGame
     {
         // parameters to be adjusted
         const int CYCLES_COUNT = 10;
-        const int INPUTS_COUNT = 135;
         // environment:                                   R, G, B,         painful,         Temperature,                   smellintensity, smell       7
         // carried object:                                R, G, B, moving, painful, weight, Temperature, amplitude, pitch, smellintensity, smell       11
         // current cell:                                  R, G, B, moving, painful,         Temperature, amplitude, pitch, smellintensity, smell       10
@@ -30,8 +29,6 @@ namespace LifeGame
         // circadian, circa-annual sine & cosine:                                                                                                 4
         //                                                                                                                                   TOT: 135
 
-        const int INPUTS_AND_BIAS_COUNT = INPUTS_COUNT + 1;
-        const int OUTPUTS_COUNT = 10;
         // walk, sleep, eat, breed, fight, take, drop, 2 component action direction, energy
 
 
@@ -94,7 +91,7 @@ namespace LifeGame
                     preActArr[links[j].TargetIdx] += postActArr[links[j].SourceIdx] * links[j].Weight;
                 }
 
-                for (int j = INPUTS_AND_BIAS_COUNT; j < nodeCount; j++)
+                for (int j = Constants.INPUTS_AND_BIAS_COUNT; j < nodeCount; j++)
                 {
                     postActArr[j] = 1f / (1f + ((float)Math.Exp(-preActArr[j])));// standard sigmoid
                     // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?

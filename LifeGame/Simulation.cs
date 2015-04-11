@@ -26,7 +26,7 @@ namespace LifeGame
         /// <summary>
         /// Tells if should be used PopulationCount and the hall of fame genome list to maintain the population.
         /// </summary>
-        public bool IsInTrainingMode { get; set; }
+        public bool TrainingMode { get; set; }
         public int PopulationCount { get; set; }
         public bool IsRunning { get; private set; }
         public SimulationType Type { get; set; }
@@ -43,19 +43,31 @@ namespace LifeGame
         public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
-        public List<Being> Population { get; private set; }
         List<Genome> hallOfFame;
 
         public Thing[][] Terrain { get; set; }
 
         /// <summary>
-        /// This is the update and draw speed
+        /// This is the update and draw speed.
         /// </summary>
         public float FPS = 2;
 
         public bool MustDraw = true;
 
-        public List<Thing>[][] ModCellsQueue;
+
+        public List<Being>[][] BeingLocQueue;
+
+        /// <summary>
+        /// Dictionary containing all beings that are currently alive.
+        /// When a Being die, its object will be moved to freeBeingObjs.
+        /// </summary>
+        public List<Being> Population;
+
+        /// <summary>
+        /// Dictionary containing old beings whose properties (+ other stuff related, ex. brain, genome) 
+        /// will be overwritten when new offspring will born; these Being objects will be moved to Population
+        /// </summary>
+        public List<Being> freeBeingObjs;
 
 
         public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
@@ -64,8 +76,9 @@ namespace LifeGame
             thread = new Thread(Update);
             thread.IsBackground = true;
             thread.Priority = ThreadPriority.Highest;
+            thread.Start();
 
-            IsInTrainingMode = true;
+            TrainingMode = true;
             PopulationCount = 100;
             hallOfFame = new List<Genome>(10);
 
@@ -77,16 +90,23 @@ namespace LifeGame
             GridHeight = gridHeight;
 
             Terrain = new Thing[GridWidth][];
-            ModCellsQueue = new List<Thing>[GridWidth][];
+            BeingLocQueue = new List<Being>[GridWidth][];
             for (int i = 0; i < GridWidth; i++)
             {
                 Terrain[i] = new Thing[GridHeight];
-                ModCellsQueue[i] = new List<Thing>[GridHeight];
+                BeingLocQueue[i] = new List<Being>[GridHeight];
                 for (int j = 0; j < GridHeight; j++)
                 {
-                    ModCellsQueue[i][j] = new List<Thing>();
+                    BeingLocQueue[i][j] = new List<Being>();
                     Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
+            }
+            Population = new List<Being>();
+            freeBeingObjs = new List<Being>();
+            for (int i = 0; i < PopulationCount * 2; i++)
+            {
+                var being = new Being(this, engine);
+                freeBeingObjs.Add(being);
             }
             // }
             /*else
@@ -98,106 +118,162 @@ namespace LifeGame
 
 
         }
-
+        bool popCreated;
         public void TogglePause()
         {
+            if (!popCreated)
+            {
+                CreatePopulation();
+            }
             IsRunning = !IsRunning;
         }
         //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update()
         {
-            while (IsRunning)
+            while (true)
             {
-                if (watch.Elapsed.TotalSeconds > 1 / FPS)
+                while (IsRunning)
                 {
-
-                    TimeTick++;
-
-                    Environment.Update();
-                    foreach (var arr in Terrain)
+                    if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / FPS)
                     {
-                        foreach (var thing in arr)
-                        {
-                            thing.Update();
-                        }
-                    }
 
-                    //Apply
-                    for (int x = 0; x < GridWidth; x++)
-                    {
-                        for (int y = 0; y < GridHeight; y++)
-                        {
+                        TimeTick++;
 
-                            var modQueue = ModCellsQueue[x][y];
-                            var thing = Terrain[x][y];
-                            if (modQueue.Count > 0)
-                            {
-                                var being = thing.InnerThing;
-                                foreach (var newThing in modQueue)
-                                {
-                                    if (newThing.Properties[ThingProperty.Height] * newThing.Properties[ThingProperty.Alpha] > //criterio: grandezza, non il peso
-                                        thing.Properties[ThingProperty.Height] * thing.Properties[ThingProperty.Alpha])
-                                    {
-                                        thing = newThing;
-                                        thing.InnerThing = being;
-                                    }
-                                }
-                                Terrain[x][y] = thing;
-                                ModCellsQueue[x][y].Clear();
-                            }
-                            else
-                            {
-                                thing.Apply();
-                            }
-                        }
-                    }
-                    //Draw
-                    if (MustDraw)
-                    {
-                        Environment.Draw();
+
+                        Environment.Update();
                         foreach (var arr in Terrain)
                         {
                             foreach (var thing in arr)
                             {
-                                thing.Draw();
+                                thing.Update();
                             }
                         }
+
+                        foreach (var being in Population)
+                        {
+                            being.Update();
+                        }
+
+
+                        foreach (var arr in Terrain)
+                        {
+                            foreach (var thing in arr)
+                            {
+                                thing.Apply();
+                            }
+                        }
+
+                        foreach (var being in Population)
+                        {
+                            being.Apply();
+                        }
+
+                        for (int x = 0; x < BeingLocQueue.Length; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
+                        {
+                            for (int y = 0; y < BeingLocQueue[x].Length; y++)
+                            {
+                                var beingList = BeingLocQueue[x][y];
+                                var biggerBeing = beingList[0];
+                                int idx = 0;
+                                for (int i = 1; i < beingList.Count; i++)
+                                {
+                                    if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
+                                    {
+                                        biggerBeing = beingList[i];
+                                        idx = i;
+                                    }
+                                }
+                                beingList.RemoveAt(idx);
+                                Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
+
+                                var loc = new GridPoint(x, y);
+                                biggerBeing.Location = loc;
+                                Terrain[x][y].InnerThing = biggerBeing;
+                                foreach (var being in beingList)
+                                {
+                                    var newLoc = loc;
+                                    Thing newCell;
+                                    do
+                                    {
+                                        newLoc = newLoc.GetNearCell();
+                                        newCell = Terrain[newLoc.X][newLoc.Y];
+                                    } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
+                                    newCell.InnerThing = being;
+                                    Terrain[being.Location.X][being.Location.Y].InnerThing = null;
+                                    being.Location = newLoc;
+                                }
+                                beingList.Clear();
+                            }
+                        }
+
+
+                        //Draw
+                        if (MustDraw)
+                        {
+                            Environment.Draw();
+                            foreach (var arr in Terrain)
+                            {
+                                foreach (var thing in arr)
+                                {
+                                    thing.Draw();
+                                }
+                            }
+                        }
+
+
+                        //// Manage population.
+                        //if (Type == SimulationType.Fast)
+                        //{
+
+                        //    if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
+                        //    {
+                        //        if (_newState.Population.Count > PopulationCount)
+                        //        {
+                        //            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
+                        //            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
+                        //        }
+                        //        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
+                        //        {                                                       // because creating a new genome (even copying an existing one) is very expensive
+                        //            int idx;
+                        //            while (_newState.Population.Count < PopulationCount)
+                        //            {
+                        //                while (true)
+                        //                {
+                        //                    idx = rand.Next(_newState.Population.Count);
+                        //                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
+                        //                    if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
+                        //                    {
+                        //                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
+                        //                        break;
+                        //                    }
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
                     }
-
-                    //// Manage population.
-                    //if (Type == SimulationType.Fast)
-                    //{
-
-                    //    if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
-                    //    {
-                    //        if (_newState.Population.Count > PopulationCount)
-                    //        {
-                    //            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
-                    //            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
-                    //        }
-                    //        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
-                    //        {                                                       // because creating a new genome (even copying an existing one) is very expensive
-                    //            int idx;
-                    //            while (_newState.Population.Count < PopulationCount)
-                    //            {
-                    //                while (true)
-                    //                {
-                    //                    idx = rand.Next(_newState.Population.Count);
-                    //                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
-                    //                    if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
-                    //                    {
-                    //                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
-                    //                        break;
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
                 }
             }
         }
 
+        void CreatePopulation()
+        {
+            for (int i = 0; i < PopulationCount; i++)
+            {
+                Thing cell;
+                do
+                {
+                    cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
+                } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
+
+                var being = freeBeingObjs.Last();
+                Population.Add(being);
+                cell.InnerThing = being;
+                freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
+                being.InitOffspring(new Genome(this));
+            }
+            popCreated = true;
+        }
         //public void Draw()
         //{
         //    foreach (var arr in Terrain)

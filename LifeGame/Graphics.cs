@@ -30,7 +30,7 @@ namespace LifeGame
         //canvas was the only thing that let me do what I wanted, if there is something better we can change it now, later it will be too painful
         private Canvas _canvas { get; set; }
         //For any callback use this as type
-        public delegate void Del(GraphicsEngine engine); 
+        public delegate void Del(GraphicsEngine engine);
         public double canvasHeight { get; set; }
         public double canvasWidth { get; set; }
         public int hexaW = 40;
@@ -65,8 +65,8 @@ namespace LifeGame
             series.Add(new System.Windows.Point(0, 17));
             return series;
         }
-        
-        public void messageBox(int x, int y, int w, int h, string message, int life=0, Del callbackOK=null, Del callbackNO=null)
+
+        public void messageBox(int x, int y, int w, int h, string message, int life = 0, Del callbackOK = null, Del callbackNO = null)
         {
             //If x and y are null, put it in the center
             var rect = new System.Windows.Shapes.Rectangle();
@@ -102,22 +102,22 @@ namespace LifeGame
 
             }
 
-            
+
         }
-        public void addCell(Thing obj,GridPoint location)
+        public void addCell(Thing obj, GridPoint location)
         {
             Polygon poligono = new Polygon();
-            
+
             poligono.Points = this.getPointCollection(location.X, location.Y);
-            poligono.Name = "thing"+obj.ID;
+            poligono.Name = "thing" + obj.ID;
             //This should store the object he represents
             poligono.DataContext = obj;
             poligono.Stroke = System.Windows.Media.Brushes.White;
             poligono.StrokeThickness = 1;
-            
+
             //poligono.Fill = new SolidColorBrush(switchColor(obj.Type));
             //System.Drawing.Image image = System.Drawing.Image.FromFile("grass.png"); 
-            
+
             poligono.Fill = switchGround(obj.Type);
 
             //Set the position inside the canvas
@@ -154,7 +154,7 @@ namespace LifeGame
         {
             BitmapImage image;
             ImageBrush brush = new ImageBrush();
-            
+
             switch (type)
             {
                 case ThingType.Earth:
@@ -189,11 +189,11 @@ namespace LifeGame
 
             /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
             //Debug stuff
-            Debug.Write("Over a polygon "+poligono.Name+"\n");
+            Debug.Write("Over a polygon " + poligono.Name + "\n");
             cosa.showID();
             if (editing)
             {
-                cosa.changeType(this.currentType);
+                cosa.ChangeType(this.currentType, null);
             }
         }
 
