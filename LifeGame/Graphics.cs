@@ -38,6 +38,9 @@ namespace LifeGame
         private BitmapImage grass = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\grass.png"));
         private BitmapImage earth = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\earth.png"));
         private BitmapImage water = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\water.png"));
+        private BitmapImage bush = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\bush.png"));
+        private BitmapImage berry = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\berry.png"));
+        private BitmapImage sand = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\sand.png"));
         public bool editing;
 
         public GraphicsEngine(Canvas canvas)
@@ -104,8 +107,18 @@ namespace LifeGame
 
 
         }
+        public void addBeing(Being obj, GridPoint location)
+        {
+
+        }
+        public void changeBeing(Being obj)
+        {
+            //obj.Location
+        }
+        //location is useless
         public void addCell(Thing obj, GridPoint location)
         {
+            
             Polygon poligono = new Polygon();
 
             poligono.Points = this.getPointCollection(location.X, location.Y);
@@ -166,6 +179,15 @@ namespace LifeGame
                 case ThingType.Grass:
                     image = grass;
                     break;
+                case ThingType.Bush:
+                    image = bush;
+                    break;
+                case ThingType.Berry:
+                    image = berry;
+                    break;
+                case ThingType.Sand:
+                    image = sand;
+                    break;
                 default:
                     image = grass;
                     break;
@@ -194,6 +216,7 @@ namespace LifeGame
             if (editing)
             {
                 cosa.ChangeType(this.currentType, null);
+                cosa.Apply();
             }
         }
 

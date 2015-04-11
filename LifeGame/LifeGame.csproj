@@ -132,9 +132,15 @@
   <ItemGroup>
     <Resource Include="Remarks.txt" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\earth.png" />
+    <Resource Include="Resources\berry.png" />
+    <Resource Include="Resources\bush.png" />
+    <Resource Include="Resources\sand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\earth.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\grass.png" />
     <Resource Include="Resources\water.png" />
   </ItemGroup>
