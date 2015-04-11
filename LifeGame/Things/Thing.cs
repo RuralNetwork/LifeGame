@@ -116,7 +116,7 @@ namespace LifeGame
 
                 NewTypeQueue.Clear();
 
-                //engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
+                engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
             }
             else
             {

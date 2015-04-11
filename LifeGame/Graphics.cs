@@ -193,6 +193,7 @@ namespace LifeGame
             if (editing)
             {
                 cosa.ChangeType(this.currentType, null);
+                cosa.Apply();
             }
         }
 
