@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Diagnostics;
@@ -76,11 +75,7 @@ namespace LifeGame
             Type = type;
             Interactions = interactionsDicts[(int)type];
             updateDel = updateDels[(int)type];
-            Properties = new Dictionary<ThingProperty, float>();
-            foreach (var prop in propsDicts[(int)type])
-            {
-                Properties.Add(prop.Key, prop.Value);
-            }
+            Properties = new Dictionary<ThingProperty, float>(propsDicts[(int)type]);
         }
 
         /// <summary>
@@ -156,11 +151,7 @@ namespace LifeGame
         /// </param>
         public void ChangeType(ThingType newType, Dictionary<ThingProperty, float> props)
         {
-            var newDict = new Dictionary<ThingProperty, float>();
-            foreach (var prop in propsDicts[(int)newType])
-            {
-                newDict.Add(prop.Key, prop.Value);
-            }
+            var newDict = new Dictionary<ThingProperty, float>(propsDicts[(int)newType]);
 
             if (props != null)
             {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Media;
 
@@ -64,6 +63,15 @@ namespace LifeGame
         public override void Update()
         {
             Lifespan++;
+            if (simulation.TrainingMode)
+            {
+                var fitness = Properties[(ThingProperty)BeingMutableProp.Health];
+                foreach (var being in LivingOffsprings)
+                {
+                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health];
+                }
+                FitnessMean.Add(fitness);
+            }
 
             mute();
             rest();
@@ -275,7 +283,7 @@ namespace LifeGame
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
             GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
-            var target = terrain[cellPt.X][cellPt.Y];
+            var target = terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)];
             switch (act)
             {
                 case ActionType.Walk:
@@ -287,16 +295,19 @@ namespace LifeGame
                         while (EnergySpent > 0)
                         {
                             target = terrain[cellPt.X][cellPt.Y];
-                            interact(target, ActionType.Walk);
+                            walkThrough(target);
                             if (EnergySpent < 0) break;
                             if (target.InnerThing != null)
                             {
-                                interact(target.InnerThing, ActionType.Walk);
+                                walkThrough(target.InnerThing);
                             }
                             else
                             {
                                 lastFreeCellPt = cellPt;
                             }
+                            cellPt.GetNearCell(cDir);
+                            cellPt.X = cellPt.X.Cycle(width);
+                            cellPt.Y = cellPt.Y.Cycle(height);
                         }
                         simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
                         //ChangeProp(ThingProperty.Moving,)
@@ -318,8 +329,7 @@ namespace LifeGame
                     break;
                 case ActionType.Breed:
                     cellPt = Location.GetNearCell(cDir);
-                    target = terrain[cellPt.X][cellPt.Y];
-                    var being = (Being)terrain[cellPt.X][cellPt.Y].InnerThing;
+                    var being = (Being)terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)].InnerThing;
                     if (being != null && being.Sex != this.Sex)
                     {
                         interact(being, ActionType.Breed);
@@ -390,11 +400,7 @@ namespace LifeGame
             if (InnerThing.Properties[ThingProperty.Height] * InnerThing.Properties[ThingProperty.Alpha] * quantity >
                 target.Properties[ThingProperty.Height] * target.Properties[ThingProperty.Alpha])
             {
-                var dict = new Dictionary<ThingProperty, float>();
-                foreach (var prop in InnerThing.Properties)
-                {
-                    dict.Add(prop.Key, prop.Value);
-                }
+                var dict = new Dictionary<ThingProperty, float>(InnerThing.Properties);
                 dict[ThingProperty.Height] *= EnergySpent / InnerThing.Properties[ThingProperty.Weigth];
                 dict[ThingProperty.Weigth] *= EnergySpent / InnerThing.Properties[ThingProperty.Weigth];
                 target.ChangeType(InnerThing.Type, dict);
@@ -409,6 +415,12 @@ namespace LifeGame
                 InnerThing.ChangeProp(ThingProperty.Height, -InnerThing.Properties[ThingProperty.Height] * quantity, false);
                 InnerThing.ChangeProp(ThingProperty.Weigth, -InnerThing.Properties[ThingProperty.Weigth] * quantity, false);
             }
+        }
+
+        void walkThrough(Thing t)
+        {
+            EnergySpent -= t.Properties[ThingProperty.Height] / Properties[ThingProperty.Height] *
+                (t.Properties[ThingProperty.Alpha] + Properties[ThingProperty.Alpha]) * 10f + Properties[ThingProperty.Weigth] / CAL2KG;
         }
     }
 }

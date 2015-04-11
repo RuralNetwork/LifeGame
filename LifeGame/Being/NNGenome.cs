@@ -11,7 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LifeGame
 {
@@ -92,37 +91,24 @@ namespace LifeGame
         /// <summary>
         /// Create a new genome mutating a genome
         /// </summary>
-        //public NNGenome( Simulation simulation)
-        //{
-            //this.simulation = simulation;
+        public NNGenome(NNGenome genome)
+        {
+            genome.simulation = simulation;
+            NodeGeneList=new Dictionary<uint,NodeGene>(genome.NodeGeneList);
+            LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList);
 
-        //    NodeGeneList = new Dictionary<uint, NodeGene>(INPUTS_AND_BIAS_COUNT + OUTPUTS_COUNT);
-        //    NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
-        //    for (uint i = 1; i < INPUTS_AND_BIAS_COUNT; i++)
-        //    {
-        //        NodeGeneList.Add(i, new NodeGene(NodeType.Input));
-        //    }
-        //    for (uint i = INPUTS_AND_BIAS_COUNT; i < OUTPUTS_COUNT + INPUTS_AND_BIAS_COUNT; i++)
-        //    {
-        //        NodeGeneList.Add(i, new NodeGene(NodeType.Output));
-        //    }
+            mutate();
 
-        //    LinkGeneList = new SortedList<uint, LinkGene>(5);
-        //    for (int i = 0; i < 5; i++)// choose how many links to add for starting the simulation
-        //    {
-        //        addLink();
-        //    }
-
-        //}
+        }
 
         /// <summary>
         /// Create a new genome recombining two genomes.
         /// </summary>
         // for now this is unfinisced: the recombination applies only over weights and not over morphology of the net
         // the structure is copied from the fittest genome
-        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2, Simulation simulation)
+        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2)
         {
-            this.simulation = simulation;
+            parent1.simulation = simulation;
 
             //determine fittest parent
             NNGenome fitPar, weakPar;

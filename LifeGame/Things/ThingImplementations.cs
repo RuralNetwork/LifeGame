@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LifeGame
 {
@@ -25,7 +24,7 @@ namespace LifeGame
             Dictionary<ActionType, Effects> interactDict;
 
             //proprietà che non devono essere nulle: weight, amplitude, smellIntensity
-            
+
             //---------------- Null:
             propsDict = new Dictionary<ThingProperty, float>();
             propsDict.Add(ThingProperty.Height, 0);
@@ -71,7 +70,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Smell3, 0);
             propsDict.Add(ThingProperty.SmellIntensity, 0.0001f);
             propsDict.Add(ThingProperty.Wet, 0.2f);
-            propsDict.Add((ThingProperty)BeingMutableProp.Energy, 1);
+            propsDict.Add((ThingProperty)BeingMutableProp.Energy, 500f);
             propsDict.Add((ThingProperty)BeingMutableProp.Health, 1);
             propsDict.Add((ThingProperty)BeingMutableProp.Integrity, 1);
             propsDict.Add((ThingProperty)BeingMutableProp.Hunger, 1);
@@ -79,7 +78,7 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Walk, walkThrough);
+            interactDict.Add(ActionType.Breed, (t, b) => { });
             // interactDict.Add(ActionType.Breed, )
             interactionsDicts.Add(interactDict);
 
@@ -106,7 +105,6 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Walk, walkThrough);
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
 
@@ -415,11 +413,6 @@ namespace LifeGame
                 thing2.Properties[ThingProperty.Height] * thing2.Properties[ThingProperty.Alpha];
         }
 
-        static void walkThrough(Thing t, Being b)
-        {
-            b.EnergySpent -= t.Properties[ThingProperty.Height] * t.Properties[ThingProperty.Alpha] * b.Properties[ThingProperty.Weigth];
-            //b.ModQueue.Add(new ThingMod(new Tuple<ThingProperty, float>((ThingProperty)BeingMutableProp.Energy,...........)));
-        }
 
         protected void mute()
         {

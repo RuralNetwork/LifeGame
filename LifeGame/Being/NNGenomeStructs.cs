@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 //I renamed this file because I struct can be confused and structures is too long, I don't know, useless change, but whatever
 namespace LifeGame
 {
