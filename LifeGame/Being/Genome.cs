@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LifeGame
 {
@@ -22,6 +21,12 @@ namespace LifeGame
         {
             NNGenome = new NNGenome(simulation);
             //  BodyGenome=new BodyGenome()
+        }
+
+        public Genome(Genome genome)
+        {
+            NNGenome = new NNGenome(genome.NNGenome);
+            //BodyGenome = new BodyGenome();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Diagnostics;
 
@@ -43,7 +42,8 @@ namespace LifeGame
         public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
-        List<Genome> hallOfFame;
+        //List<Genome> hallOfFame;
+        Genome bestGenome;
 
         public Thing[][] Terrain { get; set; }
 
@@ -80,7 +80,7 @@ namespace LifeGame
 
             TrainingMode = true;
             PopulationCount = 100;
-            hallOfFame = new List<Genome>(10);
+            //hallOfFame = new List<Genome>(10);
 
             Environment = new SimEnvironment(this, engine);
             //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
@@ -103,7 +103,7 @@ namespace LifeGame
             }
             Population = new List<Being>();
             freeBeingObjs = new List<Being>();
-            for (int i = 0; i < PopulationCount * 2; i++)
+            for (int i = 0; i < PopulationCount * 1.5f; i++)
             {
                 var being = new Being(this, engine);
                 freeBeingObjs.Add(being);
@@ -173,36 +173,40 @@ namespace LifeGame
                             for (int y = 0; y < BeingLocQueue[x].Length; y++)
                             {
                                 var beingList = BeingLocQueue[x][y];
-                                var biggerBeing = beingList[0];
-                                int idx = 0;
-                                for (int i = 1; i < beingList.Count; i++)
+                                if (beingList.Count > 0)
                                 {
-                                    if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
-                                    {
-                                        biggerBeing = beingList[i];
-                                        idx = i;
-                                    }
-                                }
-                                beingList.RemoveAt(idx);
-                                Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
 
-                                var loc = new GridPoint(x, y);
-                                biggerBeing.Location = loc;
-                                Terrain[x][y].InnerThing = biggerBeing;
-                                foreach (var being in beingList)
-                                {
-                                    var newLoc = loc;
-                                    Thing newCell;
-                                    do
+                                    var biggerBeing = beingList[0];
+                                    int idx = 0;
+                                    for (int i = 1; i < beingList.Count; i++)
                                     {
-                                        newLoc = newLoc.GetNearCell();
-                                        newCell = Terrain[newLoc.X][newLoc.Y];
-                                    } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
-                                    newCell.InnerThing = being;
-                                    Terrain[being.Location.X][being.Location.Y].InnerThing = null;
-                                    being.Location = newLoc;
+                                        if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
+                                        {
+                                            biggerBeing = beingList[i];
+                                            idx = i;
+                                        }
+                                    }
+                                    beingList.RemoveAt(idx);
+                                    Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
+
+                                    var loc = new GridPoint(x, y);
+                                    biggerBeing.Location = loc;
+                                    Terrain[x][y].InnerThing = biggerBeing;
+                                    foreach (var being in beingList)
+                                    {
+                                        var newLoc = loc;
+                                        Thing newCell;
+                                        do
+                                        {
+                                            newLoc = newLoc.GetNearCell();
+                                            newCell = Terrain[newLoc.X][newLoc.Y];
+                                        } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
+                                        newCell.InnerThing = being;
+                                        Terrain[being.Location.X][being.Location.Y].InnerThing = null;
+                                        being.Location = newLoc;
+                                    }
+                                    beingList.Clear();
                                 }
-                                beingList.Clear();
                             }
                         }
 
@@ -220,35 +224,41 @@ namespace LifeGame
                             }
                         }
 
-
-                        //// Manage population.
-                        //if (Type == SimulationType.Fast)
+                        //if (TrainingMode)
                         //{
-
-                        //    if (IsInTrainingMode)// fixed population size must be used while training the beings to behave "normally".
+                        //    if (Population.Count < PopulationCount)
                         //    {
-                        //        if (_newState.Population.Count > PopulationCount)
+                        //        int idx;
+                        //        while (PopulationCount < PopulationCount)
                         //        {
-                        //            _newState.Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
-                        //            _newState.Population.RemoveRange(PopulationCount, _newState.Population.Count - PopulationCount);
-                        //        }
-                        //        else if (_newState.Population.Count < PopulationCount)// i don't just spawn new beings in random places and let die the ones spawned in unlucky places
-                        //        {                                                       // because creating a new genome (even copying an existing one) is very expensive
-                        //            int idx;
-                        //            while (_newState.Population.Count < PopulationCount)
+                        //            foreach (var being in Population)
                         //            {
-                        //                while (true)
+                        //                if (being.FitnessMean.Value > bestGenome.Fitness)
                         //                {
-                        //                    idx = rand.Next(_newState.Population.Count);
-                        //                    var loc = _newState.Population[idx].Location.GetNearCell();// spawn in a cell adjacent to one of another being
-                        //                    if (loc.X >= 0 && loc.Y >= 0 && loc.X < GridWidth && loc.Y < GridHeight)
-                        //                    {
-                        //                        _newState.Population.Add(new Being(this, loc, hallOfFame[rand.Next(10)]));
-                        //                        break;
-                        //                    }
+                        //                    bestGenome = being.Genome;
                         //                }
                         //            }
+
+                        //            Thing cell;
+                        //            do
+                        //            {
+                        //                cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
+                        //            } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
+
+                        //            var newBeing = freeBeingObjs.Last();
+                        //            Population.Add(newBeing);
+                        //            cell.InnerThing = newBeing;
+                        //            freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
+                        //            newBeing.Location = cell.Location;
+
+                        //            newBeing.InitOffspring(new Genome(bestGenome));
                         //        }
+                        //    }
+                        //    else if (Population.Count>PopulationCount)
+                        //    {
+                        //        Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
+                        //        //...... add to freebeingobjs
+                        //        Population.RemoveRange(PopulationCount, Population.Count - PopulationCount);
                         //    }
                         //}
                     }
@@ -271,6 +281,7 @@ namespace LifeGame
                 cell.InnerThing = being;
                 freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
                 being.InitOffspring(new Genome(this));
+                being.Location = cell.Location;
             }
             popCreated = true;
         }
