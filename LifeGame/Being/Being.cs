@@ -37,6 +37,7 @@ namespace LifeGame
             : base(ThingType.Being, simulation, engine, default(GridPoint))
         {
             InnerThing = new Thing(ThingType.Null, simulation, engine, default(GridPoint));
+            InnerThing.IsCarrObj = true;
             LivingOffsprings = new List<Being>();
         }
 
@@ -235,14 +236,14 @@ namespace LifeGame
             }
             // cycle from rightmost to leftmost (excluding back direction), relative to current (forward) direction
             int dir = ((int)Direction + 4) % 6;
-            for (int j = 0; j < 5; j++)
-            {
-                bState[++i] = results[dirIdxs[dir] * 3];
-                bState[++i] = results[dirIdxs[dir] * 3 + 1];
-                bState[++i] = results[dirIdxs[dir] * 3 + 2];
-                dir++;
-                if (dir == 6) dir = 0;
-            }
+            //for (int j = 0; j < 5; j++)
+            //{
+            //    bState[++i] = results[dirIdxs[dir] * 3];
+            //    bState[++i] = results[dirIdxs[dir] * 3 + 1];
+            //    bState[++i] = results[dirIdxs[dir] * 3 + 2];
+            //    dir++;
+            //    if (dir == 6) dir = 0;
+            //}
 
             //current cell
             bState[++i] = ccProps[ThingProperty.Color1];
@@ -257,7 +258,7 @@ namespace LifeGame
             //environment
             bState[++i] = environment.Painful;
             bState[++i] = environment.Temperature;
-            Debug.Write("Input count: " + i);
+            //Debug.Write("Input count: " + i);
 
             Brain.Calculate();
 

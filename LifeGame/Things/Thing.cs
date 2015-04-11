@@ -116,7 +116,11 @@ namespace LifeGame
 
                 NewTypeQueue.Clear();
 
+                if (!IsCarrObj)
+                {
                 engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
+
+                }
             }
             else
             {

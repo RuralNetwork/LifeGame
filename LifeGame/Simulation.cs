@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace LifeGame
 {
@@ -127,48 +128,40 @@ namespace LifeGame
             }
             IsRunning = !IsRunning;
         }
+
         //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update()
         {
+            //debug
+            Type = SimulationType.Fast;
             while (true)
             {
                 while (IsRunning)
                 {
                     if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / FPS)
                     {
+                        Debug.WriteLine("Fps: " + (1 / (float)watch.Elapsed.TotalSeconds).ToString("00.0"));
+                        watch.Restart();
 
                         TimeTick++;
 
-
                         Environment.Update();
-                        foreach (var arr in Terrain)
+
+                        Parallel.ForEach(Terrain, arr =>
                         {
-                            foreach (var thing in arr)
-                            {
-                                thing.Update();
-                            }
-                        }
+                            foreach (var thing in arr) thing.Update();
+                        });
 
-                        foreach (var being in Population)
+                        Parallel.ForEach(Population, being => being.Update());
+
+                        Parallel.ForEach(Terrain, arr =>
                         {
-                            being.Update();
-                        }
+                            foreach (var thing in arr) thing.Apply();
+                        });
 
+                        Parallel.ForEach(Population, being => being.Apply());
 
-                        foreach (var arr in Terrain)
-                        {
-                            foreach (var thing in arr)
-                            {
-                                thing.Apply();
-                            }
-                        }
-
-                        foreach (var being in Population)
-                        {
-                            being.Apply();
-                        }
-
-                        for (int x = 0; x < BeingLocQueue.Length; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
+                        Parallel.For(0, BeingLocQueue.Length, x =>
                         {
                             for (int y = 0; y < BeingLocQueue[x].Length; y++)
                             {
@@ -208,7 +201,7 @@ namespace LifeGame
                                     beingList.Clear();
                                 }
                             }
-                        }
+                        });
 
 
                         //Draw
@@ -224,43 +217,43 @@ namespace LifeGame
                             }
                         }
 
-                        //if (TrainingMode)
-                        //{
-                        //    if (Population.Count < PopulationCount)
-                        //    {
-                        //        int idx;
-                        //        while (PopulationCount < PopulationCount)
-                        //        {
-                        //            foreach (var being in Population)
-                        //            {
-                        //                if (being.FitnessMean.Value > bestGenome.Fitness)
-                        //                {
-                        //                    bestGenome = being.Genome;
-                        //                }
-                        //            }
+                        if (TrainingMode)
+                        {
+                            if (Population.Count < PopulationCount)
+                            {
+                                int idx;
+                                while (PopulationCount < PopulationCount)
+                                {
+                                    foreach (var being in Population)
+                                    {
+                                        if (being.FitnessMean.Value > bestGenome.Fitness)
+                                        {
+                                            bestGenome = being.Genome;
+                                        }
+                                    }
 
-                        //            Thing cell;
-                        //            do
-                        //            {
-                        //                cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
-                        //            } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
+                                    Thing cell;
+                                    do
+                                    {
+                                        cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
+                                    } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
 
-                        //            var newBeing = freeBeingObjs.Last();
-                        //            Population.Add(newBeing);
-                        //            cell.InnerThing = newBeing;
-                        //            freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
-                        //            newBeing.Location = cell.Location;
+                                    var newBeing = freeBeingObjs.Last();
+                                    Population.Add(newBeing);
+                                    cell.InnerThing = newBeing;
+                                    freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
+                                    newBeing.Location = cell.Location;
 
-                        //            newBeing.InitOffspring(new Genome(bestGenome));
-                        //        }
-                        //    }
-                        //    else if (Population.Count>PopulationCount)
-                        //    {
-                        //        Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
-                        //        //...... add to freebeingobjs
-                        //        Population.RemoveRange(PopulationCount, Population.Count - PopulationCount);
-                        //    }
-                        //}
+                                    newBeing.InitOffspring(new Genome(bestGenome));
+                                }
+                            }
+                            else if (Population.Count > PopulationCount)
+                            {
+                                Population.InsertionSort((a, b) => -a.FitnessMean.Value.CompareTo(b.FitnessMean.Value)); // the minus -> decrescent
+                                //...... add to freebeingobjs
+                                Population.RemoveRange(PopulationCount, Population.Count - PopulationCount);
+                            }
+                        }
                     }
                 }
             }
