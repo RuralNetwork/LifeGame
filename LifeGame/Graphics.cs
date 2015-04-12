@@ -120,6 +120,9 @@ namespace LifeGame
             Polygon poligono = new Polygon();
             poligono.Points = getPointCollectionBeing();
             BitmapImage being = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\being.png"));
+            ImageBrush brush = new ImageBrush();
+            brush.ImageSource = being;
+            poligono.Fill = brush;
 
             TranslateTransform translate = new TranslateTransform((Double)40 * location.X, (Double)((34 * location.Y)));
             poligono.RenderTransform = translate;
