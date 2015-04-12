@@ -364,6 +364,10 @@ namespace LifeGame
             ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.001f, false);
 
+            if (Properties[(ThingProperty)BeingMutableProp.Health] <= 0)
+            {
+                simulation.BornDiedQueue[Location.X][Location.Y] = new Tuple<bool, Being>(false, this); //  FATALITY!!!
+            }
 
             InnerThing.Update();
 

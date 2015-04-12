@@ -49,6 +49,9 @@ namespace LifeGame
     {
         private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
+
+
+
         public MainWindow()
         {
             InitializeComponent();
