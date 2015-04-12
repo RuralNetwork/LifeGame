@@ -93,8 +93,8 @@ namespace LifeGame
         /// </summary>
         public NNGenome(NNGenome genome)
         {
-            genome.simulation = simulation;
-            NodeGeneList=new Dictionary<uint,NodeGene>(genome.NodeGeneList);
+            simulation = genome.simulation;
+            NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList);
             LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList);
 
             mutate();

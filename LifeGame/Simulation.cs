@@ -83,7 +83,7 @@ namespace LifeGame
             Type = SimulationType.Fast; // fare in modo che si possa cambiare
 
             timer.Tick += Update;
-           // timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            // timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
 
             this.engine = engine;
             //thread = new Thread(Update);
@@ -153,7 +153,10 @@ namespace LifeGame
             {
                 if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / FPS)
                 {
-                    Debug.WriteLine("Fps: " + (1 / (float)watch.Elapsed.TotalSeconds).ToString("0.0"));
+                    Debug.Write("Fps: " + (1 / (float)watch.Elapsed.TotalSeconds).ToString("0.0"));
+                    Debug.Write(" Population.Count: " + Population.Count);
+                    Debug.WriteLine(" Free Beings: " + freeBeingObjs.Count);
+
                     watch.Restart();
 
                     TimeTick++;
@@ -175,58 +178,24 @@ namespace LifeGame
                         being.Value.Update();
                     }
 
+                    foreach (var arr in Terrain)
+                    {
+                        foreach (var thing in arr)
+                        {
+                            thing.Apply();
+                        }
+                    }
+
                     foreach (var being in Population)
                     {
                         being.Value.Apply();
                     }
 
-                    // move beings
-                    for (int x = 0; x < GridWidth; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
-                    {
-                        for (int y = 0; y < GridHeight; y++)
-                        {
-                            var beingList = BeingLocQueue[x][y];
-                            if (beingList.Count > 0)
-                            {
-
-                                var biggerBeing = beingList[0];
-                                idx = 0;
-                                for (int i = 1; i < beingList.Count; i++)
-                                {
-                                    if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
-                                    {
-                                        biggerBeing = beingList[i];
-                                        idx = i;
-                                    }
-                                }
-                                beingList.RemoveAt(idx);
-                                Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
-
-                                var loc = new GridPoint(x, y);
-                                biggerBeing.Location = loc;
-                                Terrain[x][y].InnerThing = biggerBeing;
-                                foreach (var being in beingList)
-                                {
-                                    var newLoc = loc;
-                                    Thing newCell;
-                                    do
-                                    {
-                                        newLoc = newLoc.GetNearCell();
-                                        newCell = Terrain[newLoc.X][newLoc.Y];
-                                    } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
-                                    newCell.InnerThing = being;
-                                    Terrain[being.Location.X][being.Location.Y].InnerThing = null;
-                                    being.Location = newLoc;
-                                }
-                                beingList.Clear();
-                            }
-                        }
-                    }
 
                     // make born some beings
                     if (TrainingMode)
                     {
-                        while (PopulationCount < PopulationCount)
+                        for (int i = 0; i < PopulationCount - Population.Count; i++)
                         {
                             Thing cell;
                             do
@@ -239,11 +208,13 @@ namespace LifeGame
                             being.OldLoc = cell.Location;
                             being.Father = null;
                             being.Mother = null;
+                            BornDiedQueue[cell.Location.X][cell.Location.Y] = new Tuple<bool, Being>(true, being);
                         }
                     }
 
                     // make die some beings
-                    while (Population.Count > PopulationCount)
+
+                    for (int i = 0; i < Population.Count - PopulationCount; i++)
                     {
                         idx = rand.Next(Population.Count);
                         var being = Population.ElementAt(idx).Value;
@@ -327,14 +298,55 @@ namespace LifeGame
                         }
                     }
 
-
-                    foreach (var arr in Terrain)
+                    // move beings
+                    for (int x = 0; x < GridWidth; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
                     {
-                        foreach (var thing in arr)
+                        for (int y = 0; y < GridHeight; y++)
                         {
-                            thing.Apply();
+                            var beingList = BeingLocQueue[x][y];
+                            if (beingList.Count > 0)
+                            {
+
+                                var biggerBeing = beingList[0];
+                                idx = 0;
+                                for (int i = 1; i < beingList.Count; i++)
+                                {
+                                    if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
+                                    {
+                                        biggerBeing = beingList[i];
+                                        idx = i;
+                                    }
+                                }
+                                beingList.RemoveAt(idx);
+                                Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
+
+                                var loc = new GridPoint(x, y);
+                                biggerBeing.Location = loc;
+                                Terrain[x][y].InnerThing = biggerBeing;
+                                foreach (var being in beingList)
+                                {
+                                    var newLoc = loc;
+                                    Thing newCell;
+                                    do
+                                    {
+                                        newLoc = newLoc.GetNearCell();
+                                        newCell = Terrain[newLoc.X][newLoc.Y];
+                                    } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
+                                    newCell.InnerThing = being;
+                                    Terrain[being.Location.X][being.Location.Y].InnerThing = null;
+                                    being.Location = newLoc;
+                                }
+                                beingList.Clear();
+                            }
                         }
                     }
+
+
+                    if (Population.Count+freeBeingObjs.Count!=150)
+                    {
+
+                    }
+
 
 #else
                         //       Rifare questa parte

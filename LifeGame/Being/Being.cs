@@ -292,33 +292,33 @@ namespace LifeGame
             var target = terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)];
             switch (act)
             {
-                case ActionType.Walk:
-                    if (tgtType == 2)
-                    {
-                        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
-                        cellPt = Location;
-                        var lastFreeCellPt = Location;
-                        while (EnergySpent > 0)
-                        {
-                            target = terrain[cellPt.X][cellPt.Y];
-                            walkThrough(target);
-                            if (EnergySpent < 0) break;
-                            if (target.InnerThing != null)
-                            {
-                                walkThrough(target.InnerThing);
-                            }
-                            else
-                            {
-                                lastFreeCellPt = cellPt;
-                            }
-                            cellPt.GetNearCell(cDir);
-                            cellPt.X = cellPt.X.Cycle(width);
-                            cellPt.Y = cellPt.Y.Cycle(height);
-                        }
-                        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
-                        //ChangeProp(ThingProperty.Moving,)
-                    }
-                    break;
+                //case ActionType.Walk:
+                //    if (tgtType == 2)
+                //    {
+                //        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
+                //        cellPt = Location;
+                //        var lastFreeCellPt = Location;
+                //        while (EnergySpent > 0)
+                //        {
+                //            target = terrain[cellPt.X][cellPt.Y];
+                //            walkThrough(target);
+                //            if (EnergySpent < 0) break;
+                //            if (target.InnerThing != null)
+                //            {
+                //                walkThrough(target.InnerThing);
+                //            }
+                //            else
+                //            {
+                //                lastFreeCellPt = cellPt;
+                //            }
+                //            cellPt.GetNearCell(cDir);
+                //            cellPt.X = cellPt.X.Cycle(width);
+                //            cellPt.Y = cellPt.Y.Cycle(height);
+                //        }
+                //        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
+                //        //ChangeProp(ThingProperty.Moving,)
+                //    }
+                //    break;
                 case ActionType.Sleep:
                     ChangeProp((ThingProperty)BeingMutableProp.Energy, Properties[(ThingProperty)BeingMutableProp.Hunger] * 100f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
                     ChangeProp((ThingProperty)BeingMutableProp.Hunger, -Properties[(ThingProperty)BeingMutableProp.Hunger] * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
