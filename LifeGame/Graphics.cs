@@ -56,7 +56,7 @@ namespace LifeGame
             _canvas = newCanvas;
         }
         //Get the points to make a hexagon
-        private PointCollection getPointCollection(int x, int y)
+        private PointCollection getPointCollection()
         {
             PointCollection series = new PointCollection();
             series.Add(new System.Windows.Point(10, 0));
@@ -65,6 +65,15 @@ namespace LifeGame
             series.Add(new System.Windows.Point(30, 34));
             series.Add(new System.Windows.Point(10, 34));
             series.Add(new System.Windows.Point(0, 17));
+            return series;
+        }
+        private PointCollection getPointCollectionBeing()
+        {
+            PointCollection series = new PointCollection();
+            series.Add(new System.Windows.Point(3, 0));
+            series.Add(new System.Windows.Point(37, 0));
+            series.Add(new System.Windows.Point(37, 34));
+            series.Add(new System.Windows.Point(3, 34));
             return series;
         }
 
@@ -108,11 +117,22 @@ namespace LifeGame
         }
         public void addBeing(Being obj, GridPoint location)
         {
+            Polygon poligono = new Polygon();
+            poligono.Points = getPointCollectionBeing();
+            BitmapImage being = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\being.png"));
 
+            TranslateTransform translate = new TranslateTransform((Double)40 * location.X, (Double)((34 * location.Y)));
+            poligono.RenderTransform = translate;
+
+            this._canvas.Children.Add(poligono);
+            //Links the polygon to the thing
+            obj.polygon = poligono;
         }
         public void changeBeing(Being obj)
         {
             //obj.Location
+            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y)));
+            obj.polygon.RenderTransform = translate;
         }
         //location is useless
         public void addCell(Thing obj, GridPoint location)
@@ -120,7 +140,7 @@ namespace LifeGame
             
             Polygon poligono = new Polygon();
 
-            poligono.Points = this.getPointCollection(location.X, location.Y);
+            poligono.Points = this.getPointCollection();
             poligono.Name = "thing" + obj.ID;
             //This should store the object he represents
             poligono.DataContext = obj;
