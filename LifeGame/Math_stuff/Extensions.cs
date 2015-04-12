@@ -35,7 +35,8 @@ namespace LifeGame
 
         public static float InverseSigmoid(this float x)
         {
-            return (float)Math.Log(-x / (x - 1f));
+            return (x > 0f && x < 1f ? (float)Math.Log(-x / (x - 1f)) : (x > 0.5f ? 10000000f : -10000000f));
+            //return -(float)Math.Tan(Math.PI * (0.5 - x));
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace LifeGame
         /// </summary>
         public static CellDirection AngleToDirection(this float angle)
         {
-           return (CellDirection)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
+            return (CellDirection)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
         }
         /// <summary>
         /// Mod function extended to negative numbers

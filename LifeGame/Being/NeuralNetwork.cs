@@ -39,7 +39,7 @@ namespace LifeGame
         int linkCount, nodeCount;
 
 
-        public NeuralNetwork(NNGenome genome)
+        public NeuralNetwork(NNGenome genome, bool sex)
         {
             var linkList = genome.LinkGeneList;
             var nodeList = genome.NodeGeneList;
@@ -69,6 +69,7 @@ namespace LifeGame
             preActivationArray = new float[nodeCount];
             State = new float[nodeCount];
             State[0] = 1;                 // bias
+            State[1] = (sex ? 1f : 0f);
             this.linkCount = linkCount;
             this.nodeCount = nodeCount;
         }
@@ -93,6 +94,7 @@ namespace LifeGame
                 for (int j = Constants.INPUTS_AND_BIAS_COUNT; j < nodeCount; j++)
                 {
                     postActArr[j] = 1f / (1f + ((float)Math.Exp(-preActArr[j])));// standard sigmoid
+                    //postActArr[j] = (float)(Math.Atan(preActArr[j]) / Math.PI) + 0.5f;
                     // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
 
                     preActArr[j] = 0f;

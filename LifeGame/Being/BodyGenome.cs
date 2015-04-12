@@ -42,10 +42,10 @@ namespace LifeGame
 
         public BodyGenome(Chromosome[] chromArr1, Chromosome[] chromArr2)
         {
-            ChromArr1 = chromArr1.Clone() as Chromosome[];
+           // ChromArr1 = chromArr1.Clone() as Chromosome[];
         }
 
-        public BodyGenome(BodyGenome parent1, BodyGenome parent2)
+        public BodyGenome(BodyGenome dadGen, BodyGenome mumGen)
         {
             ChromArr1 = new Chromosome[1];
             ChromArr2 = new Chromosome[1];

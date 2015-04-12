@@ -21,7 +21,7 @@ namespace LifeGame
         public float EnergySpent; // I had to create this because C# doesn't allow ref parameters in lambda expressions
 
         //immutable properties
-        public float Sex { get; private set; }
+        public bool Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
         public Average FitnessMean { get; private set; }
@@ -29,6 +29,10 @@ namespace LifeGame
         public Genome Genome { get; set; }
         public NeuralNetwork Brain { get; private set; }
         public List<Being> LivingOffsprings { get; private set; }
+
+        //need to identify whose the father and the mother 
+        public Being Father { get; set; }
+        public Being Mother { get; set; }
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
@@ -43,10 +47,11 @@ namespace LifeGame
 
         public void InitOffspring(Genome genome)
         {
+            LivingOffsprings.Clear();
             Genome = genome;
             FitnessMean = new Average();
-            Brain = new NeuralNetwork(genome.NNGenome);
-            Brain.State[1] = Sex = (randBool.Next() ? 1f : 02f);
+            Sex = randBool.Next();
+            Brain = new NeuralNetwork(genome.NNGenome, Sex);
         }
 
         public void InitLoad(int lifespan, Average fitness, Genome genome, NeuralNetwork brain, CellDirection direction)
@@ -236,14 +241,14 @@ namespace LifeGame
             }
             // cycle from rightmost to leftmost (excluding back direction), relative to current (forward) direction
             int dir = ((int)Direction + 4) % 6;
-            //for (int j = 0; j < 5; j++)
-            //{
-            //    bState[++i] = results[dirIdxs[dir] * 3];
-            //    bState[++i] = results[dirIdxs[dir] * 3 + 1];
-            //    bState[++i] = results[dirIdxs[dir] * 3 + 2];
-            //    dir++;
-            //    if (dir == 6) dir = 0;
-            //}
+            for (int j = 0; j < 5; j++)
+            {
+                bState[++i] = results[dirIdxs[dir] * 3];
+                bState[++i] = results[dirIdxs[dir] * 3 + 1];
+                bState[++i] = results[dirIdxs[dir] * 3 + 2];
+                dir++;
+                if (dir == 6) dir = 0;
+            }
 
             //current cell
             bState[++i] = ccProps[ThingProperty.Color1];
@@ -278,7 +283,7 @@ namespace LifeGame
             var dirVec = new Vector(bState[++i].InverseSigmoid(), bState[++i].InverseSigmoid());
             var mag = dirVec.Magnitude;
             int tgtType = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));//target type
-            var energy = bState[++i].InverseSigmoid();
+            var energy = Math.Max(bState[++i].InverseSigmoid(), 0); //energy >= 0;
             energy = Math.Min(energy, Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
             EnergySpent = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
@@ -339,21 +344,20 @@ namespace LifeGame
                 case ActionType.MakeSound:
                     ChangeProp(ThingProperty.Amplitude, 500 * energy, true);
                     break;
-                case ActionType.Take:
-                    interact(target, act);
-                    break;
-                case ActionType.Drop:
-                    drop(target);
-                    InnerThing.ChangeType(ThingType.Null, null);
-                    energy = 0;
-                    break;
+                //case ActionType.Take:
+                //    interact(target, act);
+                //    break;
+                //case ActionType.Drop:
+                //    drop(target);
+                //    InnerThing.ChangeType(ThingType.Null, null);
+                //    energy = 0;
+                //    break;
                 default:
                     break;
             }
 
             // being changes
-            Direction = cDir;// this doesn't need to be changed through ModQueue because it can't be detected and can't be changed elsewhere
-
+            Direction = cDir;
             ChangeProp((ThingProperty)BeingMutableProp.Energy, -energy - 10f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.02f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.05f, false);

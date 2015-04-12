@@ -407,7 +407,7 @@ namespace LifeGame
 
         //=========== Common behavior & helper functions =========
 
-        static public bool CompareThings(Thing thing1, Thing thing2)
+        static public bool BiggerBetween(Thing thing1, Thing thing2)
         {
             return thing1.Properties[ThingProperty.Height] * thing1.Properties[ThingProperty.Alpha] >
                 thing2.Properties[ThingProperty.Height] * thing2.Properties[ThingProperty.Alpha];

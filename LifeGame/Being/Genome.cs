@@ -11,10 +11,10 @@ namespace LifeGame
         public NNGenome NNGenome { get; set; }
         public BodyGenome BodyGenome { get; set; }
 
-        public Genome(NNGenome nnGenome, BodyGenome bodyGenome)
+        public Genome(Genome dadGen, Genome mumGen)
         {
-            NNGenome = nnGenome;
-            BodyGenome = bodyGenome;
+           NNGenome=new NNGenome(dadGen.NNGenome,mumGen.NNGenome,dadGen.Fitness,mumGen.Fitness);
+           BodyGenome = new BodyGenome(dadGen.BodyGenome, mumGen.BodyGenome);
         }
 
         public Genome(Simulation simulation)

@@ -18,14 +18,14 @@ namespace LifeGame
         static FastRandom rand = new FastRandom();
 
         //constant
-        static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
+      public  static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
 
         protected Simulation simulation;
         protected GraphicsEngine engine;
 
         public Thing InnerThing { get; set; }
         public GridPoint Location { get; set; }
-        public GridPoint OldLoc { get; private set; }
+        public GridPoint OldLoc { get; set; }
 
         public ThingType Type { get; private set; }
         public List<Tuple<ThingType, Dictionary<ThingProperty, float>>> NewTypeQueue { get; private set; }

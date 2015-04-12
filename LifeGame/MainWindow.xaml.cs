@@ -59,7 +59,7 @@ namespace LifeGame
             b = "addio";
             var c = new List<Thing>();
             //c.Add(null);
-           var d= c.Contains(null);
+            var d = c.Contains(null);
             // var window = new Window();
             //visualHost prova = new visualHost();
             //window.Content = prova;
@@ -133,7 +133,7 @@ namespace LifeGame
             for (int i = 0; i < gridToolbox.Children.Count; i++)
             {
                 UIElement f = gridToolbox.Children[i];
-                f.GetType().GetProperty("Background").SetValue(f,new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
+                f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
             }
             current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
             Engine.changeBrush(current.Name);
