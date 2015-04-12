@@ -124,7 +124,7 @@ namespace LifeGame
             brush.ImageSource = being;
             poligono.Fill = brush;
 
-            TranslateTransform translate = new TranslateTransform((Double)40 * location.X, (Double)((34 * location.Y)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y)));
             poligono.RenderTransform = translate;
 
             this._canvas.Children.Add(poligono);
