@@ -92,7 +92,7 @@ namespace LifeGame
             //thread.Start();
 
             TrainingMode = true;
-            PopulationCount = 100;
+            PopulationCount = 20;
             //hallOfFame = new List<Genome>(10);
 
             Environment = new SimEnvironment(this, engine);
@@ -296,6 +296,7 @@ namespace LifeGame
                                     }
 
                                     ///////////////////////////aggiungi qui codice per nascondere il being (e il suo innerthing)//////////////////////
+                                    engine.removeBeing(being);
                                 }
                                 BornDiedQueue[x][y] = null;
                             }
