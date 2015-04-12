@@ -50,7 +50,7 @@ namespace LifeGame
         private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
 
-
+        System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
 
         public MainWindow()
         {
@@ -73,8 +73,6 @@ namespace LifeGame
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
             Engine = new GraphicsEngine(mainpanel);
-
-
 
         }
 
@@ -128,6 +126,12 @@ namespace LifeGame
             createWorld.Visibility = Visibility.Hidden;
             gridToolbox.Visibility = Visibility.Visible;
             startSimulation.IsEnabled = true;
+
+
+            //debug
+            timer.Tick += delegate { Title = Simulation.ActualFPS.ToString("0.0"); };
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            timer.Start();
         }
 
         private void toggleBrush(object sender, RoutedEventArgs e)

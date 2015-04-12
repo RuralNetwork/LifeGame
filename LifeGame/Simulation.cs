@@ -146,6 +146,8 @@ namespace LifeGame
             IsRunning = !IsRunning;
         }
 
+        public float ActualFPS;
+
         //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update(object sender, EventArgs e)
         {
@@ -153,12 +155,13 @@ namespace LifeGame
             {
                 if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / FPS)
                 {
-                    Debug.Write("Fps: " + (1 / (float)watch.Elapsed.TotalSeconds).ToString("0.0"));
+                    ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
+
+                    Debug.Write("Fps: " + ActualFPS.ToString("0.0"));
                     Debug.Write(" Population.Count: " + Population.Count);
                     Debug.WriteLine(" Free Beings: " + freeBeingObjs.Count);
 
                     watch.Restart();
-
                     TimeTick++;
 
                     Environment.Update();
@@ -242,6 +245,7 @@ namespace LifeGame
                                     being.InitOffspring(new Genome(BestGenome));
 
                                     ///////////////////////////aggiungi qui codice per mostrare il being (e il suo innerthing)//////////////////////
+                                    engine.addBeing(being, being.Location);
                                 }
                                 else
                                 {
@@ -342,7 +346,7 @@ namespace LifeGame
                     }
 
 
-                    if (Population.Count+freeBeingObjs.Count!=150)
+                    if (Population.Count + freeBeingObjs.Count != 150)
                     {
 
                     }
@@ -440,6 +444,8 @@ namespace LifeGame
                 freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
                 being.InitOffspring(new Genome(this));
                 being.Location = cell.Location;
+
+                engine.addBeing(being, being.Location);
             }
             popCreated = true;
         }
