@@ -137,6 +137,10 @@ namespace LifeGame
             TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y)));
             obj.polygon.RenderTransform = translate;
         }
+        //Careful, it removes also things
+        public void removeBeing(Being obj){
+            this._canvas.Children.Remove(obj.polygon);
+        }
         //location is useless
         public void addCell(Thing obj, GridPoint location)
         {
