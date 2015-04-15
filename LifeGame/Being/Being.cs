@@ -366,7 +366,7 @@ namespace LifeGame
 
             if (Properties[(ThingProperty)BeingMutableProp.Health] <= 0)
             {
-                simulation.BornDiedQueue[Location.X][Location.Y] = new Tuple<bool, Being>(false, this); //  FATALITY!!!
+                simulation.MakeDie(this); //  FATALITY!!!
             }
 
             InnerThing.Update();

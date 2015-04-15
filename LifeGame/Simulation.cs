@@ -62,8 +62,7 @@ namespace LifeGame
 
         //Born: true
         //Died: false
-        //Nothing: null
-        public Tuple<bool, Being>[][] BornDiedQueue { get; private set; }
+        public Tuple<bool, Genome, Being, Being>[][] BornDiedQueue { get; private set; }
 
         /// <summary>
         /// Dictionary containing all beings that are currently alive.
@@ -104,16 +103,16 @@ namespace LifeGame
 
             Terrain = new Thing[gridWidth][];
             BeingLocQueue = new List<Being>[gridWidth][];
-            BornDiedQueue = new Tuple<bool, Being>[gridWidth][];
+            BornDiedQueue = new Tuple<bool, Genome, Being, Being>[gridWidth][];
             for (int i = 0; i < gridWidth; i++)
             {
                 Terrain[i] = new Thing[gridHeight];
                 BeingLocQueue[i] = new List<Being>[gridHeight];
-                BornDiedQueue[i] = new Tuple<bool, Being>[gridHeight];
+                BornDiedQueue[i] = new Tuple<bool, Genome, Being, Being>[gridHeight];
                 for (int j = 0; j < gridHeight; j++)
                 {
                     BeingLocQueue[i][j] = new List<Being>();
-                    Terrain[i][j] = new Thing(ThingType.Earth, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
+                    Terrain[i][j] = new Thing(ThingType.Grass, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
             }
             Population = new Dictionary<int, Being>();
@@ -201,28 +200,25 @@ namespace LifeGame
                         for (int i = 0; i < PopulationCount - Population.Count; i++)
                         {
                             Thing cell;
+                            int x, y;
                             do
                             {
-                                cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
-                            } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
+                                x = rand.Next(GridWidth);
+                                y = rand.Next(GridHeight);
+                                cell = Terrain[x][y];
+                            } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
 
-                            var being = freeBeingObjs.Last();
-                            freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
-                            being.OldLoc = cell.Location;
-                            being.Father = null;
-                            being.Mother = null;
-                            BornDiedQueue[cell.Location.X][cell.Location.Y] = new Tuple<bool, Being>(true, being);
+
+                            GiveBirth(BestGenome, new GridPoint(x, y));
                         }
                     }
 
                     // make die some beings
-
                     for (int i = 0; i < Population.Count - PopulationCount; i++)
                     {
                         idx = rand.Next(Population.Count);
                         var being = Population.ElementAt(idx).Value;
-                        var loc = being.Location;
-                        BornDiedQueue[loc.X][loc.Y] = new Tuple<bool, Being>(false, being);
+                        MakeDie(being);
                     }
 
 
@@ -238,11 +234,23 @@ namespace LifeGame
                                 if (tuple.Item1)
                                 {
                                     var cell = Terrain[x][y];
-                                    var being = tuple.Item2;
-                                    Population.Add(being.ID, being);
+                                    var being = freeBeingObjs.Last();
                                     cell.InnerThing = being;
+
+                                    freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1); // remove form freeBeingObjs
+                                    Population.Add(being.ID, being);                 // add to Population
+
                                     being.Location = cell.Location;
-                                    being.InitOffspring(new Genome(BestGenome));
+                                    being.OldLoc = cell.Location;
+                                    being.Father = tuple.Item3;
+                                    being.Mother = tuple.Item4;
+                                    if (being.Father != null)
+                                    {
+                                        being.Father.LivingOffsprings.Add(being);
+                                        being.Mother.LivingOffsprings.Add(being);
+                                    }
+
+                                    being.InitOffspring(tuple.Item2);
 
                                     ///////////////////////////aggiungi qui codice per mostrare il being (e il suo innerthing)//////////////////////
                                     engine.addBeing(being, being.Location);
@@ -250,9 +258,12 @@ namespace LifeGame
                                 else
                                 {
                                     var cell = Terrain[x][y];
-                                    var being = tuple.Item2;
-                                    Population.Remove(being.ID);
-                                    freeBeingObjs.Add(being);
+                                    var being = (Being)cell.InnerThing;
+                                    cell.InnerThing = null;
+
+                                    Population.Remove(being.ID); // remove form Population               // here it's the only place I need being IDs
+                                    freeBeingObjs.Add(being);    // add to freeBeingObjs
+
                                     if (being.Father != null)
                                     {
                                         being.Father.LivingOffsprings.Remove(being);//find a faster way to search it (indexing)
@@ -347,7 +358,7 @@ namespace LifeGame
                     }
 
 
-                    if (Population.Count + freeBeingObjs.Count != 150)
+                    if (Population.Count + freeBeingObjs.Count != 30)
                     {
 
                     }
@@ -450,16 +461,20 @@ namespace LifeGame
             }
             popCreated = true;
         }
-        //public void Draw()
-        //{
-        //    foreach (var arr in Terrain)
-        //    {
-        //        foreach (var thing in arr)
-        //        {
-        //            thing.Draw();
-        //        }
-        //    }
 
-        //}
+        public void GiveBirth(Being dad, Being mum, GridPoint location)
+        {
+            BornDiedQueue[location.X][location.Y] = new Tuple<bool, Genome, Being, Being>(true, new Genome(dad.Genome, mum.Genome), dad, mum);
+        }
+        public void GiveBirth(Genome oldGen, GridPoint location)
+        {
+            BornDiedQueue[location.X][location.Y] = new Tuple<bool, Genome, Being, Being>(true, new Genome(oldGen), null, null);
+        }
+
+        public void MakeDie(Being being)
+        {
+            BornDiedQueue[being.Location.X][being.Location.Y] = new Tuple<bool, Genome, Being, Being>(false, null, null, null);
+        }
+
     }
 }
