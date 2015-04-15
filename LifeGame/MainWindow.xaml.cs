@@ -49,6 +49,7 @@ namespace LifeGame
     {
         private GraphicsEngine Engine { get; set; }
         private Simulation Simulation { get; set; }
+        FastRandom rand = new FastRandom();
 
         System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
 
@@ -121,6 +122,30 @@ namespace LifeGame
             Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
             Engine.editing = true;
             Simulation = new Simulation(31, 13, Engine);
+
+            for (int i = 0; i < 50; i++)
+            {
+                int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
+                Simulation.Terrain[x][y].ChangeType(ThingType.Earth, null);
+                Simulation.Terrain[x][y].Apply();
+
+                x = rand.Next(Simulation.GridWidth);
+                y = rand.Next(Simulation.GridHeight);
+                Simulation.Terrain[x][y].ChangeType(ThingType.Sand, null);
+                Simulation.Terrain[x][y].Apply();
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
+                Simulation.Terrain[x][y].ChangeType(ThingType.Water, null);
+                Simulation.Terrain[x][y].Apply();
+
+                x = rand.Next(Simulation.GridWidth);
+                y = rand.Next(Simulation.GridHeight);
+                Simulation.Terrain[x][y].ChangeType(ThingType.Bush, null);
+                Simulation.Terrain[x][y].Apply();
+            }
+
 
             opening_title.Visibility = Visibility.Hidden;
             createWorld.Visibility = Visibility.Hidden;

@@ -28,10 +28,10 @@ namespace LifeGame
 
         // mutation probalility coefficients
         const float UNCHANGED_MUT_PROB = 10f;   // do nothing probability
-        const float WEIGHT_MUT_PROB = 0.988f;   // weight mutation probability
-        const float ADD_NODE_MUT_PROB = 0.01f;  // add node mutation probability
-        const float ADD_LINK_MUT_PROB = 0.01f;  // add link mutation probability
-        const float DEL_LINK_MUT_PROB = 0.01f;  // delete link mutation probability
+        const float WEIGHT_MUT_PROB = 0.7f;   // weight mutation probability
+        const float ADD_NODE_MUT_PROB = 0.1f;  // add node mutation probability
+        const float ADD_LINK_MUT_PROB = 0.1f;  // add link mutation probability
+        const float DEL_LINK_MUT_PROB = 0.1f;  // delete link mutation probability
 
         //random generators
         static RouletteWheel stdMutationRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_LINK_MUT_PROB, DEL_LINK_MUT_PROB, UNCHANGED_MUT_PROB);
@@ -215,7 +215,7 @@ namespace LifeGame
 
         void mutate()
         {
-            switch ((simulation.TrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
+            switch ((!simulation.TrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
             {
                 case 0:
                     mutateWeight();

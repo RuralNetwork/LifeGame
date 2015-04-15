@@ -15,10 +15,10 @@ namespace LifeGame
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
     public partial class Thing
     {
-        static FastRandom rand = new FastRandom();
+        protected static FastRandom rand = new FastRandom();
 
         //constant
-      public  static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
+        public static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
 
         protected Simulation simulation;
         protected GraphicsEngine engine;
@@ -118,7 +118,7 @@ namespace LifeGame
 
                 if (!IsCarrObj)
                 {
-                engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
+                    engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
 
                 }
             }
@@ -127,7 +127,7 @@ namespace LifeGame
                 foreach (var prop in PropsQueueDelta)
                 {
                     Properties[prop.Key] += prop.Value;
-                    if (Properties[prop.Key] < 0) Properties[prop.Key] = 0;
+                    if (Properties[prop.Key] < 0) Properties[prop.Key] = 0.0001f;
                 }
 
                 foreach (var prop in PropsQueueReset)
