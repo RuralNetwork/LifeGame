@@ -124,7 +124,7 @@ namespace LifeGame
             brush.ImageSource = being;
             poligono.Fill = brush;
 
-            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
 
             this._canvas.Children.Add(poligono);
@@ -134,7 +134,7 @@ namespace LifeGame
         public void changeBeing(Being obj)
         {
             //obj.Location
-            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y)));
+            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             obj.polygon.RenderTransform = translate;
         }
         //Careful, it removes also things

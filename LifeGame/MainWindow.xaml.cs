@@ -88,13 +88,13 @@ namespace LifeGame
             gridToolbox.Visibility = Visibility.Hidden;
             Simulation.TogglePause();
             //toggling text
-            if (((string)startSimulation.Content) == (string)"Start Simulation")
+            if ((string)startSimulation.Content == "Ferma Simulazione")
             {
-                startSimulation.Content = "Stop Simulation";
+                startSimulation.Content = "Continua Simulazione";
             }
             else
             {
-                startSimulation.Content = "Start Simulation";
+                startSimulation.Content = "Ferma Simulazione";
             }
 
             /*Debug.Write("Button clicked\n");

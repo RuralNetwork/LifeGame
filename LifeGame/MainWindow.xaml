@@ -10,7 +10,7 @@
             <ColumnDefinition x:Name="toolbox" Width="80*"/>
         </Grid.ColumnDefinitions>
         <Button x:Name="createWorld" Content="Crea il mondo" Grid.Column="1" Margin="159,0,159,234" FontSize="24" Cursor="Hand" Click="createWorld_Click" Height="71" VerticalAlignment="Bottom"/>
-        <Button x:Name="startSimulation" Content="Start Simulation" Margin="159,0,159,54" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand" Height="72" VerticalAlignment="Bottom"/>
+        <Button x:Name="startSimulation" Content="Inizia Simulazione" Margin="159,0,159,54" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand" Height="72" VerticalAlignment="Bottom"/>
 
         <Canvas x:Name="mainpanel" HorizontalAlignment="left" Width="0" Height="0" VerticalAlignment="Top"/>
         <TextBlock x:Name="opening_title" Grid.Column="1" Margin="75,188,63,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="158" FontSize="52" Text="Il Gioco della Vita" TextAlignment="Center"/>

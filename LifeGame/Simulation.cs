@@ -164,7 +164,15 @@ namespace LifeGame
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
                     Debug.Write("    best fitness: " + BestGenome.Fitness.ToString("0.00"));
-
+                    int c = 0;
+                    for (int x = 0; x < GridWidth; x++)
+                    {
+                        for (int y = 0; y < GridHeight; y++)
+                        {
+                            c++;
+                        }
+                    }
+                    Debug.Write("    " + c);
 
                     watch.Restart();
                     TimeTick++;
