@@ -3,18 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="600" Width="1000">
     <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="528*"/>
+            <RowDefinition x:Name="speed" Height="41*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="328*"/>
             <ColumnDefinition Width="337*"/>
             <ColumnDefinition Width="247*"/>
             <ColumnDefinition x:Name="toolbox" Width="80*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="createWorld" Content="Create World" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,200" VerticalAlignment="Bottom" Width="276" Height="71" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
-        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="0,0,0,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand"/>
+        <Button x:Name="createWorld" Content="Create World" Grid.Column="1" HorizontalAlignment="Center" Margin="30,0,31,138" VerticalAlignment="Bottom" Width="276" Height="71" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
+        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="30,0,31,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand" Grid.RowSpan="2"/>
 
-        <Canvas x:Name="mainpanel" Margin="0" HorizontalAlignment="left" VerticalAlignment="Top" Height="0" Width="0"></Canvas>
+        <Canvas x:Name="mainpanel" Margin="0" Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Height="0" Width="0"></Canvas>
         <TextBlock x:Name="opening_title" Grid.Column="1" HorizontalAlignment="Center" Margin="30,100,31,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="276" FontSize="52" Text="Life Game" TextAlignment="Center"/>
-        <Grid x:Name="gridToolbox" Grid.Column="3" HorizontalAlignment="Right" Height="569" VerticalAlignment="Top" Width="40" Visibility="Hidden">
+        <Grid x:Name="gridToolbox" Grid.Column="3" HorizontalAlignment="Right" Height="569" VerticalAlignment="Top" Width="40" Visibility="Hidden" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="51*"/>
                 <RowDefinition Height="51*"/>
@@ -32,7 +36,11 @@
             <Button Content="Bush"  Name="bush"  HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="4" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
             <Button Content="Berry" Name="berry" HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="3" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
         </Grid>
-
+        <Grid Grid.Row="1" Grid.Column="2" Name="gridSpeed" Visibility="Hidden">
+            <Button Content="1x" Grid.Column="2" HorizontalAlignment="Left" Margin="50,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x1" Click="toggleSpeed"/>
+            <Button Content="2x" Grid.Column="2" HorizontalAlignment="Left" Margin="90,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x2" Click="toggleSpeed"/>
+            <Button Content="3x" Grid.Column="2" HorizontalAlignment="Left" Margin="130,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x3" Click="toggleSpeed"/>
+        </Grid>
 
     </Grid>
 </Window>

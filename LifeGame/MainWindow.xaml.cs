@@ -85,6 +85,7 @@ namespace LifeGame
             Canvas.SetLeft(prova, 50);*/
             Engine.editing = false;
             gridToolbox.Visibility = Visibility.Hidden;
+            gridSpeed.Visibility = Visibility.Visible;
             Simulation.TogglePause();
             //toggling text
             if (((string)startSimulation.Content) == (string)"Start Simulation")
@@ -144,6 +145,18 @@ namespace LifeGame
             }
             current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
             Engine.changeBrush(current.Name);
+
+        }
+        private void toggleSpeed(object sender, RoutedEventArgs e)
+        {
+            Button current = e.Source as Button;
+            for (int i = 0; i < gridSpeed.Children.Count; i++)
+            {
+                UIElement f = gridSpeed.Children[i];
+                f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
+            }
+            current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
+            Engine.toggleSpeed(current.Name);
 
         }
     }
