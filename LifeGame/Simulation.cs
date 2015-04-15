@@ -157,8 +157,14 @@ namespace LifeGame
                     ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
 
                     Debug.Write("Fps: " + ActualFPS.ToString("0.0"));
-                    Debug.Write(" Population.Count: " + Population.Count);
-                    Debug.WriteLine(" Free Beings: " + freeBeingObjs.Count);
+                    Debug.Write(" Population.Count: " + Population.Count.ToString("00"));
+                    Debug.Write(" Free Beings: " + freeBeingObjs.Count.ToString("00"));
+                    if (Population.Count > 0)
+                    {
+                        Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
+                    }
+                    Debug.Write("    best fitness: " + BestGenome.Fitness.ToString("0.00"));
+
 
                     watch.Restart();
                     TimeTick++;
@@ -207,7 +213,6 @@ namespace LifeGame
                                 y = rand.Next(GridHeight);
                                 cell = Terrain[x][y];
                             } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
-
 
                             GiveBirth(BestGenome, new GridPoint(x, y));
                         }
@@ -289,15 +294,15 @@ namespace LifeGame
                                         }
                                     }
 
-                                    if (Thing.BiggerBetween(being, cell))
-                                    {
-                                        var dict = new Dictionary<ThingProperty, float>();
-                                        for (int i = 0; i < Thing.nThingProps; i++)
-                                        {
-                                            dict.Add((ThingProperty)i, being.Properties[(ThingProperty)i]);
-                                        }
-                                        cell.ChangeType(ThingType.Corpse, dict);
-                                    }
+                                    //if (Thing.BiggerBetween(being, cell))
+                                    //{
+                                    //    var dict = new Dictionary<ThingProperty, float>();
+                                    //    for (int i = 0; i < Thing.nThingProps; i++)
+                                    //    {
+                                    //        dict.Add((ThingProperty)i, being.Properties[(ThingProperty)i]);
+                                    //    }
+                                    //    cell.ChangeType(ThingType.Corpse, dict);
+                                    //}
 
                                     //check if is best genome
                                     if (being.FitnessMean.Value > BestGenome.Fitness)
@@ -435,7 +440,7 @@ namespace LifeGame
                             }
                         }
                     }
-
+                    Debug.WriteLine(null);
                 }
             }
         }

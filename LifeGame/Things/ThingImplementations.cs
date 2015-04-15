@@ -135,9 +135,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.64f);
+            propsDict.Add(ThingProperty.Color2, 0.75f);
+            propsDict.Add(ThingProperty.Color3, 0.34f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -163,9 +163,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.46f);
+            propsDict.Add(ThingProperty.Color2, 0.75f);
+            propsDict.Add(ThingProperty.Color3, 0.87f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -179,7 +179,10 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Eat, (t, b) => 
+            {
+                b.ChangeProp((ThingProperty)BeingMutableProp.Thirst, 0.005f * b.EnergySpent, false);
+            });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
 
@@ -191,9 +194,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.81f);
+            propsDict.Add(ThingProperty.Color2, 0.65f);
+            propsDict.Add(ThingProperty.Color3, 0.47f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -218,9 +221,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.48f);
+            propsDict.Add(ThingProperty.Color2, 0.42f);
+            propsDict.Add(ThingProperty.Color3, 0.38f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -245,9 +248,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.36f);
+            propsDict.Add(ThingProperty.Color2, 0.45f);
+            propsDict.Add(ThingProperty.Color3, 0.30f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -261,7 +264,10 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Eat, (t, b) => { });
+            interactDict.Add(ActionType.Eat, (t, b) =>
+            {
+                b.ChangeProp((ThingProperty)BeingMutableProp.Hunger, 0.01f * b.EnergySpent, false);
+            });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
 
@@ -272,9 +278,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.43f);
+            propsDict.Add(ThingProperty.Color2, 0.12f);
+            propsDict.Add(ThingProperty.Color3, 0.16f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);
@@ -353,9 +359,9 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Height, 0);
             propsDict.Add(ThingProperty.Alpha, 0);
             propsDict.Add(ThingProperty.Weigth, 0);
-            propsDict.Add(ThingProperty.Color1, 0);
-            propsDict.Add(ThingProperty.Color2, 0);
-            propsDict.Add(ThingProperty.Color3, 0);
+            propsDict.Add(ThingProperty.Color1, 0.31f);
+            propsDict.Add(ThingProperty.Color2, 0.19f);
+            propsDict.Add(ThingProperty.Color3, 0.11f);
             propsDict.Add(ThingProperty.Moving, 0);
             propsDict.Add(ThingProperty.Painful, 0);
             propsDict.Add(ThingProperty.Temperature, 0);

@@ -47,6 +47,12 @@ namespace LifeGame
 
         public void InitOffspring(Genome genome)
         {
+            Properties[(ThingProperty)BeingMutableProp.Energy] = 500f;
+            Properties[(ThingProperty)BeingMutableProp.Health] = 1;
+            Properties[(ThingProperty)BeingMutableProp.Integrity] = 1f;
+            Properties[(ThingProperty)BeingMutableProp.Hunger] = 1f;
+            Properties[(ThingProperty)BeingMutableProp.Thirst] = 1f;
+            Lifespan = 0;
             LivingOffsprings.Clear();
             Genome = genome;
             FitnessMean = new Average();
@@ -74,7 +80,7 @@ namespace LifeGame
                 var fitness = Properties[(ThingProperty)BeingMutableProp.Health];
                 foreach (var being in LivingOffsprings)
                 {
-                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health];
+                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan;
                 }
                 FitnessMean.Add(fitness);
             }
@@ -98,12 +104,12 @@ namespace LifeGame
             float f1;
             //       autoperception
             var i = 1;// 0=bias,  1=sex
-            bState[++i] = Properties[ThingProperty.Height];
-            bState[++i] = Properties[ThingProperty.Temperature];
-            bState[++i] = Properties[ThingProperty.SmellIntensity];
-            bState[++i] = Properties[ThingProperty.Smell1];
-            bState[++i] = Properties[ThingProperty.Smell2];
-            bState[++i] = Properties[ThingProperty.Smell3];
+            //bState[++i] = Properties[ThingProperty.Height];
+            //bState[++i] = Properties[ThingProperty.Temperature];
+            //bState[++i] = Properties[ThingProperty.SmellIntensity];
+            //bState[++i] = Properties[ThingProperty.Smell1];
+            //bState[++i] = Properties[ThingProperty.Smell2];
+            //bState[++i] = Properties[ThingProperty.Smell3];
             bState[++i] = Properties[ThingProperty.Wet];
             bState[++i] = Properties[(ThingProperty)BeingMutableProp.Health];
             bState[++i] = Properties[(ThingProperty)BeingMutableProp.Integrity];
@@ -112,28 +118,28 @@ namespace LifeGame
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            f1 = simulation.TimeTick / simulation.Environment.DayTicks * 2 * (float)Math.PI;
-            bState[++i] = (float)Math.Sin(f1);
-            bState[++i] = (float)Math.Cos(f1);
-            f1 = simulation.TimeTick / simulation.Environment.YearTicks * 2 * (float)Math.PI;
-            bState[++i] = (float)Math.Sin(f1);
-            bState[++i] = (float)Math.Cos(f1);
+            //f1 = simulation.TimeTick / simulation.Environment.DayTicks * 2 * (float)Math.PI;
+            //bState[++i] = (float)Math.Sin(f1);
+            //bState[++i] = (float)Math.Cos(f1);
+            //f1 = simulation.TimeTick / simulation.Environment.YearTicks * 2 * (float)Math.PI;
+            //bState[++i] = (float)Math.Sin(f1);
+            //bState[++i] = (float)Math.Cos(f1);
 
 
             //      carried object
-            bState[++i] = InnerThing.Properties[ThingProperty.Color1];
-            bState[++i] = InnerThing.Properties[ThingProperty.Color2];
-            bState[++i] = InnerThing.Properties[ThingProperty.Color3];
-            bState[++i] = InnerThing.Properties[ThingProperty.Moving];
-            bState[++i] = InnerThing.Properties[ThingProperty.Painful];
-            bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
-            bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
-            bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
-            bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
-            bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
-            bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
-            bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
-            bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Color1];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Color2];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Color3];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Moving];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Painful];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Weigth];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Temperature];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Amplitude];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Pitch];
+            //bState[++i] = InnerThing.Properties[ThingProperty.SmellIntensity];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Smell1];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Smell2];
+            //bState[++i] = InnerThing.Properties[ThingProperty.Smell3];
 
             //    common useful variables initialization
             var results = new float[12];
@@ -170,9 +176,9 @@ namespace LifeGame
                 }
             }
             //apply results
-            bState[++i] = results[0];
-            bState[++i] = results[1];
-            bState[++i] = results[2];
+            //bState[++i] = results[0];
+            //bState[++i] = results[1];
+            //bState[++i] = results[2];
 
             //       environment hearing(near cells)
             results[0] = 0f;
@@ -206,10 +212,10 @@ namespace LifeGame
                     }
                 }
             }
-            for (int j = 0; j < 12; j++)
-            {
-                bState[++i] = results[j];
-            }
+            //for (int j = 0; j < 12; j++)
+            //{
+            //    bState[++i] = results[j];
+            //}
 
             //environment sight(near cells)             //  questa parte dovrebbe essere molto più complessa (per le occlusioni) ma per ora lascio così
             results = new float[18];
@@ -236,6 +242,10 @@ namespace LifeGame
                         results[flags * 3] = terrain[gridX][gridY].Properties[ThingProperty.Color1] * k;
                         results[flags * 3 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Color2] * k;
                         results[flags * 3 + 2] = terrain[gridX][gridY].Properties[ThingProperty.Color3] * k;
+                        if (float.IsNaN(results[flags * 3]))
+                        {
+
+                        }
                     }
                 }
             }
@@ -256,13 +266,13 @@ namespace LifeGame
             bState[++i] = ccProps[ThingProperty.Color3];
             bState[++i] = ccProps[ThingProperty.Moving];
             bState[++i] = ccProps[ThingProperty.Painful];
-            bState[++i] = ccProps[ThingProperty.Temperature];
-            bState[++i] = ccProps[ThingProperty.Amplitude];
-            bState[++i] = ccProps[ThingProperty.Pitch];
+            //bState[++i] = ccProps[ThingProperty.Temperature];
+            //bState[++i] = ccProps[ThingProperty.Amplitude];
+            //bState[++i] = ccProps[ThingProperty.Pitch];
 
             //environment
-            bState[++i] = environment.Painful;
-            bState[++i] = environment.Temperature;
+            //bState[++i] = environment.Painful;
+            //bState[++i] = environment.Temperature;
             //Debug.Write("Input count: " + i);
 
             Brain.Calculate();
@@ -292,45 +302,44 @@ namespace LifeGame
             var target = terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)];
             switch (act)
             {
-                //case ActionType.Walk:
-                //    if (tgtType == 2)
-                //    {
-                //        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
-                //        cellPt = Location;
-                //        var lastFreeCellPt = Location;
-                //        while (EnergySpent > 0)
-                //        {
-                //            target = terrain[cellPt.X][cellPt.Y];
-                //            walkThrough(target);
-                //            if (EnergySpent < 0) break;
-                //            if (target.InnerThing != null)
-                //            {
-                //                walkThrough(target.InnerThing);
-                //            }
-                //            else
-                //            {
-                //                lastFreeCellPt = cellPt;
-                //            }
-                //            cellPt.GetNearCell(cDir);
-                //            cellPt.X = cellPt.X.Cycle(width);
-                //            cellPt.Y = cellPt.Y.Cycle(height);
-                //        }
-                //        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
-                //        //ChangeProp(ThingProperty.Moving,)
-                //    }
-                //    break;
+                case ActionType.Walk:
+                    if (tgtType == 2)
+                    {
+                        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
+                        cellPt = Location;
+                        var lastFreeCellPt = Location;
+                        while (EnergySpent > 0)
+                        {
+                            target = terrain[cellPt.X][cellPt.Y];
+                            walkThrough(target);
+                            if (EnergySpent < 0) break;
+                            if (target.InnerThing != null)
+                            {
+                                walkThrough(target.InnerThing);
+                            }
+                            else
+                            {
+                                lastFreeCellPt = cellPt;
+                            }
+                            cellPt.GetNearCell(cDir);
+                            cellPt.X = cellPt.X.Cycle(width);
+                            cellPt.Y = cellPt.Y.Cycle(height);
+                        }
+                        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
+                        //ChangeProp(ThingProperty.Moving,)
+                    }
+                    break;
                 case ActionType.Sleep:
                     ChangeProp((ThingProperty)BeingMutableProp.Energy, Properties[(ThingProperty)BeingMutableProp.Hunger] * 100f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
-                    ChangeProp((ThingProperty)BeingMutableProp.Hunger, -Properties[(ThingProperty)BeingMutableProp.Hunger] * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
                     energy = 0;// prevent loss of energy
                     //interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
                 case ActionType.Fight:
-                    if (tgtType == 0)
-                    {
-                        interact(InnerThing, act);
-                    }
+                    //if (tgtType == 0)
+                    //{
+                    //    interact(InnerThing, act);
+                    //}
                     interact(target, act);
                     break;
                 case ActionType.Breed:
@@ -353,6 +362,7 @@ namespace LifeGame
                 //    energy = 0;
                 //    break;
                 default:
+                    energy = 0;
                     break;
             }
 
@@ -364,7 +374,11 @@ namespace LifeGame
             ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.001f, false);
 
-            if (Properties[(ThingProperty)BeingMutableProp.Health] <= 0)
+            if (Properties[(ThingProperty)BeingMutableProp.Health] > Properties[(ThingProperty)BeingMutableProp.Health])
+            {
+                ChangeProp((ThingProperty)BeingMutableProp.Health, Properties[(ThingProperty)BeingMutableProp.Health], true);
+            }
+            if (Properties[(ThingProperty)BeingMutableProp.Health] < 0.01f)
             {
                 simulation.MakeDie(this); //  FATALITY!!!
             }
