@@ -8,16 +8,16 @@
             <RowDefinition x:Name="speed" Height="41*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="328*"/>
-            <ColumnDefinition Width="337*"/>
-            <ColumnDefinition Width="247*"/>
-            <ColumnDefinition x:Name="toolbox" Width="80*"/>
+            <ColumnDefinition Width="141*"/>
+            <ColumnDefinition Width="213*"/>
+            <ColumnDefinition Width="102*"/>
+            <ColumnDefinition x:Name="toolbox" Width="40*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="createWorld" Content="Create World" Grid.Column="1" HorizontalAlignment="Center" Margin="30,0,31,138" VerticalAlignment="Bottom" Width="276" Height="71" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
-        <Button x:Name="startSimulation" Content="Start Simulation" HorizontalAlignment="Center" Margin="30,0,31,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand" Grid.RowSpan="2"/>
+        <Button x:Name="createWorld" Content="Crea Mondo" Grid.Column="1" HorizontalAlignment="Center" Margin="78,0,72,138" VerticalAlignment="Bottom" Width="276" Height="71" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
+        <Button x:Name="startSimulation" Content="Inizia Simulazione" HorizontalAlignment="Center" Margin="78,0,72,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" IsEnabled="False" Cursor="Hand" Grid.RowSpan="2"/>
 
-        <Canvas x:Name="mainpanel" Margin="0" Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Height="0" Width="0"></Canvas>
-        <TextBlock x:Name="opening_title" Grid.Column="1" HorizontalAlignment="Center" Margin="30,100,31,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="276" FontSize="52" Text="Life Game" TextAlignment="Center"/>
+        <Canvas x:Name="mainpanel" Margin="216,264,210,264" Grid.Column="1" HorizontalAlignment="center" VerticalAlignment="center" Height="0" Width="0"></Canvas>
+        <TextBlock x:Name="opening_title" HorizontalAlignment="Center" Margin="4,100,2,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="420" FontSize="52" Text="Il Gioco della Vita" TextAlignment="Center" Grid.Column="1"/>
         <Grid x:Name="gridToolbox" Grid.Column="3" HorizontalAlignment="Right" Height="569" VerticalAlignment="Top" Width="40" Visibility="Hidden" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="51*"/>
