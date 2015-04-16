@@ -69,7 +69,7 @@ namespace LifeGame
             preActivationArray = new float[nodeCount];
             State = new float[nodeCount];
             State[0] = 1;                 // bias
-            State[1] = (sex ? 1f : 0f);
+            State[1] = (sex ? 1f : -1f);
             this.linkCount = linkCount;
             this.nodeCount = nodeCount;
         }

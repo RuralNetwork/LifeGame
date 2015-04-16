@@ -181,8 +181,26 @@ namespace LifeGame
                 f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
             }
             current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
-            Engine.toggleSpeed(current.Name);
+            toggleSpeed(current.Name);
 
+        }
+        public void toggleSpeed(string speed)
+        {
+            switch (speed)
+            {
+                case "x1":
+                    Simulation.timer.Interval = new TimeSpan(0, 0, 1);
+                    break;
+                case "x2":
+                    Simulation.timer.Interval = new TimeSpan(0, 0,0,0,200);
+                    break;
+                case "x3":
+                    Simulation.timer.Interval = default(TimeSpan);
+                    break;
+                default:
+                    Simulation.timer.Interval = new TimeSpan(0, 0, 1);
+                    break;
+            }
         }
     }
 }

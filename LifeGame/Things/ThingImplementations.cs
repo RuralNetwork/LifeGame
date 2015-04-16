@@ -86,8 +86,8 @@ namespace LifeGame
 
             //---------------- Earth:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 0.10f);
+            propsDict.Add(ThingProperty.Alpha, 1f);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.29f);
             propsDict.Add(ThingProperty.Color2, 0.18f);
@@ -132,8 +132,8 @@ namespace LifeGame
 
             //---------------- Grass:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 0.30f);
+            propsDict.Add(ThingProperty.Alpha, 0.8f);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.64f);
             propsDict.Add(ThingProperty.Color2, 0.75f);
@@ -160,8 +160,8 @@ namespace LifeGame
 
             //---------------- Water:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 0.50f);
+            propsDict.Add(ThingProperty.Alpha, 0.2f);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.46f);
             propsDict.Add(ThingProperty.Color2, 0.75f);
@@ -191,8 +191,8 @@ namespace LifeGame
 
             //---------------- Sand:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 0.20f);
+            propsDict.Add(ThingProperty.Alpha, 1);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.81f);
             propsDict.Add(ThingProperty.Color2, 0.65f);
@@ -245,8 +245,8 @@ namespace LifeGame
 
             //---------------- Bush:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 1f);
+            propsDict.Add(ThingProperty.Alpha, 0.9f);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.36f);
             propsDict.Add(ThingProperty.Color2, 0.45f);

@@ -45,7 +45,7 @@ namespace LifeGame
         //Nodes: based on link they replaced
 
         //ID counter for both linkBuffer and nodeBuffer
-        static uint lastID;
+        static uint lastID = Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT;
 
         //The key is the link ID the AddedNode struct replaced
         //The ID is contained in the AddedNode sruct
@@ -86,19 +86,27 @@ namespace LifeGame
             {
                 addLink();
             }
-
+            integrityCheck();
         }
         /// <summary>
         /// Create a new genome mutating a genome
         /// </summary>
         public NNGenome(NNGenome genome)
         {
+            genome.integrityCheck();
             simulation = genome.simulation;
-            NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList);
-            LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList);
+            NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList.Count);
+            foreach (var kv in genome.NodeGeneList)
+            {
+                NodeGeneList.Add(kv.Key, new NodeGene(kv.Value));
+            }
+            LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList.Count);
+            foreach (var kv in genome.LinkGeneList)
+            {
+                LinkGeneList.Add(kv.Key, new LinkGene(kv.Value));
+            }
 
             mutate();
-
         }
 
         /// <summary>
@@ -241,7 +249,7 @@ namespace LifeGame
             var valueList = LinkGeneList.Values;
             for (int i = 0; i < n; i++)
             {
-                var m = rand.Next(n);// it doesn't matter mutating a connection twice
+                var m = rand.Next(LinkGeneList.Count);// it doesn't matter mutating a connection twice
 
                 var weight = valueList[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
                 valueList[m].Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
@@ -270,16 +278,18 @@ namespace LifeGame
             //output link with max weight
             LinkGeneList.Add(addedNode.OutpLinkID, new LinkGene(addedNode.NodeID, oldLink.TargetID, WEIGHT_RANGE));
 
-            var srcNode = NodeGeneList[oldLink.SourceID];//search by key -> binary search
-            srcNode.TgtNodeIDs.Remove(oldLink.SourceID);
+            var srcID = oldLink.SourceID;
+            var tgtID = oldLink.TargetID;
+
+            var srcNode = NodeGeneList[srcID];//search by key -> binary search
+            srcNode.TgtNodeIDs.Remove(tgtID);
             srcNode.TgtNodeIDs.Add(addedNode.NodeID);
-            newNode.SrcNodeIDs.Add(oldLink.SourceID);
+            newNode.SrcNodeIDs.Add(srcID);
 
-            var tgtNode = NodeGeneList[oldLink.TargetID];//search by key -> binary search
-            tgtNode.SrcNodeIDs.Remove(oldLink.SourceID);
+            var tgtNode = NodeGeneList[tgtID];//search by key -> binary search
+            tgtNode.SrcNodeIDs.Remove(srcID);
             tgtNode.SrcNodeIDs.Add(addedNode.NodeID);
-            newNode.TgtNodeIDs.Add(oldLink.TargetID);
-
+            newNode.TgtNodeIDs.Add(tgtID);
         }
 
         /// <summary>
@@ -339,8 +349,8 @@ namespace LifeGame
                     }
                     else
                     {
-                        LinkGeneList.Add(++lastID, newLink);
-                        linkBuffer.Enqueue(addedLink, lastID);//same ID
+                        linkBuffer.Enqueue(addedLink, ++lastID);
+                        LinkGeneList.Add(lastID, newLink);//same ID
                     }
                     srcNode.TgtNodeIDs.Add(tgtID);
                     tgtNode.SrcNodeIDs.Add(srcID);
@@ -367,21 +377,54 @@ namespace LifeGame
             var oldLink = LinkGeneList.Values[idx];
             LinkGeneList.RemoveAt(idx);
 
-            //-------------Remove unnecessary nodes------------
             var srcID = oldLink.SourceID;
             var tgtID = oldLink.TargetID;
 
             //source node
             var srcNode = NodeGeneList[srcID];
             srcNode.TgtNodeIDs.Remove(tgtID);
-            if (srcNode.IsRedundant) NodeGeneList.Remove(srcID);
 
             //target node
             var tgtNode = NodeGeneList[tgtID];
             tgtNode.SrcNodeIDs.Remove(srcID);
+
+            //-------------Remove unnecessary nodes------------
+            if (srcNode.IsRedundant) NodeGeneList.Remove(srcID);
             if (tgtNode.IsRedundant) NodeGeneList.Remove(tgtID);
 
 
+        }
+
+
+        public bool integrityCheck()
+        {
+            foreach (var node in NodeGeneList)
+            {
+                foreach (var id in node.Value.SrcNodeIDs)
+                {
+                    if (!NodeGeneList.ContainsKey(id))
+                    {
+                        return false;
+                    }
+                }
+                foreach (var id in node.Value.TgtNodeIDs)
+                {
+                    if (!NodeGeneList.ContainsKey(id))
+                    {
+                        return false;
+                    }
+                }
+
+            }
+            foreach (var link in LinkGeneList)
+            {
+                if (!NodeGeneList.ContainsKey(link.Value.SourceID) || !NodeGeneList.ContainsKey(link.Value.TargetID))
+                {
+                    return false;
+                }
+
+            }
+            return true;
         }
     }
 }

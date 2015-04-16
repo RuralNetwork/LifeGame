@@ -189,24 +189,7 @@ namespace LifeGame
             }
             return color;
         }
-        public void toggleSpeed(string speed)
-        {
-            switch (speed)
-            {
-                case "x1":
-                    //speed normale
-                    break;
-                case "x2":
-                    //speed doppia
-                    break;
-                case "x3":
-                    //speed massima
-                    break;
-                default:
-                    //speed normale
-                    break;
-            }
-        }
+
         private ImageBrush switchGround(ThingType type)
         {
             BitmapImage image;

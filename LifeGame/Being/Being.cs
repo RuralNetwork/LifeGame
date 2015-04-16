@@ -201,9 +201,9 @@ namespace LifeGame
                         flags += (cartY < -0.001 * cartX ? 2 : 0);//                       /0 \ 
                         // il 0.001 aggiunto/sottratto serve per redistribuire equamente le celle divise esattamente a metà
 
-                        results[flags * 2] = terrain[gridX][gridY].Properties[ThingProperty.Pitch] /
+                        results[flags * 2] += terrain[gridX][gridY].Properties[ThingProperty.Pitch] /
                             terrain[gridX][gridY].Properties[ThingProperty.Amplitude] / (d + 1);
-                        results[flags * 2 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Amplitude] / (d + 1);
+                        results[flags * 2 + 1] += terrain[gridX][gridY].Properties[ThingProperty.Amplitude] / (d + 1);
                         if (float.IsNaN(results[flags * 2]))
                         {
 
@@ -239,9 +239,9 @@ namespace LifeGame
                         var k = terrain[gridX][gridY].Properties[ThingProperty.Alpha] *
                             (-1 / (terrain[gridX][gridY].Properties[ThingProperty.Height] + 1) + 1) / (d + 1);
 
-                        results[flags * 3] = terrain[gridX][gridY].Properties[ThingProperty.Color1] * k;
-                        results[flags * 3 + 1] = terrain[gridX][gridY].Properties[ThingProperty.Color2] * k;
-                        results[flags * 3 + 2] = terrain[gridX][gridY].Properties[ThingProperty.Color3] * k;
+                        results[flags * 3] += terrain[gridX][gridY].Properties[ThingProperty.Color1] * k;
+                        results[flags * 3 + 1] += terrain[gridX][gridY].Properties[ThingProperty.Color2] * k;
+                        results[flags * 3 + 2] += terrain[gridX][gridY].Properties[ThingProperty.Color3] * k;
                         if (float.IsNaN(results[flags * 3]))
                         {
 

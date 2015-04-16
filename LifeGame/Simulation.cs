@@ -19,7 +19,7 @@ namespace LifeGame
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     public class Simulation
     {
-        DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
+        public DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
         Stopwatch watch = Stopwatch.StartNew();
 
         public int lastID; // used and managed by the beings
@@ -37,7 +37,6 @@ namespace LifeGame
         /// </summary>
         public List<Event> Events { get; set; }
 
-        Thread thread;
         GraphicsEngine engine;
         FastRandom rand = new FastRandom();
 
@@ -169,7 +168,10 @@ namespace LifeGame
                     {
                         for (int y = 0; y < GridHeight; y++)
                         {
-                            c++;
+                            if (Terrain[x][y].InnerThing!=null)
+                            {
+                                c++;
+                            }
                         }
                     }
                     Debug.Write("    " + c);
@@ -368,12 +370,6 @@ namespace LifeGame
                                 beingList.Clear();
                             }
                         }
-                    }
-
-
-                    if (Population.Count + freeBeingObjs.Count != 30)
-                    {
-
                     }
 
 
