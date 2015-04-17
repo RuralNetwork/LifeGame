@@ -47,7 +47,7 @@ namespace LifeGame
 
         public void InitOffspring(Genome genome)
         {
-            Properties[(ThingProperty)BeingMutableProp.Energy] = 500f;
+            Properties[(ThingProperty)BeingMutableProp.Energy] = 10000f;
             Properties[(ThingProperty)BeingMutableProp.Health] = 1;
             Properties[(ThingProperty)BeingMutableProp.Integrity] = 1f;
             Properties[(ThingProperty)BeingMutableProp.Hunger] = 1f;
@@ -295,8 +295,8 @@ namespace LifeGame
             var dirVec = new Vector(bState[++i].InverseSigmoid(), bState[++i].InverseSigmoid());
             var mag = dirVec.Magnitude;
             int tgtType = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));//target type
-            var energy = Math.Max(bState[++i].InverseSigmoid(), 0); //energy >= 0;
-            energy = Math.Min(energy, Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
+            var energy = Math.Max(bState[++i], 0.5f);
+            energy = Math.Min((energy - 0.5f) * 2f * Properties[(ThingProperty)BeingMutableProp.Energy], Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
             EnergySpent = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
@@ -306,19 +306,21 @@ namespace LifeGame
             //debug: sovrascrivi questi
             act = ActionType.Walk;
             tgtType = 2;
-            energy = 2; //questo modifica la lunghezza del percorso, mai negativo
-            cDir = CellDirection.Random;// cambia questo per cambiare scegliere la direzione
+            EnergySpent = 400f;
+            cDir = CellDirection.Bottom;// cambia questo per cambiare scegliere la direzione
 
             switch (act)
             {
                 case ActionType.Walk:
                     if (tgtType == 2)
                     {
-                        EnergySpent = energy; // DeltaEnergy is decreased by the things the being interact with
                         cellPt = Location;
                         var lastFreeCellPt = Location;
                         while (EnergySpent > 0)
                         {
+                           cellPt= cellPt.GetNearCell(cDir);
+                            cellPt.X = cellPt.X.Cycle(width);
+                            cellPt.Y = cellPt.Y.Cycle(height);
                             target = terrain[cellPt.X][cellPt.Y];
                             walkThrough(target);
                             if (EnergySpent < 0) break;
@@ -330,9 +332,6 @@ namespace LifeGame
                             {
                                 lastFreeCellPt = cellPt;
                             }
-                            cellPt.GetNearCell(cDir);
-                            cellPt.X = cellPt.X.Cycle(width);
-                            cellPt.Y = cellPt.Y.Cycle(height);
                             steps++;
                         }
                         simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
@@ -374,6 +373,7 @@ namespace LifeGame
                     energy = 0;
                     break;
             }
+
 
             //debug
             energy = 0;
