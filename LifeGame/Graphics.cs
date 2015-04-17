@@ -134,7 +134,7 @@ namespace LifeGame
         public void changeBeing(Being obj)
         {
             //obj.Location
-            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             obj.polygon.RenderTransform = translate;
         }
         //Careful, it removes also things
