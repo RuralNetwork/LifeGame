@@ -302,6 +302,13 @@ namespace LifeGame
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
             GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
             var target = terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)];
+
+            //debug: sovrascrivi questi
+            act = ActionType.Walk;
+            tgtType = 2;
+            energy = 2; //questo modifica la lunghezza del percorso, mai negativo
+            cDir = CellDirection.Random;// cambia questo per cambiare scegliere la direzione
+
             switch (act)
             {
                 case ActionType.Walk:
