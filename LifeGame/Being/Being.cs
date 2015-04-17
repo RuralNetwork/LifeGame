@@ -58,6 +58,8 @@ namespace LifeGame
             FitnessMean = new Average();
             Sex = randBool.Next();
             Brain = new NeuralNetwork(genome.NNGenome, Sex);
+
+            steps = 0;
         }
 
         public void InitLoad(int lifespan, Average fitness, Genome genome, NeuralNetwork brain, CellDirection direction)
@@ -70,7 +72,7 @@ namespace LifeGame
             //sex, heightmul
         }
 
-
+        int steps;
 
         public override void Update()
         {
@@ -80,7 +82,7 @@ namespace LifeGame
                 var fitness = Properties[(ThingProperty)BeingMutableProp.Health];
                 foreach (var being in LivingOffsprings)
                 {
-                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan;
+                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan + steps;
                 }
                 FitnessMean.Add(fitness);
             }
@@ -324,9 +326,9 @@ namespace LifeGame
                             cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);
                             cellPt.Y = cellPt.Y.Cycle(height);
+                            steps++;
                         }
                         simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
-                        //ChangeProp(ThingProperty.Moving,)
                     }
                     break;
                 case ActionType.Sleep:
@@ -365,6 +367,9 @@ namespace LifeGame
                     energy = 0;
                     break;
             }
+
+            //debug
+            energy = 0;
 
             // being changes
             Direction = cDir;

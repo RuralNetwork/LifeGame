@@ -7,5 +7,6 @@ namespace LifeGame
 {
     class Serializer
     {
+
     }
 }

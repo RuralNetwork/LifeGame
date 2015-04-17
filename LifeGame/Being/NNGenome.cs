@@ -86,24 +86,22 @@ namespace LifeGame
             {
                 addLink();
             }
-            integrityCheck();
         }
         /// <summary>
         /// Create a new genome mutating a genome
         /// </summary>
         public NNGenome(NNGenome genome)
         {
-            genome.integrityCheck();
             simulation = genome.simulation;
             NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList.Count);
-            foreach (var kv in genome.NodeGeneList)
+            foreach (var kvp in genome.NodeGeneList)
             {
-                NodeGeneList.Add(kv.Key, new NodeGene(kv.Value));
+                NodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
             }
             LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList.Count);
-            foreach (var kv in genome.LinkGeneList)
+            foreach (var kvp in genome.LinkGeneList)
             {
-                LinkGeneList.Add(kv.Key, new LinkGene(kv.Value));
+                LinkGeneList.Add(kvp.Key, new LinkGene(kvp.Value));
             }
 
             mutate();

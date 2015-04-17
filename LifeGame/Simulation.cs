@@ -353,6 +353,7 @@ namespace LifeGame
 
                                 var loc = new GridPoint(x, y);
                                 biggerBeing.Location = loc;
+                                engine.changeBeing(biggerBeing); //             <-----chiamata all'engine
                                 Terrain[x][y].InnerThing = biggerBeing;
                                 foreach (var being in beingList)
                                 {
@@ -366,6 +367,7 @@ namespace LifeGame
                                     newCell.InnerThing = being;
                                     Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                                     being.Location = newLoc;
+                                    engine.changeBeing(being); //             <-----chiamata all'engine
                                 }
                                 beingList.Clear();
                             }
