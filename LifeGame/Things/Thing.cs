@@ -45,7 +45,7 @@ namespace LifeGame
         public Dictionary<ActionType, Effects> Interactions { get; set; }
 
 
-        protected delegate void UpdateDelegate();
+        public delegate void UpdateDelegate();
         protected UpdateDelegate updateDel;
 
         public bool IsCarrObj;

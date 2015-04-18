@@ -179,7 +179,7 @@ namespace LifeGame
             propsDicts.Add(propsDict);
 
             interactDict = new Dictionary<ActionType, Effects>();
-            interactDict.Add(ActionType.Eat, (t, b) => 
+            interactDict.Add(ActionType.Eat, (t, b) =>
             {
                 b.ChangeProp((ThingProperty)BeingMutableProp.Thirst, 0.005f * b.EnergySpent, false);
             });

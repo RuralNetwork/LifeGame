@@ -37,6 +37,9 @@ namespace LifeGame
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
 
+        public float FitnessPoints;
+
+
         public Being(Simulation simulation, GraphicsEngine engine)
             : base(ThingType.Being, simulation, engine, default(GridPoint))
         {
@@ -59,7 +62,6 @@ namespace LifeGame
             Sex = randBool.Next();
             Brain = new NeuralNetwork(genome.NNGenome, Sex);
 
-            steps = 0;
         }
 
         public void InitLoad(int lifespan, Average fitness, Genome genome, NeuralNetwork brain, CellDirection direction)
@@ -72,20 +74,22 @@ namespace LifeGame
             //sex, heightmul
         }
 
-        int steps;
+
 
         public override void Update()
         {
             Lifespan++;
             if (simulation.TrainingMode)
             {
-                var fitness = Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan + steps;
+                var fitness = Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
+                    Properties[(ThingProperty)BeingMutableProp.Thirst] + Lifespan + FitnessPoints;
                 foreach (var id in LivingOffsprings)
                 {
                     fitness += simulation.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
                 }
                 FitnessMean.Add(fitness);
             }
+            FitnessPoints = 0;
 
             mute();
             rest();
@@ -328,13 +332,13 @@ namespace LifeGame
                             {
                                 walkThrough(target.InnerThing);
                             }
-                            steps++;
+                            FitnessPoints++;
                         }
                         simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
                     }
                     break;
                 case ActionType.Sleep:
-                    ChangeProp((ThingProperty)BeingMutableProp.Energy, Properties[(ThingProperty)BeingMutableProp.Hunger] * 100f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
+                    ChangeProp((ThingProperty)BeingMutableProp.Energy, 1000f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
                     energy = 0;// prevent loss of energy
                     //interact(target, ActionType.Sleep);
                     break;

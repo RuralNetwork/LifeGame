@@ -17,6 +17,7 @@ namespace LifeGame
     }
 
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
+    [Serializable]
     public class Simulation
     {
         public DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
@@ -44,8 +45,8 @@ namespace LifeGame
         public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
-        //List<Genome> hallOfFame;
-        public Genome BestGenome;
+        public List<Genome> HallOfFame;
+        public int HallSeats;
 
         public Thing[][] Terrain { get; set; }
 
@@ -119,7 +120,12 @@ namespace LifeGame
                 var being = new Being(this, engine);
                 freeBeingObjs.Add(being);
             }
-            BestGenome = new Genome(this);
+            HallSeats = 5;
+            HallOfFame = new List<Genome>();
+            for (int i = 0; i < HallSeats; i++)
+            {
+                HallOfFame.Add(new Genome(this));
+            }
             // }
             /*else
             {
@@ -160,7 +166,7 @@ namespace LifeGame
                     {
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
-                    Debug.Write("    best fitness: " + BestGenome.Fitness.ToString("0.00"));
+                    Debug.Write("    best fitness: " + HallOfFame.First().Fitness.ToString("0.000"));
                     int c = 0;
                     for (int x = 0; x < GridWidth; x++)
                     {
@@ -222,7 +228,7 @@ namespace LifeGame
                                 cell = Terrain[x][y];
                             } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
 
-                            GiveBirth(BestGenome, new GridPoint(x, y));
+                            GiveBirth(HallOfFame[rand.Next(HallSeats)], new GridPoint(x, y));
                         }
                     }
 
@@ -279,7 +285,7 @@ namespace LifeGame
                                     var being = tuple.Item1;
                                     cell.InnerThing = null;
 
-                                    Population.Remove(being.ID); // remove form Population               // here it's the only place I need being IDs
+                                    Population.Remove(being.ID); // remove form Population
                                     freeBeingObjs.Add(being);    // add to freeBeingObjs
 
                                     if (being.Father != -1)
@@ -318,10 +324,14 @@ namespace LifeGame
                                     //}
 
                                     //check if is best genome
-                                    if (being.FitnessMean.Value > BestGenome.Fitness)
+                                    for (int i = 0; i < HallSeats; i++)
                                     {
-                                        BestGenome = being.Genome;
-                                        BestGenome.Fitness = being.FitnessMean.Value;
+                                        if (being.FitnessMean.Value > HallOfFame[i].Fitness)
+                                        {
+                                            being.Genome.Fitness = being.FitnessMean.Value;
+                                            HallOfFame.Insert(i, being.Genome);
+                                            HallOfFame.RemoveAt(HallSeats);
+                                        }
                                     }
 
                                     ///////////////////////////aggiungi qui codice per nascondere il being (e il suo innerthing)//////////////////////
