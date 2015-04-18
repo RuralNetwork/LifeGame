@@ -138,12 +138,13 @@ namespace LifeGame
             //obj.Location
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
 
+            //TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            /*TranslateTransform translate = new TranslateTransform(0,0);
             DoubleAnimation ascissa = new DoubleAnimation((Double)40 * obj.Location.X, duration);
             DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
             translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
-            translate.BeginAnimation(TranslateTransform.YProperty, ordinata);*/
+            translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
+            obj.polygon.RenderTransform = translate;
         }
         //Careful, it removes also things
         public void removeBeing(Being obj){

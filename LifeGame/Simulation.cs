@@ -155,12 +155,12 @@ namespace LifeGame
 
                     Debug.Write("Fps: " + ActualFPS.ToString("0.0"));
                     Debug.Write(" Population.Count: " + Population.Count.ToString("00"));
-                    Debug.Write(" Free Beings: " + freeBeingObjs.Count.ToString("00"));
+                    Debug.Write(" Free Beings: " + freeBeingObjs.Count.ToString("00") + "\n");
                     if (Population.Count > 0)
                     {
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
-                    Debug.Write("    best fitness: " + BestGenome.Fitness.ToString("0.00"));
+                    Debug.Write("    best fitness: " + BestGenome.Fitness.ToString("0.00") + "\n");
                     int c = 0;
                     for (int x = 0; x < GridWidth; x++)
                     {
@@ -180,7 +180,7 @@ namespace LifeGame
                     Environment.Update();
 
                     int idx = 0;
-#if DEBUG // change to release to execute parallel code
+//#if DEBUG // change to release to execute parallel code
                     foreach (var arr in Terrain)
                     {
                         foreach (var thing in arr)
@@ -336,8 +336,10 @@ namespace LifeGame
                     while (BeingLocQueue.Count > 0)
                     {
                         idx = rand.Next(BeingLocQueue.Count);
+
                         var tuple = BeingLocQueue[idx];
                         var being = tuple.Item1;
+                        Debug.Write("Count Beings"+BeingLocQueue.Count+"\n");
                         if (Population.ContainsKey(being.ID))
                         {
                             var newLoc = tuple.Item2;
@@ -350,8 +352,10 @@ namespace LifeGame
                                 newCell = Terrain[newLoc.X][newLoc.Y];
                             }
                             newCell.InnerThing = being;
+                            Debug.Write("Ex location" + being.Location.X + "\n");
                             Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                             being.Location = newLoc;
+                            Debug.Write("New location" + newLoc.X + "\n");
                             engine.changeBeing(being); //             <-----chiamata all'engine
                         }
                         else
@@ -362,7 +366,7 @@ namespace LifeGame
                     }
 
 
-#else
+//#else
                         //       Rifare questa parte
                         //Parallel.ForEach(Terrain, arr =>
                         //{
@@ -420,7 +424,7 @@ namespace LifeGame
                         //    }
                         //});
 
-#endif
+//#endif
                     //Draw
                     if (MustDraw)
                     {
@@ -433,7 +437,7 @@ namespace LifeGame
                             }
                         }
                     }
-                    Debug.WriteLine(null);
+                    //Debug.WriteLine(null);
                 }
             }
         }
