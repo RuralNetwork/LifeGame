@@ -28,11 +28,11 @@ namespace LifeGame
         public int Lifespan { get; private set; }
         public Genome Genome { get; set; }
         public NeuralNetwork Brain { get; private set; }
-        public List<Being> LivingOffsprings { get; private set; }
+        public List<int> LivingOffsprings { get; private set; }
 
         //need to identify whose the father and the mother 
-        public Being Father { get; set; }
-        public Being Mother { get; set; }
+        public int Father { get; set; }
+        public int Mother { get; set; }
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
@@ -42,7 +42,7 @@ namespace LifeGame
         {
             InnerThing = new Thing(ThingType.Null, simulation, engine, default(GridPoint));
             InnerThing.IsCarrObj = true;
-            LivingOffsprings = new List<Being>();
+            LivingOffsprings = new List<int>();
         }
 
         public void InitOffspring(Genome genome)
@@ -79,10 +79,10 @@ namespace LifeGame
             Lifespan++;
             if (simulation.TrainingMode)
             {
-                var fitness = Properties[(ThingProperty)BeingMutableProp.Health];
-                foreach (var being in LivingOffsprings)
+                var fitness = Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan + steps;
+                foreach (var id in LivingOffsprings)
                 {
-                    fitness += being.Properties[(ThingProperty)BeingMutableProp.Health] + Lifespan + steps;
+                    fitness += simulation.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
                 }
                 FitnessMean.Add(fitness);
             }
@@ -301,13 +301,15 @@ namespace LifeGame
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
             var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
             GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
-            var target = terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)];
+            cellPt.X = cellPt.X.Cycle(width);
+            cellPt.Y = cellPt.Y.Cycle(height);
+            var target = terrain[cellPt.X][cellPt.Y];
 
             //debug: sovrascrivi questi
-            act = ActionType.Walk;
-            tgtType = 2;
-            EnergySpent = 400f;
-            cDir = CellDirection.Bottom;// cambia questo per cambiare scegliere la direzione
+            //act = ActionType.Walk;
+            //tgtType = 2;
+            //EnergySpent = 100f;
+            //cDir = CellDirection.Bottom;// cambia questo per cambiare scegliere la direzione
 
             switch (act)
             {
@@ -315,26 +317,20 @@ namespace LifeGame
                     if (tgtType == 2)
                     {
                         cellPt = Location;
-                        var lastFreeCellPt = Location;
                         while (EnergySpent > 0)
                         {
-                           cellPt= cellPt.GetNearCell(cDir);
+                            cellPt = cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);
                             cellPt.Y = cellPt.Y.Cycle(height);
                             target = terrain[cellPt.X][cellPt.Y];
                             walkThrough(target);
-                            if (EnergySpent < 0) break;
                             if (target.InnerThing != null)
                             {
                                 walkThrough(target.InnerThing);
                             }
-                            else
-                            {
-                                lastFreeCellPt = cellPt;
-                            }
                             steps++;
                         }
-                        simulation.BeingLocQueue[lastFreeCellPt.X][lastFreeCellPt.Y].Add(this);
+                        simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
                     }
                     break;
                 case ActionType.Sleep:

@@ -57,11 +57,11 @@ namespace LifeGame
         public bool MustDraw = true;
 
 
-        public List<Being>[][] BeingLocQueue { get; private set; }
+        public List<Tuple<Being, GridPoint>> BeingLocQueue { get; private set; }
 
-        //Born: true
-        //Died: false
-        public Tuple<bool, Genome, Being, Being>[][] BornDiedQueue { get; private set; }
+        //Born: 1° being=null
+        //Died: 1° being!=null
+        public Tuple<Being, Genome, Being, Being>[][] BornDiedQueue { get; private set; }
 
         /// <summary>
         /// Dictionary containing all beings that are currently alive.
@@ -101,16 +101,14 @@ namespace LifeGame
             GridHeight = gridHeight;
 
             Terrain = new Thing[gridWidth][];
-            BeingLocQueue = new List<Being>[gridWidth][];
-            BornDiedQueue = new Tuple<bool, Genome, Being, Being>[gridWidth][];
+            BeingLocQueue = new List<Tuple<Being, GridPoint>>();
+            BornDiedQueue = new Tuple<Being, Genome, Being, Being>[gridWidth][];
             for (int i = 0; i < gridWidth; i++)
             {
                 Terrain[i] = new Thing[gridHeight];
-                BeingLocQueue[i] = new List<Being>[gridHeight];
-                BornDiedQueue[i] = new Tuple<bool, Genome, Being, Being>[gridHeight];
+                BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[gridHeight];
                 for (int j = 0; j < gridHeight; j++)
                 {
-                    BeingLocQueue[i][j] = new List<Being>();
                     Terrain[i][j] = new Thing(ThingType.Grass, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
             }
@@ -133,13 +131,13 @@ namespace LifeGame
 
         }
 
-        bool popCreated;
+        bool started;
         public void TogglePause()
         {
-            if (!popCreated)
+            if (!started)
             {
-                CreatePopulation();
                 timer.Start();
+                started = true;
             }
             IsRunning = !IsRunning;
         }
@@ -168,7 +166,7 @@ namespace LifeGame
                     {
                         for (int y = 0; y < GridHeight; y++)
                         {
-                            if (Terrain[x][y].InnerThing!=null)
+                            if (Terrain[x][y].InnerThing != null)
                             {
                                 c++;
                             }
@@ -246,7 +244,7 @@ namespace LifeGame
                             if (tuple != null)
                             {
 
-                                if (tuple.Item1)
+                                if (tuple.Item1 == null)
                                 {
                                     var cell = Terrain[x][y];
                                     var being = freeBeingObjs.Last();
@@ -257,12 +255,17 @@ namespace LifeGame
 
                                     being.Location = cell.Location;
                                     being.OldLoc = cell.Location;
-                                    being.Father = tuple.Item3;
-                                    being.Mother = tuple.Item4;
-                                    if (being.Father != null)
+                                    if (tuple.Item3 != null)
                                     {
-                                        being.Father.LivingOffsprings.Add(being);
-                                        being.Mother.LivingOffsprings.Add(being);
+                                        being.Father = tuple.Item3.ID;
+                                        being.Mother = tuple.Item4.ID;
+                                        Population[being.Father].LivingOffsprings.Add(being.ID);
+                                        Population[being.Mother].LivingOffsprings.Add(being.ID);
+                                    }
+                                    else
+                                    {
+                                        being.Father = -1;
+                                        being.Mother = -1;
                                     }
 
                                     being.InitOffspring(tuple.Item2);
@@ -273,34 +276,34 @@ namespace LifeGame
                                 else
                                 {
                                     var cell = Terrain[x][y];
-                                    var being = (Being)cell.InnerThing;
+                                    var being = tuple.Item1;
                                     cell.InnerThing = null;
 
                                     Population.Remove(being.ID); // remove form Population               // here it's the only place I need being IDs
                                     freeBeingObjs.Add(being);    // add to freeBeingObjs
 
-                                    if (being.Father != null)
+                                    if (being.Father != -1)
                                     {
-                                        being.Father.LivingOffsprings.Remove(being);//find a faster way to search it (indexing)
+                                        Population[being.Father].LivingOffsprings.Remove(being.ID);//find a faster way to search it (indexing)
                                     }
-                                    if (being.Mother != null)
+                                    if (being.Mother != -1)
                                     {
-                                        being.Mother.LivingOffsprings.Remove(being);//find a faster way to search it (indexing)
+                                        Population[being.Mother].LivingOffsprings.Remove(being.ID);//find a faster way to search it (indexing)
                                     }
 
                                     if (being.Sex)
                                     {
-                                        foreach (var offspring in being.LivingOffsprings)
+                                        foreach (var offspringID in being.LivingOffsprings)
                                         {
-                                            offspring.Father = null;
+                                            Population[offspringID].Father = -1;
                                         }
                                     }
                                     else
                                     {
 
-                                        foreach (var offspring in being.LivingOffsprings)
+                                        foreach (var offspringID in being.LivingOffsprings)
                                         {
-                                            offspring.Mother = null;
+                                            Population[offspringID].Mother = -1;
                                         }
                                     }
 
@@ -330,52 +333,32 @@ namespace LifeGame
                     }
 
                     // move beings
-                    for (int x = 0; x < GridWidth; x++)// qui c'è qualche problema di incongruenza temporale, che è troppo lungo da correggere adesso
+                    while (BeingLocQueue.Count > 0)
                     {
-                        for (int y = 0; y < GridHeight; y++)
+                        idx = rand.Next(BeingLocQueue.Count);
+                        var tuple = BeingLocQueue[idx];
+                        var being = tuple.Item1;
+                        if (Population.ContainsKey(being.ID))
                         {
-                            var beingList = BeingLocQueue[x][y];
-                            if (beingList.Count > 0)
+                            var newLoc = tuple.Item2;
+                            Thing newCell = Terrain[newLoc.X][newLoc.Y];
+                            while (newCell.InnerThing != null)
                             {
-
-                                var biggerBeing = beingList[0];
-                                idx = 0;
-                                for (int i = 1; i < beingList.Count; i++)
-                                {
-                                    if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
-                                    {
-                                        biggerBeing = beingList[i];
-                                        idx = i;
-                                    }
-                                }
-                                beingList.RemoveAt(idx);
-                                Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
-
-                                var loc = new GridPoint(x, y);
-                                biggerBeing.Location = loc;
-                                engine.changeBeing(biggerBeing); //             <-----chiamata all'engine
-                                Terrain[x][y].InnerThing = biggerBeing;
-                                foreach (var being in beingList)
-                                {
-                                    var newLoc = loc.GetNearCell();
-                                    Thing newCell;
-                                    do
-                                    {
-                                        newLoc = newLoc.GetNearCell();
-                                        newCell = Terrain[newLoc.X][newLoc.Y];
-                                    } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
-                                    newCell.InnerThing = being;
-                                    Terrain[being.Location.X][being.Location.Y].InnerThing = null;
-                                    being.Location = newLoc;
-                                    if ((newLoc.X != loc.X)||(newLoc.Y!=loc.Y))
-                                    {
-                                        Debug.Write("Location differenti\n");
-                                    }
-                                    engine.changeBeing(being); //             <-----chiamata all'engine
-                                }
-                                beingList.Clear();
+                                newLoc = newLoc.GetNearCell();
+                                newLoc.X = newLoc.X.Cycle(GridWidth);
+                                newLoc.Y = newLoc.Y.Cycle(GridHeight);
+                                newCell = Terrain[newLoc.X][newLoc.Y];
                             }
+                            newCell.InnerThing = being;
+                            Terrain[being.Location.X][being.Location.Y].InnerThing = null;
+                            being.Location = newLoc;
+                            engine.changeBeing(being); //             <-----chiamata all'engine
                         }
+                        else
+                        {
+
+                        }
+                        BeingLocQueue.RemoveAt(idx);
                     }
 
 
@@ -455,40 +438,25 @@ namespace LifeGame
             }
         }
 
-        void CreatePopulation()
-        {
-            for (int i = 0; i < PopulationCount; i++)
-            {
-                Thing cell;
-                do
-                {
-                    cell = Terrain[rand.Next(GridWidth)][rand.Next(GridHeight)];
-                } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water);
-
-                var being = freeBeingObjs.Last();
-                Population.Add(being.ID, being);
-                cell.InnerThing = being;
-                freeBeingObjs.RemoveAt(freeBeingObjs.Count - 1);
-                being.InitOffspring(new Genome(this));
-                being.Location = cell.Location;
-
-                engine.addBeing(being, being.Location);
-            }
-            popCreated = true;
-        }
 
         public void GiveBirth(Being dad, Being mum, GridPoint location)
         {
-            BornDiedQueue[location.X][location.Y] = new Tuple<bool, Genome, Being, Being>(true, new Genome(dad.Genome, mum.Genome), dad, mum);
+            BornDiedQueue[location.X][location.Y] = new Tuple<Being, Genome, Being, Being>(null, new Genome(dad.Genome, mum.Genome), dad, mum);
         }
         public void GiveBirth(Genome oldGen, GridPoint location)
         {
-            BornDiedQueue[location.X][location.Y] = new Tuple<bool, Genome, Being, Being>(true, new Genome(oldGen), null, null);
+            BornDiedQueue[location.X][location.Y] = new Tuple<Being, Genome, Being, Being>(null, new Genome(oldGen), null, null);
         }
 
         public void MakeDie(Being being)
         {
-            BornDiedQueue[being.Location.X][being.Location.Y] = new Tuple<bool, Genome, Being, Being>(false, null, null, null);
+            BornDiedQueue[being.Location.X][being.Location.Y] = new Tuple<Being, Genome, Being, Being>(being, null, null, null);
+        }
+
+
+        public void Cycle(ref GridPoint pt)
+        {
+            pt = new GridPoint(pt.X.Cycle(GridWidth), pt.Y.Cycle(GridHeight));
         }
 
     }
