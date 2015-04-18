@@ -91,6 +91,8 @@ namespace LifeGame
             }
             FitnessPoints = 0;
 
+            OldLoc = Location;
+
             mute();
             rest();
 

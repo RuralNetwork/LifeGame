@@ -43,6 +43,11 @@ namespace LifeGame
         private BitmapImage sand = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\sand.png"));
         public bool editing;
 
+        /// <summary>
+        /// This is the update and draw speed.
+        /// </summary>
+        public float FPS = 2;
+
         public GraphicsEngine(Canvas canvas)
         {
             _canvas = canvas;
@@ -136,25 +141,26 @@ namespace LifeGame
         {
             Debug.Write("Move\n");
             //obj.Location
-            Duration duration = new Duration(TimeSpan.FromSeconds(1));
+            Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
 
-            //TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            DoubleAnimation ascissa = new DoubleAnimation((Double)40 * obj.Location.X, duration);
-            DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+            //TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
+            DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), 
+                                        (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+            Transform translate = obj.polygon.RenderTransform;
             translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
             translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
-            obj.polygon.RenderTransform = translate;
         }
         //Careful, it removes also things
-        public void removeBeing(Being obj){
+        public void removeBeing(Being obj)
+        {
             Debug.Write("Removed Being\n");
             this._canvas.Children.Remove(obj.polygon);
         }
         //location is useless
         public void addCell(Thing obj, GridPoint location)
         {
-            
+
             Polygon poligono = new Polygon();
 
             poligono.Points = this.getPointCollection();
@@ -236,7 +242,7 @@ namespace LifeGame
         {
             obj.polygon.Fill = switchGround(obj.Type);
         }
-        private ThingType currentType=ThingType.Earth;
+        private ThingType currentType = ThingType.Earth;
         public void changeBrush(string name)
         {
             this.currentType = (ThingType)Enum.Parse(typeof(ThingType), name, true);

@@ -92,7 +92,6 @@ namespace LifeGame
         /// <param name="container"></param>
         public virtual void Update()
         {
-            OldLoc = Location;
             updateDel();
         }
 

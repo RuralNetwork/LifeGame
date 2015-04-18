@@ -50,10 +50,6 @@ namespace LifeGame
 
         public Thing[][] Terrain { get; set; }
 
-        /// <summary>
-        /// This is the update and draw speed.
-        /// </summary>
-        public float FPS = 2;
 
         public bool MustDraw = true;
 
@@ -155,7 +151,7 @@ namespace LifeGame
         {
             if (IsRunning)
             {
-                if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / FPS)
+                if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / engine.FPS)
                 {
                     ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
 
@@ -186,7 +182,7 @@ namespace LifeGame
                     Environment.Update();
 
                     int idx = 0;
-//#if DEBUG // change to release to execute parallel code
+                    //#if DEBUG // change to release to execute parallel code
                     foreach (var arr in Terrain)
                     {
                         foreach (var thing in arr)
@@ -327,7 +323,7 @@ namespace LifeGame
                                     for (int i = 0; i < HallSeats; i++)
                                     {
                                         if (being.FitnessMean.Value > HallOfFame[i].Fitness)
-                                    {
+                                        {
                                             being.Genome.Fitness = being.FitnessMean.Value;
                                             HallOfFame.Insert(i, being.Genome);
                                             HallOfFame.RemoveAt(HallSeats);
@@ -349,7 +345,7 @@ namespace LifeGame
 
                         var tuple = BeingLocQueue[idx];
                         var being = tuple.Item1;
-                        Debug.Write("Count Beings"+BeingLocQueue.Count+"\n");
+                        Debug.Write("Count Beings" + BeingLocQueue.Count + "\n");
                         if (Population.ContainsKey(being.ID))
                         {
                             var newLoc = tuple.Item2;
@@ -376,65 +372,65 @@ namespace LifeGame
                     }
 
 
-//#else
-                        //       Rifare questa parte
-                        //Parallel.ForEach(Terrain, arr =>
-                        //{
-                        //    foreach (var thing in arr) thing.Update();
-                        //});
+                    //#else
+                    //       Rifare questa parte
+                    //Parallel.ForEach(Terrain, arr =>
+                    //{
+                    //    foreach (var thing in arr) thing.Update();
+                    //});
 
-                        //Parallel.ForEach(Population, being => being.Update());
+                    //Parallel.ForEach(Population, being => being.Update());
 
-                        //Parallel.ForEach(Terrain, arr =>
-                        //{
-                        //    foreach (var thing in arr) thing.Apply();
-                        //});
+                    //Parallel.ForEach(Terrain, arr =>
+                    //{
+                    //    foreach (var thing in arr) thing.Apply();
+                    //});
 
-                        //Parallel.ForEach(Population, being => being.Apply());
+                    //Parallel.ForEach(Population, being => being.Apply());
 
-                        //Parallel.For(0, BeingLocQueue.Length, x =>
-                        //{
-                        //    for (int y = 0; y < BeingLocQueue[x].Length; y++)
-                        //    {
-                        //        var beingList = BeingLocQueue[x][y];
-                        //        if (beingList.Count > 0)
-                        //        {
+                    //Parallel.For(0, BeingLocQueue.Length, x =>
+                    //{
+                    //    for (int y = 0; y < BeingLocQueue[x].Length; y++)
+                    //    {
+                    //        var beingList = BeingLocQueue[x][y];
+                    //        if (beingList.Count > 0)
+                    //        {
 
-                        //            var biggerBeing = beingList[0];
-                        //            idx = 0;
-                        //            for (int i = 1; i < beingList.Count; i++)
-                        //            {
-                        //                if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
-                        //                {
-                        //                    biggerBeing = beingList[i];
-                        //                    idx = i;
-                        //                }
-                        //            }
-                        //            beingList.RemoveAt(idx);
-                        //            Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
+                    //            var biggerBeing = beingList[0];
+                    //            idx = 0;
+                    //            for (int i = 1; i < beingList.Count; i++)
+                    //            {
+                    //                if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
+                    //                {
+                    //                    biggerBeing = beingList[i];
+                    //                    idx = i;
+                    //                }
+                    //            }
+                    //            beingList.RemoveAt(idx);
+                    //            Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
 
-                        //            var loc = new GridPoint(x, y);
-                        //            biggerBeing.Location = loc;
-                        //            Terrain[x][y].InnerThing = biggerBeing;
-                        //            foreach (var being in beingList)
-                        //            {
-                        //                var newLoc = loc;
-                        //                Thing newCell;
-                        //                do
-                        //                {
-                        //                    newLoc = newLoc.GetNearCell();
-                        //                    newCell = Terrain[newLoc.X][newLoc.Y];
-                        //                } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
-                        //                newCell.InnerThing = being;
-                        //                Terrain[being.Location.X][being.Location.Y].InnerThing = null;
-                        //                being.Location = newLoc;
-                        //            }
-                        //            beingList.Clear();
-                        //        }
-                        //    }
-                        //});
+                    //            var loc = new GridPoint(x, y);
+                    //            biggerBeing.Location = loc;
+                    //            Terrain[x][y].InnerThing = biggerBeing;
+                    //            foreach (var being in beingList)
+                    //            {
+                    //                var newLoc = loc;
+                    //                Thing newCell;
+                    //                do
+                    //                {
+                    //                    newLoc = newLoc.GetNearCell();
+                    //                    newCell = Terrain[newLoc.X][newLoc.Y];
+                    //                } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
+                    //                newCell.InnerThing = being;
+                    //                Terrain[being.Location.X][being.Location.Y].InnerThing = null;
+                    //                being.Location = newLoc;
+                    //            }
+                    //            beingList.Clear();
+                    //        }
+                    //    }
+                    //});
 
-//#endif
+                    //#endif
                     //Draw
                     if (MustDraw)
                     {
