@@ -357,7 +357,7 @@ namespace LifeGame
                                 Terrain[x][y].InnerThing = biggerBeing;
                                 foreach (var being in beingList)
                                 {
-                                    var newLoc = loc;
+                                    var newLoc = loc.GetNearCell();
                                     Thing newCell;
                                     do
                                     {
@@ -367,6 +367,10 @@ namespace LifeGame
                                     newCell.InnerThing = being;
                                     Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                                     being.Location = newLoc;
+                                    if ((newLoc.X != loc.X)||(newLoc.Y!=loc.Y))
+                                    {
+                                        Debug.Write("Location differenti\n");
+                                    }
                                     engine.changeBeing(being); //             <-----chiamata all'engine
                                 }
                                 beingList.Clear();
