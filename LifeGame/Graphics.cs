@@ -8,6 +8,7 @@ using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 using System.Drawing;
 
 namespace LifeGame
@@ -133,12 +134,21 @@ namespace LifeGame
         }
         public void changeBeing(Being obj)
         {
+            Debug.Write("Move\n");
             //obj.Location
-            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            Duration duration = new Duration(TimeSpan.FromSeconds(1));
+
+            //TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)40 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            DoubleAnimation ascissa = new DoubleAnimation((Double)40 * obj.Location.X, duration);
+            DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+            translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
+            translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
             obj.polygon.RenderTransform = translate;
         }
         //Careful, it removes also things
         public void removeBeing(Being obj){
+            Debug.Write("Removed Being\n");
             this._canvas.Children.Remove(obj.polygon);
         }
         //location is useless

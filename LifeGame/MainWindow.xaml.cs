@@ -156,7 +156,7 @@ namespace LifeGame
 
             //debug
             timer.Tick += delegate { Title = Simulation.ActualFPS.ToString("0.0"); };
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
             timer.Start();
         }
 
