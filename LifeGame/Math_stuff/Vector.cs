@@ -17,8 +17,7 @@ namespace LifeGame
         {
             get
             {
-                return (float)Math.Sqrt(X * X + Y * Y); // .Net languages support only 64bit FPU operations, so every float is converted to double before operation
-                                                        // math functions will be replaced when adding cudafy support
+                return (float)Math.Sqrt(X * X + Y * Y);
             }
         }
         ///<summary>

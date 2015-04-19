@@ -7,6 +7,7 @@ using System.Windows;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using System.Runtime.Serialization;
 
 namespace LifeGame
 {
@@ -20,10 +21,22 @@ namespace LifeGame
     [Serializable]
     public class Simulation
     {
-        public DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
-        Stopwatch watch = Stopwatch.StartNew();
+        static FastRandom rand = new FastRandom();
 
-        public int lastID; // used and managed by the beings
+        //non serialized stuff
+        //private
+        [NonSerialized]
+        Stopwatch watch = Stopwatch.StartNew();
+        [NonSerialized]
+        GraphicsEngine engine;
+        [NonSerialized]
+        public int lastID;
+        //public
+        [NonSerialized]
+        public DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
+        [NonSerialized]
+        public bool IsRunning;
+
         public int TimeTick { get; set; }
 
         /// <summary>
@@ -31,15 +44,11 @@ namespace LifeGame
         /// </summary>
         public bool TrainingMode { get; set; }
         public int PopulationCount { get; set; }
-        public bool IsRunning { get; private set; }
-        public SimulationType Type { get; set; }
+
         /// <summary>
         /// History of events.
         /// </summary>
         public List<Event> Events { get; set; }
-
-        GraphicsEngine engine;
-        FastRandom rand = new FastRandom();
 
         public int GridWidth { get; private set; }// this must be an even number to permit the world to wrap around itself
         public int GridHeight { get; private set; }// this can be any number
@@ -47,6 +56,7 @@ namespace LifeGame
         public SimEnvironment Environment { get; set; }
         public List<Genome> HallOfFame;
         public int HallSeats;
+        public NNGlobalLists NNLists;
 
         public Thing[][] Terrain { get; set; }
 
@@ -72,15 +82,20 @@ namespace LifeGame
         /// </summary>
         public List<Being> freeBeingObjs { get; private set; }
 
-
         public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
         {
-            Type = SimulationType.Fast; // fare in modo che si possa cambiare
-
             timer.Tick += Update;
+            this.engine = engine;
+            foreach (var arr in Terrain)
+            {
+                foreach (var thing in Terrain)
+                {
+
+                }
+            }
+            InitLoad(engine);
             // timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
 
-            this.engine = engine;
             //thread = new Thread(Update);
             //thread.IsBackground = true;
             //thread.Priority = ThreadPriority.Highest;
@@ -106,14 +121,14 @@ namespace LifeGame
                 BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[gridHeight];
                 for (int j = 0; j < gridHeight; j++)
                 {
-                    Terrain[i][j] = new Thing(ThingType.Grass, this, engine, new GridPoint(i, j));// per metto Earth per ogni cella
+                    Terrain[i][j] = new Thing(ThingType.Grass, this, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
             }
             Population = new Dictionary<int, Being>();
             freeBeingObjs = new List<Being>();
             for (int i = 0; i < PopulationCount * 1.5f; i++)
             {
-                var being = new Being(this, engine);
+                var being = new Being(this);
                 freeBeingObjs.Add(being);
             }
             HallSeats = 5;
@@ -122,14 +137,35 @@ namespace LifeGame
             {
                 HallOfFame.Add(new Genome(this));
             }
-            // }
-            /*else
-            {
-                Debug.Write("Non bene");
-                //engine.messageBox(null, null, 200, 20, "Mondo troppo largo, il massimo è:engine.canvasWidth/(engine.hexaW)+((canvasWidth/(engine.hexaW)-1))");
-            }*/
-            //Populate the terrain
 
+        }
+
+        ~Simulation()
+        {
+
+        }
+
+        void InitLoad(GraphicsEngine engine)
+        {
+            watch = Stopwatch.StartNew();
+            this.engine = engine;
+            foreach (var arr in Terrain)
+            {
+                foreach (var thing in arr)
+                {
+                    thing.Engine = engine;
+                }
+            }
+            foreach (var being in Population)
+            {
+                being.Value.Engine = engine;
+                being.Value.InnerThing.Engine = engine;
+            }
+            foreach (var being in freeBeingObjs)
+            {
+                being.Engine = engine;
+                being.InnerThing.Engine = engine;
+            }
 
         }
 
@@ -151,7 +187,7 @@ namespace LifeGame
         {
             if (IsRunning)
             {
-                if (Type == SimulationType.Fast || watch.Elapsed.TotalSeconds > 1 / engine.FPS)
+                if (engine.FPS == 0 || watch.Elapsed.TotalSeconds > 1 / engine.FPS)
                 {
                     ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
 

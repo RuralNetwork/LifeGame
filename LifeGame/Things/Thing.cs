@@ -13,6 +13,7 @@ namespace LifeGame
     /// Element that can interact with a being
     /// </summary>
     // TODO: consider using a more scientific attributes: eg using a radiation frequency chart to describe color and heat
+    [Serializable]
     public partial class Thing
     {
         protected static FastRandom rand = new FastRandom();
@@ -21,11 +22,11 @@ namespace LifeGame
         public static int nThingProps = Enum.GetNames(typeof(ThingType)).Length;// get the number of elements of the enum ThingProperty at runtime
 
         protected Simulation simulation;
-        protected GraphicsEngine engine;
+        [NonSerialized]
+        public GraphicsEngine Engine;
 
         public Thing InnerThing { get; set; }
         public GridPoint Location { get; set; }
-        public GridPoint OldLoc { get; set; }
 
         public ThingType Type { get; private set; }
         public List<Tuple<ThingType, Dictionary<ThingProperty, float>>> NewTypeQueue { get; private set; }
@@ -49,10 +50,9 @@ namespace LifeGame
         protected UpdateDelegate updateDel;
 
         public bool IsCarrObj;
-        public int ID { get; private set; }
         public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
-        public Thing(ThingType type, Simulation simulation, GraphicsEngine engine, GridPoint location)//The type of thing should already be in the initialization
+        public Thing(ThingType type, Simulation simulation, GridPoint location)//The type of thing should already be in the initialization
         {
             init(type);
             this.simulation = simulation;
@@ -60,14 +60,11 @@ namespace LifeGame
             PropsQueueReset = new Dictionary<ThingProperty, float>();
             NewTypeQueue = new List<Tuple<ThingType, Dictionary<ThingProperty, float>>>();
 
-            ID = simulation.lastID;
-            simulation.lastID++;
 
             Location = location;
-            this.engine = engine;
 
             //Draw initial thing
-            engine.addCell(this, location);
+            Engine.addCell(this, location);
         }
 
         void init(ThingType type)
@@ -78,13 +75,13 @@ namespace LifeGame
             Properties = new Dictionary<ThingProperty, float>(propsDicts[(int)type]);
         }
 
-        /// <summary>
-        /// In order to test if graphics and back-end are linked
-        /// </summary>
-        public void showID()
-        {
-            Debug.Write("My ID is: " + this.ID + "\n");
-        }
+        ///// <summary>
+        ///// In order to test if graphics and back-end are linked
+        ///// </summary>
+        //public void showID()
+        //{
+        //    Debug.Write("My ID is: " + this.ID + "\n");
+        //}
 
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
@@ -117,7 +114,7 @@ namespace LifeGame
 
                 if (!IsCarrObj)
                 {
-                    engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
+                    Engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
 
                 }
             }

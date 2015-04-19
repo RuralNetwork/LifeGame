@@ -47,8 +47,10 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-        private GraphicsEngine Engine { get; set; }
-        private Simulation Simulation { get; set; }
+        GraphicsEngine Engine;
+        Simulation Simulation;
+
+
         FastRandom rand = new FastRandom();
 
         System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
@@ -122,7 +124,7 @@ namespace LifeGame
             Engine.canvasHeight = mainpanel.Height - (startSimulation.Height + 20);
             Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
             Engine.editing = true;
-            Simulation = new Simulation(31, 13, Engine);
+            Simulation = new Simulation(30, 30, Engine);
 
             for (int i = 0; i < 50; i++)
             {
@@ -189,18 +191,30 @@ namespace LifeGame
             switch (speed)
             {
                 case "x1":
-                    Simulation.timer.Interval = new TimeSpan(0, 0, 1);
+                    Engine.FPS = 1;
                     break;
                 case "x2":
-                    Simulation.timer.Interval = new TimeSpan(0, 0,0,0,200);
+                    Engine.FPS = 2;
                     break;
-                case "x3":
-                    Simulation.timer.Interval = default(TimeSpan);
+                case "Max":
+                    Engine.FPS = 0;
                     break;
                 default:
-                    Simulation.timer.Interval = new TimeSpan(0, 0, 1);
+                    Engine.FPS = 1;
                     break;
             }
+        }
+
+        private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Simulation!=null)
+            {
+                Serializer.Save(Simulation, "simulation.sim");
+            }
+        }
+
+        void SaveBestGenome()
+        {
         }
     }
 }

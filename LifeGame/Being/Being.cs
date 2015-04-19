@@ -14,10 +14,11 @@ namespace LifeGame
         //consts:
         public const float CAL2KG = 0.42f;// kg lifted with one calorie  ->  1 / (1kg * 9.81m/s^2 * 1m)
 
-        static RandomBool randBool = new RandomBool();
+        public int ID { get; private set; }
 
         // mutable properties
         public CellDirection Direction { get; private set; }
+        public GridPoint OldLoc { get; set; }
         public float EnergySpent; // I had to create this because C# doesn't allow ref parameters in lambda expressions
 
         //immutable properties
@@ -36,16 +37,17 @@ namespace LifeGame
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
-
         public float FitnessPoints;
 
-
-        public Being(Simulation simulation, GraphicsEngine engine)
-            : base(ThingType.Being, simulation, engine, default(GridPoint))
+        public Being(Simulation simulation)
+            : base(ThingType.Being, simulation, default(GridPoint))
         {
-            InnerThing = new Thing(ThingType.Null, simulation, engine, default(GridPoint));
+            InnerThing = new Thing(ThingType.Null, simulation, default(GridPoint));
             InnerThing.IsCarrObj = true;
             LivingOffsprings = new List<int>();
+
+            ID = simulation.lastID;
+            simulation.lastID++;
         }
 
         public void InitOffspring(Genome genome)
@@ -59,22 +61,10 @@ namespace LifeGame
             LivingOffsprings.Clear();
             Genome = genome;
             FitnessMean = new Average();
-            Sex = randBool.Next();
+            Sex = RandomBool.Next();
             Brain = new NeuralNetwork(genome.NNGenome, Sex);
 
         }
-
-        public void InitLoad(int lifespan, Average fitness, Genome genome, NeuralNetwork brain, CellDirection direction)
-        {
-            Lifespan = lifespan;
-            FitnessMean = fitness;
-            Genome = genome;
-            Brain = brain;
-            Direction = direction;
-            //sex, heightmul
-        }
-
-
 
         public override void Update()
         {
@@ -322,8 +312,9 @@ namespace LifeGame
                 case ActionType.Walk:
                     if (tgtType == 2)
                     {
+                        var steps = 0;
                         cellPt = Location;
-                        while (EnergySpent > 0)
+                        while (EnergySpent > 0 && steps < height)
                         {
                             cellPt = cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);
@@ -334,6 +325,7 @@ namespace LifeGame
                             {
                                 walkThrough(target.InnerThing);
                             }
+                            steps++;
                             FitnessPoints++;
                         }
                         simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));

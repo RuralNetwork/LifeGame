@@ -46,7 +46,7 @@ namespace LifeGame
         /// <summary>
         /// This is the update and draw speed.
         /// </summary>
-        public float FPS = 2;
+        public float FPS = 0;
 
         public GraphicsEngine(Canvas canvas)
         {
@@ -141,15 +141,21 @@ namespace LifeGame
         {
             Debug.Write("Move\n");
             //obj.Location
-            Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
+            if (FPS > 0)
+            {
+                Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
 
-            //TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
-            DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), 
-                                        (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
-            Transform translate = obj.polygon.RenderTransform;
-            translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
-            translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
+                DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
+                DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)),
+                                            (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+                Transform translate = obj.polygon.RenderTransform;
+                translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
+                translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
+            }
+            else
+            {
+                TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            }
         }
         //Careful, it removes also things
         public void removeBeing(Being obj)
@@ -164,7 +170,7 @@ namespace LifeGame
             Polygon poligono = new Polygon();
 
             poligono.Points = this.getPointCollection();
-            poligono.Name = "thing" + obj.ID;
+            //poligono.Name = "thing" + obj.ID;
             //This should store the object he represents
             poligono.DataContext = obj;
             poligono.Stroke = System.Windows.Media.Brushes.White;
@@ -255,7 +261,7 @@ namespace LifeGame
             /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
             //Debug stuff
             Debug.Write("Over a polygon " + poligono.Name + "\n");
-            cosa.showID();
+            //cosa.showID();
             if (editing)
             {
                 cosa.ChangeType(this.currentType, null);

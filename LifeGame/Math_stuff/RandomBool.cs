@@ -6,19 +6,18 @@ using System.Text;
 
 namespace LifeGame
 {
-    //this is a temporary class (waiting for cudafy implementation) that yields 32 random booleans with one random shot, one per call
-    class RandomBool
+    static class RandomBool
     {
-        FastRandom rand = new FastRandom();
-        BitArray bitArr;
-        int idx = 31;
+        static FastRandom rand = new FastRandom();
+        static BitArray bitArr;
+        static int idx = 31;
 
-        public RandomBool()
+        static RandomBool()
         {
             Next();
         }
 
-        public bool Next()
+        static public bool Next()
         {
             idx++;
             if (idx == 32)

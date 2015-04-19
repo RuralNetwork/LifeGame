@@ -37,23 +37,6 @@ namespace LifeGame
         static RouletteWheel stdMutationRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_LINK_MUT_PROB, DEL_LINK_MUT_PROB, UNCHANGED_MUT_PROB);
         static RouletteWheel alwaysMutateRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_LINK_MUT_PROB, DEL_LINK_MUT_PROB);
         static FastRandom rand = new FastRandom();
-        static RandomBool randBool = new RandomBool();
-
-        //--------Globally store the identifiers needed to match genes during recombination
-        //The innovation IDs are assigned based on the structure:
-        //Links: based on source & target ID, not on weight
-        //Nodes: based on link they replaced
-
-        //ID counter for both linkBuffer and nodeBuffer
-        static uint lastID = Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT;
-
-        //The key is the link ID the AddedNode struct replaced
-        //The ID is contained in the AddedNode sruct
-        static KVCircularBuffer<uint, AddedNode> nodeBuffer = new KVCircularBuffer<uint, AddedNode>(0x20000);
-
-        //The value is the actual ID
-        static KVCircularBuffer<AddedLink, uint?> linkBuffer = new KVCircularBuffer<AddedLink, uint?>(0x20000);
-
 
         //Being specific genomes
         public Dictionary<uint, NodeGene> NodeGeneList { get; private set; }
@@ -165,7 +148,7 @@ namespace LifeGame
 
                 if (ID1 == ID2)
                 {
-                    linkGeneList.Add(ID1, new LinkGene(randBool.Next() ? link1 : link2));
+                    linkGeneList.Add(ID1, new LinkGene(RandomBool.Next() ? link1 : link2));
                     idx1++;
                     idx2++;
                 }
@@ -297,7 +280,7 @@ namespace LifeGame
         {
             AddedNode addedNode;
             var isNewAddedNode = false;
-            if (nodeBuffer.TryGetValue(oldLinkID, out addedNode))
+            if (simulation.NNLists.nodeBuffer.TryGetValue(oldLinkID, out addedNode))
             {
                 if (!(NodeGeneList.ContainsKey(addedNode.NodeID) || LinkGeneList.ContainsKey(addedNode.InpLinkID) || LinkGeneList.ContainsKey(addedNode.OutpLinkID)))
                 {
@@ -309,11 +292,11 @@ namespace LifeGame
                 isNewAddedNode = true;
             }
 
-            addedNode = new AddedNode(ref lastID);
+            addedNode = new AddedNode(ref simulation.NNLists.lastID);
 
             if (isNewAddedNode)
             {
-                nodeBuffer.Enqueue(oldLinkID, addedNode);
+                simulation.NNLists.nodeBuffer.Enqueue(oldLinkID, addedNode);
             }
             return addedNode;
         }
@@ -341,14 +324,14 @@ namespace LifeGame
                     uint? existingLinkID;// must be nullable, to handle the case there isn't an existing ID
                     var newLink = new LinkGene(srcID, tgtID, ((float)rand.NextDouble() * 2f - 1f) * WEIGHT_RANGE);
 
-                    if (linkBuffer.TryGetValue(addedLink, out existingLinkID))
+                    if (simulation.NNLists.linkBuffer.TryGetValue(addedLink, out existingLinkID))
                     {
                         LinkGeneList.Add(existingLinkID.Value, newLink);
                     }
                     else
                     {
-                        linkBuffer.Enqueue(addedLink, ++lastID);
-                        LinkGeneList.Add(lastID, newLink);//same ID
+                        simulation.NNLists.linkBuffer.Enqueue(addedLink, ++simulation.NNLists.lastID);
+                        LinkGeneList.Add(simulation.NNLists.lastID, newLink);//same ID
                     }
                     srcNode.TgtNodeIDs.Add(tgtID);
                     tgtNode.SrcNodeIDs.Add(srcID);
@@ -424,5 +407,24 @@ namespace LifeGame
             }
             return true;
         }
+    }
+
+
+    public class NNGlobalLists
+    {
+        //--------Globally store the identifiers needed to match genes during recombination
+        //The innovation IDs are assigned based on the structure:
+        //Links: based on source & target ID, not on weight
+        //Nodes: based on link they replaced
+
+        //ID counter for both linkBuffer and nodeBuffer
+        public uint lastID = Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT;
+
+        //The key is the link ID the AddedNode struct replaced
+        //The ID is contained in the AddedNode struct
+        public KVCircularBuffer<uint, AddedNode> nodeBuffer = new KVCircularBuffer<uint, AddedNode>(0x20000);
+
+        //The value is the actual ID
+        public KVCircularBuffer<AddedLink, uint?> linkBuffer = new KVCircularBuffer<AddedLink, uint?>(0x20000);
     }
 }
