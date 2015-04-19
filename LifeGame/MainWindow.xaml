@@ -41,6 +41,10 @@
             <Button Content="2x" Grid.Column="2" HorizontalAlignment="Left" Margin="90,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x2" Click="toggleSpeed"/>
             <Button Content="3x" Grid.Column="2" HorizontalAlignment="Left" Margin="130,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x3" Click="toggleSpeed"/>
         </Grid>
+        <Button x:Name="loadWorldButton" Content="Carica Mondo" HorizontalAlignment="Center" Margin="0,180,0,0" VerticalAlignment="Center" Width="180" Height="71" FontSize="24" Cursor="Hand" Click="loadWorld"/>
+        <Button x:Name="loadGenomaButton" Content="Carica Genoma" HorizontalAlignment="Center" Margin="0,180,0,0" VerticalAlignment="Center" Width="180" Height="70" FontSize="24" Cursor="Hand" Click="loadGenoma" Grid.Column="2"/>
+        <Button x:Name="saveButton" Content="Salva" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" Width="75" Height="30" Visibility="Hidden"/>
+        <Button x:Name="headBack" Content="Chiudi" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Bottom" Width="75" Height="30" IsEnabled="True" Visibility="Hidden" Click="goBack"/>
 
     </Grid>
 </Window>

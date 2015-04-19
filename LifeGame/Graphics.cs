@@ -144,18 +144,24 @@ namespace LifeGame
             Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
 
             //TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
+            DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X,
+                                                            (Double)30 * obj.Location.X, duration);
             DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), 
-                                        (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+                                                            (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
             Transform translate = obj.polygon.RenderTransform;
             translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
             translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
         }
-        //Careful, it removes also things
         public void removeBeing(Being obj)
         {
             Debug.Write("Removed Being\n");
             this._canvas.Children.Remove(obj.polygon);
+        }
+        public void removeCell(Thing obj)
+        {
+            Debug.Write("Removed Cell\n");
+            this._canvas.Children.Remove(obj.polygon);
+
         }
         //location is useless
         public void addCell(Thing obj, GridPoint location)
