@@ -89,6 +89,10 @@ namespace LifeGame
             Engine.editing = false;
             gridToolbox.Visibility = Visibility.Hidden;
             gridSpeed.Visibility = Visibility.Visible;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            loadWorldButton.Visibility = Visibility.Hidden;
+            saveButton.Visibility = Visibility.Visible;
+            headBack.Visibility = Visibility.Visible;
             Simulation.TogglePause();
             //toggling text
             if ((string)startSimulation.Content == "Ferma Simulazione")
@@ -153,6 +157,8 @@ namespace LifeGame
             opening_title.Visibility = Visibility.Hidden;
             createWorld.Visibility = Visibility.Hidden;
             gridToolbox.Visibility = Visibility.Visible;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            loadWorldButton.Visibility = Visibility.Hidden;
             startSimulation.IsEnabled = true;
 
 
@@ -205,16 +211,46 @@ namespace LifeGame
             }
         }
 
-        private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void loadGenoma(object sender, RoutedEventArgs e)
         {
-            if (Simulation!=null)
-            {
-                Serializer.Save(Simulation, "simulation.sim");
-            }
+            //Load Genome simulation.loadstuff
+            opening_title.Visibility = Visibility.Hidden;
+            createWorld.Visibility = Visibility.Hidden;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            loadWorldButton.Visibility = Visibility.Hidden;
+            gridSpeed.Visibility = Visibility.Visible;
+            gridToolbox.Visibility = Visibility.Hidden;
+            saveButton.Visibility = Visibility.Visible;
+            headBack.Visibility = Visibility.Visible;
         }
 
-        void SaveBestGenome()
+        private void loadWorld(object sender, RoutedEventArgs e)
         {
+            //Load World simulation.oadstuff
+            opening_title.Visibility = Visibility.Hidden;
+            createWorld.Visibility = Visibility.Hidden;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            loadWorldButton.Visibility = Visibility.Hidden;
+            gridSpeed.Visibility = Visibility.Visible;
+            gridToolbox.Visibility = Visibility.Hidden;
+            saveButton.Visibility = Visibility.Visible;
+            headBack.Visibility = Visibility.Visible;
+        }
+
+        private void goBack(object sender, RoutedEventArgs e)
+        {
+            mainpanel.Visibility = Visibility.Hidden;
+            opening_title.Visibility = Visibility.Visible;
+            createWorld.Visibility = Visibility.Visible;
+            loadGenomaButton.Visibility = Visibility.Visible;
+            loadWorldButton.Visibility = Visibility.Visible;
+            gridToolbox.Visibility = Visibility.Hidden;
+            gridSpeed.Visibility = Visibility.Hidden;
+            saveButton.Visibility = Visibility.Hidden;
+            headBack.Visibility = Visibility.Hidden;
+            startSimulation.IsEnabled = false;
+            Engine.editing = false;
+            //for(eachcell){engine.removeCell(cell)}
         }
     }
 }
