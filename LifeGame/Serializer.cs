@@ -17,7 +17,7 @@ namespace LifeGame
             stream.Close();
         }
 
-        static public void Load<T>(out T obj, string filename) where T : class //  <-- allow obj to be null
+        static public bool Load<T>(out T obj, string filename) where T : class //  <-- allow obj to be null
         {
             if (File.Exists(filename))
             {
@@ -25,8 +25,25 @@ namespace LifeGame
                 Stream stream = File.OpenRead(filename);
                 obj = (T)bf.Deserialize(stream);
                 stream.Close();
+                return true;
             }
             obj = null;
+            return false;
+        }
+
+
+        static public Genome LoadGenome(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                Genome obj;
+                BinaryFormatter bf = new BinaryFormatter();
+                Stream stream = File.OpenRead(filename);
+                obj = (Genome)bf.Deserialize(stream);
+                stream.Close();
+                return obj;
+            }
+            return null;
         }
     }
 }

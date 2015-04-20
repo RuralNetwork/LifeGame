@@ -7,8 +7,7 @@ using System.Windows.Media;
 
 namespace LifeGame
 {
-
-
+    [Serializable]
     public class Being : Thing
     {
         //consts:
@@ -314,7 +313,7 @@ namespace LifeGame
                     {
                         var steps = 0;
                         cellPt = Location;
-                        while (EnergySpent > 0 && steps < height)
+                        while (EnergySpent > 0 && steps < 5)
                         {
                             cellPt = cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);

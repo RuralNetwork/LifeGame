@@ -121,7 +121,7 @@ namespace LifeGame
 
 
         }
-        public void addBeing(Being obj, GridPoint location)
+        public void addBeing(Being obj)
         {
             Polygon poligono = new Polygon();
             poligono.Points = getPointCollectionBeing();
@@ -130,13 +130,14 @@ namespace LifeGame
             brush.ImageSource = being;
             poligono.Fill = brush;
 
-            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
 
             this._canvas.Children.Add(poligono);
             //Links the polygon to the thing
             obj.polygon = poligono;
         }
+
         public void changeBeing(Being obj)
         {
             Debug.Write("Move\n");
@@ -157,20 +158,14 @@ namespace LifeGame
                 TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             }
         }
-        //Careful, it removes also things
-        public void removeBeing(Being obj)
-        {
-            Debug.Write("Removed Being\n");
-            this._canvas.Children.Remove(obj.polygon);
-        }
-        public void removeCell(Thing obj)
-        {
-            Debug.Write("Removed Cell\n");
-            this._canvas.Children.Remove(obj.polygon);
 
+        public void removeThing(Thing obj)
+        {
+            Debug.Write("Removed Thing\n");
+            this._canvas.Children.Remove(obj.polygon);
         }
-        //location is useless
-        public void addCell(Thing obj, GridPoint location)
+
+        public void addCell(Thing obj)
         {
 
             Polygon poligono = new Polygon();
@@ -188,7 +183,7 @@ namespace LifeGame
             poligono.Fill = switchGround(obj.Type);
 
             //Set the position inside the canvas
-            TranslateTransform translate = new TranslateTransform((Double)30 * location.X, (Double)((34 * location.Y) + (location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
             poligono.RenderTransform = translate;
 
             poligono.AddHandler(Polygon.MouseUpEvent, new RoutedEventHandler(cellaMouseEnter));
@@ -198,6 +193,7 @@ namespace LifeGame
             //Links the polygon to the thing
             obj.polygon = poligono; //la fantasia con i nomi...
         }
+
         private System.Windows.Media.Color switchColor(ThingType type)
         {
             System.Windows.Media.Color earth = System.Windows.Media.Color.FromRgb(205, 179, 128);
@@ -250,15 +246,19 @@ namespace LifeGame
             brush.ImageSource = image;
             return brush;
         }
+
         public void updateCell(Thing obj)
         {
             obj.polygon.Fill = switchGround(obj.Type);
         }
+
         private ThingType currentType = ThingType.Earth;
+
         public void changeBrush(string name)
         {
             this.currentType = (ThingType)Enum.Parse(typeof(ThingType), name, true);
         }
+
         private void cellaMouseEnter(object sender, RoutedEventArgs e)
         {
             Polygon poligono = e.Source as Polygon;

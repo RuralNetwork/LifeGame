@@ -50,6 +50,7 @@ namespace LifeGame
         protected UpdateDelegate updateDel;
 
         public bool IsCarrObj;
+        [NonSerialized]
         public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
         public Thing(ThingType type, Simulation simulation, GridPoint location)//The type of thing should already be in the initialization
@@ -63,8 +64,6 @@ namespace LifeGame
 
             Location = location;
 
-            //Draw initial thing
-            Engine.addCell(this, location);
         }
 
         void init(ThingType type)
@@ -115,7 +114,6 @@ namespace LifeGame
                 if (!IsCarrObj)
                 {
                     Engine.updateCell(this);                       //<- qui c'è la chiamata all'engine
-
                 }
             }
             else

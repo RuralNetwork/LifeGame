@@ -6,6 +6,7 @@ using System.Text;
 namespace LifeGame
 {
 
+        [Serializable]
     public struct Vector
     {
         public float X { get; set; }

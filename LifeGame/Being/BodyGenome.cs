@@ -9,7 +9,7 @@ namespace LifeGame
 
     // /////////////////////////////////////For now i'm leaving the body genome and keeping the same phenome for every being
 
-
+    [Serializable]
     public struct Chromosome
     {
 
@@ -25,6 +25,7 @@ namespace LifeGame
         }
     }
 
+    [Serializable]
     public class BodyGenome
     {
         public Chromosome[] ChromArr1 { get; private set; }// for now we test with 1 pair of sexual chromosomes and 1 pair of autosomes

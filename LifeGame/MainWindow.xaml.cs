@@ -87,12 +87,6 @@ namespace LifeGame
             //Here to center the box
             Canvas.SetLeft(prova, 50);*/
             Engine.editing = false;
-            gridToolbox.Visibility = Visibility.Hidden;
-            gridSpeed.Visibility = Visibility.Visible;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            loadWorldButton.Visibility = Visibility.Hidden;
-            saveButton.Visibility = Visibility.Visible;
-            headBack.Visibility = Visibility.Visible;
             Simulation.TogglePause();
             //toggling text
             if ((string)startSimulation.Content == "Ferma Simulazione")
@@ -123,12 +117,7 @@ namespace LifeGame
 
         private void createWorld_Click(object sender, RoutedEventArgs e)
         {
-            mainpanel.Height = mainwindow.Height - (startSimulation.Height + 20);
-            mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
-            Engine.canvasHeight = mainpanel.Height - (startSimulation.Height + 20);
-            Engine.canvasWidth = mainpanel.Width - toolbox.Width.Value;
-            Engine.editing = true;
-            Simulation = new Simulation(30, 30, Engine);
+            Simulation = new Simulation(30, 20, Engine);
 
             for (int i = 0; i < 50; i++)
             {
@@ -141,7 +130,7 @@ namespace LifeGame
                 Simulation.Terrain[x][y].ChangeType(ThingType.Sand, null);
                 Simulation.Terrain[x][y].Apply();
             }
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 150; i++)
             {
                 int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
                 Simulation.Terrain[x][y].ChangeType(ThingType.Water, null);
@@ -153,17 +142,16 @@ namespace LifeGame
                 Simulation.Terrain[x][y].Apply();
             }
 
-
-            opening_title.Visibility = Visibility.Hidden;
-            createWorld.Visibility = Visibility.Hidden;
-            gridToolbox.Visibility = Visibility.Visible;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            loadWorldButton.Visibility = Visibility.Hidden;
-            startSimulation.IsEnabled = true;
-
+            SetLayout(1);
 
             //debug
-            timer.Tick += delegate { Title = Simulation.ActualFPS.ToString("0.0"); };
+            timer.Tick += delegate
+            {
+                if (Simulation != null)
+                {
+                    Title = Simulation.ActualFPS.ToString("0.0");
+                }
+            };
             timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
             timer.Start();
         }
@@ -211,46 +199,115 @@ namespace LifeGame
             }
         }
 
+        void SetLayout(int l)
+        {
+            mainpanel.Visibility = Visibility.Hidden;
+            opening_title.Visibility = Visibility.Hidden;
+            loadSimulation.Visibility = Visibility.Hidden;
+            loadWorldButton.Visibility = Visibility.Hidden;
+            createTerrain.Visibility = Visibility.Hidden;
+            newPopulation.Visibility = Visibility.Hidden;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            loadGenomaButton.Visibility = Visibility.Hidden;
+            startSimulation.Visibility = Visibility.Hidden;
+            gridSpeed.Visibility = Visibility.Hidden;
+            gridToolbox.Visibility = Visibility.Hidden;
+            saveSimulation.Visibility = Visibility.Hidden;
+            saveTerrain.Visibility = Visibility.Hidden;
+            //saveButton.Visibility = Visibility.Hidden;
+            //headBack.Visibility = Visibility.Hidden;
+            switch (l)
+            {
+                case 0:
+                    opening_title.Visibility = Visibility.Visible;
+                    loadSimulation.Visibility = Visibility.Visible;
+                    createTerrain.Visibility = Visibility.Visible;
+                    //loadWorldButton.Visibility = Visibility.Visible;
+                    break;
+                case 1:
+                    mainpanel.Width = 910;
+                    mainpanel.Height = 700;
+                    Engine.editing = true;
+                    gridToolbox.Visibility = Visibility.Visible;
+                    mainpanel.Visibility = Visibility.Visible;
+                    newPopulation.Visibility = Visibility.Visible;
+                    loadGenomaButton.Visibility = Visibility.Visible;
+                    break;
+                case 2:
+                    mainpanel.Visibility = Visibility.Visible;
+                    startSimulation.Visibility = Visibility.Visible;
+                    gridSpeed.Visibility = Visibility.Visible;
+                    saveSimulation.Visibility = Visibility.Visible;
+                    saveTerrain.Visibility = Visibility.Visible;
+                    //saveButton.Visibility = Visibility.Visible;
+                    //headBack.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void loadGenoma(object sender, RoutedEventArgs e)
         {
-            //Load Genome simulation.loadstuff
-            opening_title.Visibility = Visibility.Hidden;
-            createWorld.Visibility = Visibility.Hidden;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            loadWorldButton.Visibility = Visibility.Hidden;
-            gridSpeed.Visibility = Visibility.Visible;
-            gridToolbox.Visibility = Visibility.Hidden;
-            saveButton.Visibility = Visibility.Visible;
-            headBack.Visibility = Visibility.Visible;
+            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
+            var gen = Serializer.LoadGenome(input);
+            if (gen != null)
+            {
+                Simulation.HallOfFame[0] = gen;
+                Simulation.NNLists = gen.NNGenome.globalLists;
+                SetLayout(2);
+            }
         }
 
         private void loadWorld(object sender, RoutedEventArgs e)
         {
-            //Load World simulation.oadstuff
-            opening_title.Visibility = Visibility.Hidden;
-            createWorld.Visibility = Visibility.Hidden;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            loadWorldButton.Visibility = Visibility.Hidden;
-            gridSpeed.Visibility = Visibility.Visible;
-            gridToolbox.Visibility = Visibility.Hidden;
-            saveButton.Visibility = Visibility.Visible;
-            headBack.Visibility = Visibility.Visible;
+            SetLayout(1);
+            string input = Microsoft.VisualBasic.Interaction.InputBox("Prompt", "Title", "Default", -1, -1);
+            if (Simulation != null)
+            {
+                SetLayout(1);
+            }
         }
 
         private void goBack(object sender, RoutedEventArgs e)
         {
-            mainpanel.Visibility = Visibility.Hidden;
-            opening_title.Visibility = Visibility.Visible;
-            createWorld.Visibility = Visibility.Visible;
-            loadGenomaButton.Visibility = Visibility.Visible;
-            loadWorldButton.Visibility = Visibility.Visible;
-            gridToolbox.Visibility = Visibility.Hidden;
-            gridSpeed.Visibility = Visibility.Hidden;
-            saveButton.Visibility = Visibility.Hidden;
-            headBack.Visibility = Visibility.Hidden;
-            startSimulation.IsEnabled = false;
+            Simulation.UnbindEngine();
+            Simulation.Dispose();
+            Simulation = null;
+            SetLayout(0);
             Engine.editing = false;
             //for(eachcell){engine.removeCell(cell)}
+        }
+
+        private void newPopulation_Click(object sender, RoutedEventArgs e)
+        {
+            Button_Click(null, null);
+            SetLayout(2);
+        }
+
+        private void loadSimulation_Click(object sender, RoutedEventArgs e)
+        {
+
+            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
+
+            if (Serializer.Load(out Simulation, input))
+            {
+                Simulation.InitLoad(Engine);
+                SetLayout(1);
+            }
+        }
+
+        private void saveSimulation_Click(object sender, RoutedEventArgs e)
+        {
+            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
+            Serializer.Save(Simulation, input);
+        }
+
+        private void saveTerrain_Click(object sender, RoutedEventArgs e)
+        {
+            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
+            Serializer.Save(Simulation.HallOfFame[0], input);
+
         }
     }
 }

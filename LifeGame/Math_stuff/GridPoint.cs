@@ -22,6 +22,7 @@ namespace LifeGame
     /// 
     /// </code>
     /// </remarks>
+       [Serializable]
     public struct GridPoint
     {
         static FastRandom rand = new FastRandom();

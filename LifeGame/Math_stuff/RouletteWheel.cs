@@ -5,6 +5,7 @@ using System.Text;
 
 namespace LifeGame
 {
+        [Serializable]
     class RouletteWheel
     {
         FastRandom rand = new FastRandom();

@@ -11,6 +11,7 @@ namespace LifeGame
     /// This can cause the same structures to have different IDs and then don't match during recombination, 
     /// however this is the only chice because the IDs grow very fast during the simulation and exceed the maximum element that a collection can contain.
     /// </summary>
+       [Serializable]
     public class KVCircularBuffer<K, V>
     {
         KeyValuePair<K, V>[] buffer;

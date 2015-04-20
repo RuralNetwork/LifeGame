@@ -5,6 +5,7 @@ using System.Text;
 
 namespace LifeGame
 {
+        [Serializable]
     public class Average
     {
         public float Value { get; set; }

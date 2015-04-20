@@ -14,11 +14,10 @@ using System.Text;
 
 namespace LifeGame
 {
+    [Serializable]
     public class NNGenome
     {
-        Simulation simulation;
-
-
+        public NNGlobalLists globalLists;
         // parameters
         const float WEIGHT_RANGE = 5.0f;
         const float DISJ_EXC_RECOMB_PROB = 0.1f;// disjoint-excess recombine probability
@@ -49,10 +48,9 @@ namespace LifeGame
         /// <summary>
         /// Initialize a random genome
         /// </summary>
-        public NNGenome(Simulation simulation)
+        public NNGenome(NNGlobalLists gblLists)
         {
-            this.simulation = simulation;
-
+            globalLists = gblLists;
             NodeGeneList = new Dictionary<uint, NodeGene>(Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT);
             NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
             for (uint i = 1; i < Constants.INPUTS_AND_BIAS_COUNT; i++)
@@ -75,7 +73,7 @@ namespace LifeGame
         /// </summary>
         public NNGenome(NNGenome genome)
         {
-            simulation = genome.simulation;
+            globalLists = genome.globalLists;
             NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList.Count);
             foreach (var kvp in genome.NodeGeneList)
             {
@@ -97,8 +95,7 @@ namespace LifeGame
         // the structure is copied from the fittest genome
         public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2)
         {
-            parent1.simulation = simulation;
-
+            globalLists = parent1.globalLists;
             //determine fittest parent
             NNGenome fitPar, weakPar;
             if (fitness1 > fitness2)
@@ -204,7 +201,7 @@ namespace LifeGame
 
         void mutate()
         {
-            switch ((!simulation.TrainingMode ? stdMutationRW : alwaysMutateRW).Spin())
+            switch (alwaysMutateRW.Spin())
             {
                 case 0:
                     mutateWeight();
@@ -280,7 +277,7 @@ namespace LifeGame
         {
             AddedNode addedNode;
             var isNewAddedNode = false;
-            if (simulation.NNLists.nodeBuffer.TryGetValue(oldLinkID, out addedNode))
+            if (globalLists.nodeBuffer.TryGetValue(oldLinkID, out addedNode))
             {
                 if (!(NodeGeneList.ContainsKey(addedNode.NodeID) || LinkGeneList.ContainsKey(addedNode.InpLinkID) || LinkGeneList.ContainsKey(addedNode.OutpLinkID)))
                 {
@@ -292,11 +289,11 @@ namespace LifeGame
                 isNewAddedNode = true;
             }
 
-            addedNode = new AddedNode(ref simulation.NNLists.lastID);
+            addedNode = new AddedNode(ref globalLists.lastID);
 
             if (isNewAddedNode)
             {
-                simulation.NNLists.nodeBuffer.Enqueue(oldLinkID, addedNode);
+                globalLists.nodeBuffer.Enqueue(oldLinkID, addedNode);
             }
             return addedNode;
         }
@@ -324,14 +321,14 @@ namespace LifeGame
                     uint? existingLinkID;// must be nullable, to handle the case there isn't an existing ID
                     var newLink = new LinkGene(srcID, tgtID, ((float)rand.NextDouble() * 2f - 1f) * WEIGHT_RANGE);
 
-                    if (simulation.NNLists.linkBuffer.TryGetValue(addedLink, out existingLinkID))
+                    if (globalLists.linkBuffer.TryGetValue(addedLink, out existingLinkID))
                     {
                         LinkGeneList.Add(existingLinkID.Value, newLink);
                     }
                     else
                     {
-                        simulation.NNLists.linkBuffer.Enqueue(addedLink, ++simulation.NNLists.lastID);
-                        LinkGeneList.Add(simulation.NNLists.lastID, newLink);//same ID
+                        globalLists.linkBuffer.Enqueue(addedLink, ++globalLists.lastID);
+                        LinkGeneList.Add(globalLists.lastID, newLink);//same ID
                     }
                     srcNode.TgtNodeIDs.Add(tgtID);
                     tgtNode.SrcNodeIDs.Add(srcID);
@@ -409,7 +406,7 @@ namespace LifeGame
         }
     }
 
-
+    [Serializable]
     public class NNGlobalLists
     {
         //--------Globally store the identifiers needed to match genes during recombination

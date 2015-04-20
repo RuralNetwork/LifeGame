@@ -5,6 +5,7 @@ using System.Text;
 
 namespace LifeGame
 {
+    [Serializable]
     public class Genome
     {
         public float Fitness { get; set; }
@@ -19,7 +20,7 @@ namespace LifeGame
 
         public Genome(Simulation simulation)
         {
-            NNGenome = new NNGenome(simulation);
+            NNGenome = new NNGenome(simulation.NNLists);
             //  BodyGenome=new BodyGenome()
         }
 

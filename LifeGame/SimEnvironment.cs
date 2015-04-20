@@ -10,10 +10,12 @@ namespace LifeGame
 
     // Siccome il colore del cielo è inutile, il colore Del SimEnviroment sarà un fattore per determinare come i Thing vengono percepiti.
     // Formula: thingColor*envColor/255, per ogni componente
+    [Serializable]
     public class SimEnvironment
     {
         Simulation simulation;
-        GraphicsEngine engine;
+        [NonSerialized]
+        public GraphicsEngine Engine;
 
         //Properties
         public float Color1 { get; set; }
@@ -42,10 +44,9 @@ namespace LifeGame
         public Tuple<int, float, int> LockWeather { private get; set; }
 
 
-        public SimEnvironment(Simulation simulation, GraphicsEngine engine)
+        public SimEnvironment(Simulation simulation)
         {
             this.simulation = simulation;
-            this.engine = engine;
             // questi valori non devono essere verosimili, ci serve una simulazione che appaia veloce facendo scorrere il tempo velocemente
             DayTicks = 240;
             YearTicks = 24000;
