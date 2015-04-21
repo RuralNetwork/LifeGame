@@ -33,6 +33,14 @@ namespace LifeGame
             }
         }
 
+        public static float Sigmoid(this float x)
+        {
+            return 1f / (1f + ((float)Math.Exp(-x)));// standard sigmoid
+            //return 0.5f + (x / 2f / (0.2f + Math.Abs(x)));
+            //postActArr[j] = (float)(Math.Atan(preActArr[j]) / Math.PI) + 0.5f;
+            // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
+        }
+
         public static float InverseSigmoid(this float x)
         {
             return (x > 0f && x < 1f ? (float)Math.Log(-x / (x - 1f)) : (x > 0.5f ? 10000000f : -10000000f));

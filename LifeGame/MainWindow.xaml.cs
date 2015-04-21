@@ -119,7 +119,7 @@ namespace LifeGame
         {
             Simulation = new Simulation(30, 20, Engine);
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 30; i++)
             {
                 int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
                 Simulation.Terrain[x][y].ChangeType(ThingType.Earth, null);
@@ -130,7 +130,7 @@ namespace LifeGame
                 Simulation.Terrain[x][y].ChangeType(ThingType.Sand, null);
                 Simulation.Terrain[x][y].Apply();
             }
-            for (int i = 0; i < 150; i++)
+            for (int i = 0; i < 50; i++)
             {
                 int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
                 Simulation.Terrain[x][y].ChangeType(ThingType.Water, null);
@@ -187,8 +187,8 @@ namespace LifeGame
                 case "x1":
                     Engine.FPS = 1;
                     break;
-                case "x2":
-                    Engine.FPS = 2;
+                case "x10":
+                    Engine.FPS = 10;
                     break;
                 case "Max":
                     Engine.FPS = 0;
@@ -301,6 +301,10 @@ namespace LifeGame
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
             Serializer.Save(Simulation, input);
+            Properties.Settings.Default.lastSim = "input";
+            Properties.Settings.Default.Save();
+            simSaved = true;
+
         }
 
         private void saveTerrain_Click(object sender, RoutedEventArgs e)
@@ -308,6 +312,31 @@ namespace LifeGame
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
             Serializer.Save(Simulation.HallOfFame[0], input);
 
+        }
+
+        bool simSaved;
+
+        private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!simSaved && Simulation != null)
+            {
+                Serializer.Save(Simulation, "lastsim");
+                Properties.Settings.Default.lastSim = "lastsim";
+                Properties.Settings.Default.Save();
+            }
+
+        }
+
+        private void mainwindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Aprire l'ultima simulazione?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                if (Serializer.Load(out Simulation, Properties.Settings.Default.lastSim))
+                {
+                    Simulation.InitLoad(Engine);
+                    SetLayout(1);
+                }
+            }
         }
     }
 }

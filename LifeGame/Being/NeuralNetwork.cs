@@ -95,9 +95,7 @@ namespace LifeGame
 
                 for (int j = Constants.INPUTS_AND_BIAS_COUNT; j < nodeCount; j++)
                 {
-                    postActArr[j] = 1f / (1f + ((float)Math.Exp(-preActArr[j])));// standard sigmoid
-                    //postActArr[j] = (float)(Math.Atan(preActArr[j]) / Math.PI) + 0.5f;
-                    // TODO: reconsider the activation function, can "0.5+(x/(2*(0.2f+abs(x))))" be better for performance/quality?
+                    postActArr[j] = preActArr[j].Sigmoid();
 
                     preActArr[j] = 0f;
                 }

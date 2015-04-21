@@ -22,5 +22,17 @@ namespace LifeGame.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastSim {
+            get {
+                return ((string)(this["lastSim"]));
+            }
+            set {
+                this["lastSim"] = value;
+            }
+        }
     }
 }

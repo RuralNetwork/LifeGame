@@ -209,6 +209,7 @@ namespace LifeGame
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
                     Debug.Write("    best fitness: " + HallOfFame.First().Fitness.ToString("0.000") + "\n");
+#if DEBUG
                     int c = 0;
                     for (int x = 0; x < GridWidth; x++)
                     {
@@ -221,6 +222,7 @@ namespace LifeGame
                         }
                     }
                     Debug.Write("    " + c);
+#endif
 
                     watch.Restart();
                     TimeTick++;
@@ -228,32 +230,21 @@ namespace LifeGame
                     Environment.Update();
 
                     int idx = 0;
+                    var po = new ParallelOptions() { MaxDegreeOfParallelism = 10 };
                     //#if DEBUG // change to release to execute parallel code
-                    foreach (var arr in Terrain)
+                    Parallel.ForEach(Terrain, po, arr =>
                     {
-                        foreach (var thing in arr)
-                        {
-                            thing.Update();
-                        }
-                    }
+                        foreach (var thing in arr) thing.Update();
+                    });
 
-                    foreach (var being in Population)
-                    {
-                        being.Value.Update();
-                    }
+                    Parallel.ForEach(Population, po, being => being.Value.Update());
 
-                    foreach (var arr in Terrain)
+                    Parallel.ForEach(Terrain, po, arr =>
                     {
-                        foreach (var thing in arr)
-                        {
-                            thing.Apply();
-                        }
-                    }
+                        foreach (var thing in arr) thing.Apply();
+                    });
 
-                    foreach (var being in Population)
-                    {
-                        being.Value.Apply();
-                    }
+                    Parallel.ForEach(Population, po, being => being.Value.Apply());
 
 
                     // make born some beings
@@ -284,6 +275,7 @@ namespace LifeGame
 
 
                     // apply births/deaths
+                    //Parallel.For(0, GridWidth, po, x =>
                     for (int x = 0; x < GridWidth; x++)
                     {
                         for (int y = 0; y < GridHeight; y++)
@@ -373,6 +365,7 @@ namespace LifeGame
                                             being.Genome.Fitness = being.FitnessMean.Value;
                                             HallOfFame.Insert(i, being.Genome);
                                             HallOfFame.RemoveAt(HallSeats);
+                                            break;
                                         }
                                     }
 
@@ -382,7 +375,7 @@ namespace LifeGame
                                 BornDiedQueue[x][y] = null;
                             }
                         }
-                    }
+                    }//);
 
                     // move beings
                     while (BeingLocQueue.Count > 0)

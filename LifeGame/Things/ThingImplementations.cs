@@ -181,7 +181,7 @@ namespace LifeGame
             interactDict = new Dictionary<ActionType, Effects>();
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
-                b.ChangeProp((ThingProperty)BeingMutableProp.Thirst, 0.005f * b.EnergySpent, false);
+                b.ChangeProp((ThingProperty)BeingMutableProp.Thirst, 0.05f * b.EnergySpent, false);
             });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -266,7 +266,7 @@ namespace LifeGame
             interactDict = new Dictionary<ActionType, Effects>();
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
-                b.ChangeProp((ThingProperty)BeingMutableProp.Hunger, 0.01f * b.EnergySpent, false);
+                b.ChangeProp((ThingProperty)BeingMutableProp.Hunger, 0.03f * b.EnergySpent, false);
             });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);

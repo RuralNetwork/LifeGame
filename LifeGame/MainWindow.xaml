@@ -1,7 +1,7 @@
 ﻿<Window x:Name="mainwindow" x:Class="LifeGame.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="714" Width="1262.5" WindowState="Maximized">
+        Title="MainWindow" Height="714" Width="1262.5" WindowState="Maximized" Closing="mainwindow_Closing" Loaded="mainwindow_Loaded">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="528*"/>
@@ -36,7 +36,7 @@
         </Grid>
         <Grid Grid.Row="1" Grid.Column="2" Name="gridSpeed" Visibility="Hidden">
             <Button Content="1x" Grid.Column="2" HorizontalAlignment="Left" Margin="50,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x1" Click="toggleSpeed"/>
-            <Button Content="2x" Grid.Column="2" HorizontalAlignment="Left" Margin="90,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x2" Click="toggleSpeed"/>
+            <Button Content="10x" Grid.Column="2" HorizontalAlignment="Left" Margin="90,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="x10" Click="toggleSpeed"/>
             <Button Content="Max" Grid.Column="2" HorizontalAlignment="Left" Margin="130,11,0,0" Grid.Row="1" VerticalAlignment="Top" Width="37" Name="Max" Click="toggleSpeed"/>
         </Grid>
         <Button x:Name="loadSimulation" Content="Carica Simulazione" HorizontalAlignment="Center" Margin="162,286,147,276" VerticalAlignment="Center" Width="230" Height="72" FontSize="24" Cursor="Hand" Grid.Column="1" Click="loadSimulation_Click"/>

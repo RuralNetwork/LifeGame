@@ -36,7 +36,6 @@ namespace LifeGame
 
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
-        public float FitnessPoints;
 
         public Being(Simulation simulation)
             : base(ThingType.Being, simulation, default(GridPoint))
@@ -63,22 +62,26 @@ namespace LifeGame
             Sex = RandomBool.Next();
             Brain = new NeuralNetwork(genome.NNGenome, Sex);
 
+            walk = new float[6];
         }
+
+        float[] walk;
 
         public override void Update()
         {
             Lifespan++;
             if (simulation.TrainingMode)
             {
-                var fitness = Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
-                    Properties[(ThingProperty)BeingMutableProp.Thirst] + Lifespan + FitnessPoints;
+                var fitness = //Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
+                    //Properties[(ThingProperty)BeingMutableProp.Thirst] + //((float)Lifespan).Sigmoid() +
+                    (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10;
                 foreach (var id in LivingOffsprings)
                 {
                     fitness += simulation.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
                 }
                 FitnessMean.Add(fitness);
             }
-            FitnessPoints = 0;
+            //FitnessPoints = 0;
 
             OldLoc = Location;
 
@@ -313,7 +316,7 @@ namespace LifeGame
                     {
                         var steps = 0;
                         cellPt = Location;
-                        while (EnergySpent > 0 && steps < 5)
+                        while (EnergySpent > 0 && steps < 3)
                         {
                             cellPt = cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);
@@ -325,35 +328,45 @@ namespace LifeGame
                                 walkThrough(target.InnerThing);
                             }
                             steps++;
-                            FitnessPoints++;
+                            //FitnessPoints++;
                         }
-                        simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
+                        if (steps > 0)
+                        {
+                            simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
+                            int a = (int)cDir;
+
+                            walk[a]++;
+                        }
                     }
                     break;
                 case ActionType.Sleep:
                     ChangeProp((ThingProperty)BeingMutableProp.Energy, 1000f * energy / Properties[(ThingProperty)BeingMutableProp.Energy], false);
                     energy = 0;// prevent loss of energy
+                    //sleep++;
                     //interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
-                case ActionType.Fight:
-                    //if (tgtType == 0)
-                    //{
-                    //    interact(InnerThing, act);
-                    //}
                     interact(target, act);
+                    energy = 0;
                     break;
-                case ActionType.Breed:
-                    cellPt = Location.GetNearCell(cDir);
-                    var being = (Being)terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)].InnerThing;
-                    if (being != null && being.Sex != this.Sex)
-                    {
-                        interact(being, ActionType.Breed);
-                    }
-                    break;
-                case ActionType.MakeSound:
-                    ChangeProp(ThingProperty.Amplitude, 500 * energy, true);
-                    break;
+                //case ActionType.Fight:
+                //    //if (tgtType == 0)
+                //    //{
+                //    //    interact(InnerThing, act);
+                //    //}
+                //    interact(target, act);
+                //    break;
+                //case ActionType.Breed:
+                //    cellPt = Location.GetNearCell(cDir);
+                //    var being = (Being)terrain[(cellPt.X).Cycle(width)][(cellPt.Y).Cycle(height)].InnerThing;
+                //    if (being != null && being.Sex != this.Sex)
+                //    {
+                //        interact(being, ActionType.Breed);
+                //    }
+                //    break;
+                //case ActionType.MakeSound:
+                //    ChangeProp(ThingProperty.Amplitude, 500 * energy, true);
+                //    break;
                 //case ActionType.Take:
                 //    interact(target, act);
                 //    break;
@@ -369,20 +382,24 @@ namespace LifeGame
 
 
             //debug
-            energy = 0;
 
             // being changes
             Direction = cDir;
             ChangeProp((ThingProperty)BeingMutableProp.Energy, -energy - 10f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.02f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.05f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.001f, false);
-
-            if (Properties[(ThingProperty)BeingMutableProp.Health] > Properties[(ThingProperty)BeingMutableProp.Health])
+            if (Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Hunger] > 1f)
             {
-                ChangeProp((ThingProperty)BeingMutableProp.Health, Properties[(ThingProperty)BeingMutableProp.Health], true);
+                ChangeProp((ThingProperty)BeingMutableProp.Energy, +100f, false);
             }
+            ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.002f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.005f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.005f, false);
+
+            if (Properties[(ThingProperty)BeingMutableProp.Health] > Properties[(ThingProperty)BeingMutableProp.Integrity])
+            {
+                ChangeProp((ThingProperty)BeingMutableProp.Health, Properties[(ThingProperty)BeingMutableProp.Integrity], true);
+            }
+
             if (Properties[(ThingProperty)BeingMutableProp.Health] < 0.01f)
             {
                 simulation.MakeDie(this); //  FATALITY!!!

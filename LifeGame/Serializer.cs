@@ -9,12 +9,20 @@ namespace LifeGame
 {
     static public class Serializer
     {
-        static public void Save<T>(T obj, string filename)
+        static public bool Save<T>(T obj, string filename)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            Stream stream = File.Create(filename);
-            bf.Serialize(stream, obj);
-            stream.Close();
+            try
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                Stream stream = File.Create(filename);
+                bf.Serialize(stream, obj);
+                stream.Close();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         static public bool Load<T>(out T obj, string filename) where T : class //  <-- allow obj to be null
