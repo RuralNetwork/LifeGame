@@ -18,9 +18,9 @@ namespace LifeGame
            BodyGenome = new BodyGenome(dadGen.BodyGenome, mumGen.BodyGenome);
         }
 
-        public Genome(Simulation simulation)
+        public Genome()
         {
-            NNGenome = new NNGenome(simulation.NNLists);
+            NNGenome = new NNGenome();
             //  BodyGenome=new BodyGenome()
         }
 

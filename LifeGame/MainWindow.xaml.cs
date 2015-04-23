@@ -47,8 +47,6 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-        GraphicsEngine Engine;
-        Simulation Simulation;
 
 
         FastRandom rand = new FastRandom();
@@ -75,7 +73,7 @@ namespace LifeGame
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
-            Engine = new GraphicsEngine(mainpanel);
+            new GraphicsEngine(mainpanel);
 
         }
 
@@ -86,8 +84,8 @@ namespace LifeGame
             mainpanel.Children.Add(prova);
             //Here to center the box
             Canvas.SetLeft(prova, 50);*/
-            Engine.editing = false;
-            Simulation.TogglePause();
+            GraphicsEngine.Instance.editing = false;
+            Simulation.Instance.TogglePause();
             //toggling text
             if ((string)startSimulation.Content == "Ferma Simulazione")
             {
@@ -97,17 +95,6 @@ namespace LifeGame
             {
                 startSimulation.Content = "Ferma Simulazione";
             }
-
-            /*Debug.Write("Button clicked\n");
-            for (int x = 0; x < 10; x++)
-            {
-                for (int y = 0; y < 10; y++)
-                {
-                    Engine.addCell(new GridPoint(x,y));
-                }
-            }*/
-            //Engine.addCell(0, 0);
-            //this.Simulation;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -117,29 +104,29 @@ namespace LifeGame
 
         private void createWorld_Click(object sender, RoutedEventArgs e)
         {
-            Simulation = new Simulation(30, 20, Engine);
+            new Simulation(30, 20);
 
             for (int i = 0; i < 30; i++)
             {
-                int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
-                Simulation.Terrain[x][y].ChangeType(ThingType.Earth, null);
-                Simulation.Terrain[x][y].Apply();
+                int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
+                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Earth, null);
+                Simulation.Instance.Terrain[x][y].Apply();
 
-                x = rand.Next(Simulation.GridWidth);
-                y = rand.Next(Simulation.GridHeight);
-                Simulation.Terrain[x][y].ChangeType(ThingType.Sand, null);
-                Simulation.Terrain[x][y].Apply();
+                x = rand.Next(Simulation.Instance.GridWidth);
+                y = rand.Next(Simulation.Instance.GridHeight);
+                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Sand, null);
+                Simulation.Instance.Terrain[x][y].Apply();
             }
             for (int i = 0; i < 50; i++)
             {
-                int x = rand.Next(Simulation.GridWidth), y = rand.Next(Simulation.GridHeight);
-                Simulation.Terrain[x][y].ChangeType(ThingType.Water, null);
-                Simulation.Terrain[x][y].Apply();
+                int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
+                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Water, null);
+                Simulation.Instance.Terrain[x][y].Apply();
 
-                x = rand.Next(Simulation.GridWidth);
-                y = rand.Next(Simulation.GridHeight);
-                Simulation.Terrain[x][y].ChangeType(ThingType.Bush, null);
-                Simulation.Terrain[x][y].Apply();
+                x = rand.Next(Simulation.Instance.GridWidth);
+                y = rand.Next(Simulation.Instance.GridHeight);
+                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Bush, null);
+                Simulation.Instance.Terrain[x][y].Apply();
             }
 
             SetLayout(1);
@@ -147,9 +134,9 @@ namespace LifeGame
             //debug
             timer.Tick += delegate
             {
-                if (Simulation != null)
+                if (Simulation.Instance != null)
                 {
-                    Title = Simulation.ActualFPS.ToString("0.0");
+                    Title = Simulation.Instance.ActualFPS.ToString("0.0");
                 }
             };
             timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
@@ -165,7 +152,7 @@ namespace LifeGame
                 f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
             }
             current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
-            Engine.changeBrush(current.Name);
+            GraphicsEngine.Instance.changeBrush(current.Name);
 
         }
         private void toggleSpeed(object sender, RoutedEventArgs e)
@@ -185,16 +172,16 @@ namespace LifeGame
             switch (speed)
             {
                 case "x1":
-                    Engine.FPS = 1;
+                    GraphicsEngine.Instance.FPS = 1;
                     break;
                 case "x10":
-                    Engine.FPS = 10;
+                    GraphicsEngine.Instance.FPS = 10;
                     break;
                 case "Max":
-                    Engine.FPS = 0;
+                    GraphicsEngine.Instance.FPS = 0;
                     break;
                 default:
-                    Engine.FPS = 1;
+                    GraphicsEngine.Instance.FPS = 1;
                     break;
             }
         }
@@ -227,7 +214,7 @@ namespace LifeGame
                 case 1:
                     mainpanel.Width = 910;
                     mainpanel.Height = 700;
-                    Engine.editing = true;
+                    GraphicsEngine.Instance.editing = true;
                     gridToolbox.Visibility = Visibility.Visible;
                     mainpanel.Visibility = Visibility.Visible;
                     newPopulation.Visibility = Visibility.Visible;
@@ -250,11 +237,12 @@ namespace LifeGame
         private void loadGenoma(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            var gen = Serializer.LoadGenome(input);
-            if (gen != null)
+            Tuple<Genome, NNGlobalLists> tuple;
+            Serializer.Load(out tuple, input);
+            if (tuple != null)
             {
-                Simulation.HallOfFame[0] = gen;
-                Simulation.NNLists = gen.NNGenome.globalLists;
+                Simulation.Instance.HallOfFame[0] = tuple.Item1;
+                Simulation.Instance.NNLists = tuple.Item2;
                 SetLayout(2);
             }
         }
@@ -263,7 +251,7 @@ namespace LifeGame
         {
             SetLayout(1);
             string input = Microsoft.VisualBasic.Interaction.InputBox("Prompt", "Title", "Default", -1, -1);
-            if (Simulation != null)
+            if (Simulation.Instance != null)
             {
                 SetLayout(1);
             }
@@ -271,12 +259,10 @@ namespace LifeGame
 
         private void goBack(object sender, RoutedEventArgs e)
         {
-            Simulation.UnbindEngine();
-            Simulation.Dispose();
-            Simulation = null;
+            Simulation.Instance.UnbindEngine();
+            Simulation.Instance = null;
             SetLayout(0);
-            Engine.editing = false;
-            //for(eachcell){engine.removeCell(cell)}
+            GraphicsEngine.Instance.editing = false;
         }
 
         private void newPopulation_Click(object sender, RoutedEventArgs e)
@@ -290,9 +276,9 @@ namespace LifeGame
 
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
 
-            if (Serializer.Load(out Simulation, input))
+            if (Serializer.Load(out Simulation.Instance, input))
             {
-                Simulation.InitLoad(Engine);
+                Simulation.Instance.InitLoad();
                 SetLayout(1);
             }
         }
@@ -300,7 +286,7 @@ namespace LifeGame
         private void saveSimulation_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
-            Serializer.Save(Simulation, input);
+            Serializer.Save(Simulation.Instance, input);
             Properties.Settings.Default.lastSim = "input";
             Properties.Settings.Default.Save();
             simSaved = true;
@@ -310,7 +296,7 @@ namespace LifeGame
         private void saveTerrain_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            Serializer.Save(Simulation.HallOfFame[0], input);
+            Serializer.Save(new Tuple<Genome, NNGlobalLists>(Simulation.Instance.HallOfFame[0], Simulation.Instance.NNLists), input);
 
         }
 
@@ -318,9 +304,9 @@ namespace LifeGame
 
         private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!simSaved && Simulation != null)
+            if (!simSaved && Simulation.Instance != null)
             {
-                Serializer.Save(Simulation, "lastsim");
+                Serializer.Save(Simulation.Instance, "lastsim");
                 Properties.Settings.Default.lastSim = "lastsim";
                 Properties.Settings.Default.Save();
             }
@@ -331,9 +317,9 @@ namespace LifeGame
         {
             if (MessageBox.Show("Aprire l'ultima simulazione?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (Serializer.Load(out Simulation, Properties.Settings.Default.lastSim))
+                if (Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim))
                 {
-                    Simulation.InitLoad(Engine);
+                    Simulation.Instance.InitLoad();
                     SetLayout(1);
                 }
             }

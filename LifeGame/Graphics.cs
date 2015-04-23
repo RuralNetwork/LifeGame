@@ -24,13 +24,16 @@ namespace LifeGame
      */
     public class GraphicsEngine
     {
+        //Singleton
+        public static GraphicsEngine Instance;
+
         //Had to use Canvas, since I want an absolute positioning in space.
         //When a new Map is created, there will be limits, then, since we know how big it is, we center it
         //Viewbox was too limited as per the child it could have, stackpanel puts everything with a DOM logic
         //canvas was the only thing that let me do what I wanted, if there is something better we can change it now, later it will be too painful
         private Canvas _canvas { get; set; }
         //For any callback use this as type
-        public delegate void Del(GraphicsEngine engine);
+        public delegate void Del();
         public double canvasHeight { get; set; }
         public double canvasWidth { get; set; }
         public int hexaW = 40;
@@ -50,12 +53,10 @@ namespace LifeGame
 
         public GraphicsEngine(Canvas canvas)
         {
+            Instance = this;
             _canvas = canvas;
             canvasHeight = canvas.Height;
             canvasWidth = canvas.Width;
-            //tentativo di parent
-            //var parent = canvas.Parent;
-
         }
         public void setViewbox(Canvas newCanvas)
         {
@@ -114,7 +115,7 @@ namespace LifeGame
 
                 if (callbackOK != null)
                 {
-                    callbackOK(this);
+                    callbackOK();
                 }
 
             }
@@ -273,11 +274,6 @@ namespace LifeGame
                 cosa.ChangeType(this.currentType, null);
                 cosa.Apply();
             }
-        }
-
-        public void startSimulation()
-        {
-            Debug.Write("Simulation started\n");
         }
     }
 }

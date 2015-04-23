@@ -37,15 +37,15 @@ namespace LifeGame
         static int[] dirIdxs = new int[] { 4, 5, 3, 1, 0, 2 };
 
 
-        public Being(Simulation simulation)
-            : base(ThingType.Being, simulation, default(GridPoint))
+        public Being()
+            : base(ThingType.Being, default(GridPoint))
         {
-            InnerThing = new Thing(ThingType.Null, simulation, default(GridPoint));
+            InnerThing = new Thing(ThingType.Null, default(GridPoint));
             InnerThing.IsCarrObj = true;
             LivingOffsprings = new List<int>();
 
-            ID = simulation.lastID;
-            simulation.lastID++;
+            ID = Simulation.Instance.lastID;
+            Simulation.Instance.lastID++;
         }
 
         public void InitOffspring(Genome genome)
@@ -69,15 +69,28 @@ namespace LifeGame
 
         public override void Update()
         {
+            //Aliases
+            var sim = Simulation.Instance;
+            var terrain = sim.Terrain;
+            var environment = sim.Environment;
+            var bState = Brain.State;
+            var width = sim.GridWidth;
+            var height = sim.GridHeight;
+            var locX = Location.X;
+            var locY = Location.Y;
+            var ccProps = terrain[locX][locY].Properties;
+
+
+
             Lifespan++;
-            if (simulation.TrainingMode)
+            if (sim.TrainingMode)
             {
                 var fitness = //Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
                     //Properties[(ThingProperty)BeingMutableProp.Thirst] + //((float)Lifespan).Sigmoid() +
                     (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10;
                 foreach (var id in LivingOffsprings)
                 {
-                    fitness += simulation.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
+                    fitness += sim.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
                 }
                 FitnessMean.Add(fitness);
             }
@@ -87,17 +100,6 @@ namespace LifeGame
 
             mute();
             rest();
-
-
-            //Aliases
-            var terrain = simulation.Terrain;
-            var environment = simulation.Environment;
-            var bState = Brain.State;
-            var width = simulation.GridWidth;
-            var height = simulation.GridHeight;
-            var locX = Location.X;
-            var locY = Location.Y;
-            var ccProps = terrain[locX][locY].Properties;
 
 
             //================================================ INPUT ========================================================
@@ -118,10 +120,10 @@ namespace LifeGame
             f1 = Direction.DirectionToAngle();
             bState[++i] = (float)Math.Sin(f1);
             bState[++i] = (float)Math.Cos(f1);
-            //f1 = simulation.TimeTick / simulation.Environment.DayTicks * 2 * (float)Math.PI;
+            //f1 = sim.TimeTick / sim.Environment.DayTicks * 2 * (float)Math.PI;
             //bState[++i] = (float)Math.Sin(f1);
             //bState[++i] = (float)Math.Cos(f1);
-            //f1 = simulation.TimeTick / simulation.Environment.YearTicks * 2 * (float)Math.PI;
+            //f1 = sim.TimeTick / sim.Environment.YearTicks * 2 * (float)Math.PI;
             //bState[++i] = (float)Math.Sin(f1);
             //bState[++i] = (float)Math.Cos(f1);
 
@@ -332,7 +334,7 @@ namespace LifeGame
                         }
                         if (steps > 0)
                         {
-                            simulation.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
+                            sim.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
                             int a = (int)cDir;
 
                             walk[a]++;
@@ -402,7 +404,7 @@ namespace LifeGame
 
             if (Properties[(ThingProperty)BeingMutableProp.Health] < 0.01f)
             {
-                simulation.MakeDie(this); //  FATALITY!!!
+                sim.MakeDie(this); //  FATALITY!!!
             }
 
             InnerThing.Update();

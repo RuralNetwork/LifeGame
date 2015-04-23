@@ -19,16 +19,17 @@ namespace LifeGame
 
     //This class can be instantiated multiple times to permit multiple simulations to be run at the same time
     [Serializable]
-    public class Simulation : IDisposable
+    public class Simulation
     {
+
+        public static Simulation Instance;
+
         static FastRandom rand = new FastRandom();
 
         //non serialized stuff
         //private
         [NonSerialized]
         Stopwatch watch;
-        [NonSerialized]
-        GraphicsEngine engine;
         [NonSerialized]
         public int lastID;
         //public
@@ -82,9 +83,9 @@ namespace LifeGame
         /// </summary>
         public List<Being> freeBeingObjs { get; private set; }
 
-        public Simulation(int gridWidth, int gridHeight, GraphicsEngine engine)
+        public Simulation(int gridWidth, int gridHeight)
         {
-
+            Instance = this;
             // timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
 
             //thread = new Thread(Update);
@@ -97,9 +98,6 @@ namespace LifeGame
             //hallOfFame = new List<Genome>(10);
 
             Environment = new SimEnvironment(this);
-            //Ho messo questo controllo per la larghezza del mondo, ma non so neanche se tu vuoi che sia possibile farlo grande quanto si vuole
-            //Not needed ATM if ((engine.hexaW * gridWidth) - ((gridWidth - 1) * 10) < engine.canvasWidth && (engine.hexaH * gridHeight) - ((gridHeight - 1) * 10) < engine.canvasHeight)
-            //{
             GridWidth = gridWidth;
             GridHeight = gridHeight;
 
@@ -112,24 +110,24 @@ namespace LifeGame
                 BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[gridHeight];
                 for (int j = 0; j < gridHeight; j++)
                 {
-                    Terrain[i][j] = new Thing(ThingType.Grass, this, new GridPoint(i, j));// per metto Earth per ogni cella
+                    Terrain[i][j] = new Thing(ThingType.Grass, new GridPoint(i, j));// per metto Earth per ogni cella
                 }
             }
             Population = new Dictionary<int, Being>();
             freeBeingObjs = new List<Being>();
             for (int i = 0; i < PopulationCount * 1.5f; i++)
             {
-                var being = new Being(this);
+                var being = new Being();
                 freeBeingObjs.Add(being);
             }
 
-            InitLoad(engine);
+            InitLoad();
 
             HallSeats = 5;
             HallOfFame = new List<Genome>();
             for (int i = 0; i < HallSeats; i++)
             {
-                HallOfFame.Add(new Genome(this));
+                HallOfFame.Add(new Genome());
             }
 
         }
@@ -140,40 +138,30 @@ namespace LifeGame
             {
                 foreach (var thing in arr)
                 {
-                    engine.removeThing(thing);
+                   GraphicsEngine.Instance.removeThing(thing);
                 }
             }
             foreach (var being in Population)
             {
-                engine.removeThing(being.Value);
+                GraphicsEngine.Instance.removeThing(being.Value);
             }
         }
 
-        public void InitLoad(GraphicsEngine engine)
+        public void InitLoad()
         {
             timer = new DispatcherTimer(DispatcherPriority.Background);
             timer.Tick += Update;
             watch = Stopwatch.StartNew();
-            this.engine = engine;
             foreach (var arr in Terrain)
             {
                 foreach (var thing in arr)
                 {
-                    thing.Engine = engine;
-                    //Draw initial thing
-                    engine.addCell(thing);
+                    GraphicsEngine.Instance.addCell(thing);
                 }
             }
             foreach (var being in Population)
             {
-                being.Value.Engine = engine;
-                being.Value.InnerThing.Engine = engine;
-                engine.addBeing(being.Value);
-            }
-            foreach (var being in freeBeingObjs)
-            {
-                being.Engine = engine;
-                being.InnerThing.Engine = engine;
+                GraphicsEngine.Instance.addBeing(being.Value);
             }
             NNLists = new NNGlobalLists();
         }
@@ -197,7 +185,7 @@ namespace LifeGame
         {
             if (IsRunning)
             {
-                if (engine.FPS == 0 || watch.Elapsed.TotalSeconds > 1 / engine.FPS)
+                if (GraphicsEngine.Instance.FPS == 0 || watch.Elapsed.TotalSeconds > 1 / GraphicsEngine.Instance.FPS)
                 {
                     ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
 
@@ -230,7 +218,11 @@ namespace LifeGame
                     Environment.Update();
 
                     int idx = 0;
+#if DEBUG
+                    var po = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
+#else
                     var po = new ParallelOptions() { MaxDegreeOfParallelism = 10 };
+#endif
                     //#if DEBUG // change to release to execute parallel code
                     Parallel.ForEach(Terrain, po, arr =>
                     {
@@ -311,7 +303,7 @@ namespace LifeGame
                                     being.InitOffspring(tuple.Item2);
 
                                     ///////////////////////////aggiungi qui codice per mostrare il being (e il suo innerthing)//////////////////////
-                                    engine.addBeing(being);
+                                    GraphicsEngine.Instance.addBeing(being);
                                 }
                                 else
                                 {
@@ -370,7 +362,7 @@ namespace LifeGame
                                     }
 
                                     ///////////////////////////aggiungi qui codice per nascondere il being (e il suo innerthing)//////////////////////
-                                    engine.removeThing(being);
+                                    GraphicsEngine.Instance.removeThing(being);
                                 }
                                 BornDiedQueue[x][y] = null;
                             }
@@ -401,7 +393,7 @@ namespace LifeGame
                             Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                             being.Location = newLoc;
                             Debug.Write("New location" + newLoc.X + "\n");
-                            engine.changeBeing(being); //             <-----chiamata all'engine
+                            GraphicsEngine.Instance.changeBeing(being); //             <-----chiamata all'engine
                         }
                         else
                         {
@@ -506,12 +498,6 @@ namespace LifeGame
         public void Cycle(ref GridPoint pt)
         {
             pt = new GridPoint(pt.X.Cycle(GridWidth), pt.Y.Cycle(GridHeight));
-        }
-
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }
