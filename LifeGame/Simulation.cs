@@ -121,8 +121,9 @@ namespace LifeGame
                 freeBeingObjs.Add(being);
             }
 
-            InitLoad();
+            InitLoad(default(StreamingContext));
 
+            NNLists = new NNGlobalLists();
             HallSeats = 5;
             HallOfFame = new List<Genome>();
             for (int i = 0; i < HallSeats; i++)
@@ -138,7 +139,7 @@ namespace LifeGame
             {
                 foreach (var thing in arr)
                 {
-                   GraphicsEngine.Instance.removeThing(thing);
+                    GraphicsEngine.Instance.removeThing(thing);
                 }
             }
             foreach (var being in Population)
@@ -147,10 +148,12 @@ namespace LifeGame
             }
         }
 
-        public void InitLoad()
+        [OnDeserialized]
+        public void InitLoad(StreamingContext context)
         {
             timer = new DispatcherTimer(DispatcherPriority.Background);
             timer.Tick += Update;
+            timer.Start();
             watch = Stopwatch.StartNew();
             foreach (var arr in Terrain)
             {
@@ -163,18 +166,10 @@ namespace LifeGame
             {
                 GraphicsEngine.Instance.addBeing(being.Value);
             }
-            NNLists = new NNGlobalLists();
         }
 
-        [NonSerialized]
-        bool started;
         public void TogglePause()
         {
-            if (!started)
-            {
-                timer.Start();
-                started = true;
-            }
             IsRunning = !IsRunning;
         }
 
@@ -242,7 +237,7 @@ namespace LifeGame
                     // make born some beings
                     if (TrainingMode)
                     {
-                        for (int i = 0; i < PopulationCount - Population.Count; i++)
+                        if (Population.Count < PopulationCount)
                         {
                             Thing cell;
                             int x, y;
@@ -258,7 +253,7 @@ namespace LifeGame
                     }
 
                     // make die some beings
-                    for (int i = 0; i < Population.Count - PopulationCount; i++)
+                    while (Population.Count > PopulationCount)
                     {
                         idx = rand.Next(Population.Count);
                         var being = Population.ElementAt(idx).Value;

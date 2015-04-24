@@ -49,7 +49,7 @@ namespace LifeGame
         /// <summary>
         /// This is the update and draw speed.
         /// </summary>
-        public float FPS = 0;
+        public float FPS = 10;
 
         public GraphicsEngine(Canvas canvas)
         {

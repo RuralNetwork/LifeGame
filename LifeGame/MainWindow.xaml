@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <Canvas x:Name="mainpanel" Margin="216,264,210,264" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="0" Width="0"></Canvas>
-        <TextBlock x:Name="opening_title" HorizontalAlignment="Center" Margin="4,100,2,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="420" FontSize="52" Text="Il Gioco della Vita" TextAlignment="Center" Grid.Column="1"/>
+        <TextBlock x:Name="openingTitle" HorizontalAlignment="Center" Margin="4,100,2,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="100" Width="420" FontSize="52" Text="Il Gioco della Vita" TextAlignment="Center" Grid.Column="1"/>
         <Grid x:Name="gridToolbox" Grid.Column="3" HorizontalAlignment="Right" Height="569" VerticalAlignment="Top" Width="40" Visibility="Hidden" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="51*"/>
@@ -27,11 +27,11 @@
                 <RowDefinition Height="51*"/>
                 <RowDefinition Height="212*"/>
             </Grid.RowDefinitions>
-            <Button Content="Earth" Name="earth" HorizontalAlignment="Center" Margin="0,16,0,17" VerticalAlignment="Center" Width="40" Grid.Row="0" Click="toggleBrush" Background="#FFC1C1C1" BorderThickness="0" Height="18" Cursor="Hand"/>
-            <Button Content="Grass" Name="grass" HorizontalAlignment="Center" Margin="0,17,0,16" VerticalAlignment="Center" Width="40" Grid.Row="1" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand" />
-            <Button Content="Water" Name="water" HorizontalAlignment="Center" Margin="0,16,0,17" VerticalAlignment="Center" Width="40" Grid.Row="2" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
-            <Button Content="Sand"  Name="sand"  HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="3" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
-            <Button Content="Bush"  Name="bush"  HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="4" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
+            <Button Content="Terra" Name="earth" HorizontalAlignment="Center" Margin="0,16,0,17" VerticalAlignment="Center" Width="40" Grid.Row="0" Click="toggleBrush" Background="#FFC1C1C1" BorderThickness="0" Height="18" Cursor="Hand"/>
+            <Button Content="Erba" Name="grass" HorizontalAlignment="Center" Margin="0,17,0,16" VerticalAlignment="Center" Width="40" Grid.Row="1" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand" />
+            <Button Content="Acqua" Name="water" HorizontalAlignment="Center" Margin="0,16,0,17" VerticalAlignment="Center" Width="40" Grid.Row="2" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
+            <Button Content="Sabbia"  Name="sand"  HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="3" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
+            <Button Content="Cespuglio"  Name="bush"  HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="4" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>
             <!-- <Button Content="Berry" Name="berry" HorizontalAlignment="Center" Margin="0,23,0,10" VerticalAlignment="Center" Width="40" Grid.Row="3" Click="toggleBrush" Background="White" BorderThickness="0" Height="18" Cursor="Hand"/>-->
         </Grid>
         <Grid Grid.Row="1" Grid.Column="2" Name="gridSpeed" Visibility="Hidden">
@@ -41,11 +41,11 @@
         </Grid>
         <Button x:Name="loadSimulation" Content="Carica Simulazione" HorizontalAlignment="Center" Margin="162,286,147,276" VerticalAlignment="Center" Width="230" Height="72" FontSize="24" Cursor="Hand" Grid.Column="1" Click="loadSimulation_Click"/>
         <Button x:Name="createTerrain" Content="Crea Terreno" Grid.Column="1" HorizontalAlignment="Center" Margin="184,412,175,150" VerticalAlignment="Center" Width="180" Height="72" FontSize="24" Cursor="Hand" Click="createWorld_Click"/>
-        <Button x:Name="loadWorldButton" Content="Carica Terreno" HorizontalAlignment="Center" Margin="340,368,0,106" VerticalAlignment="Center" Width="180" Height="71" FontSize="24" Cursor="Hand" Click="loadWorld" Grid.Column="1" Visibility="Hidden"/>
+        <Button x:Name="loadWorld" Content="Carica Terreno" HorizontalAlignment="Center" Margin="340,368,0,106" VerticalAlignment="Center" Width="180" Height="71" FontSize="24" Cursor="Hand" Click="loadWorld_Click" Grid.Column="1" Visibility="Hidden"/>
         <Button x:Name="newPopulation" Content="Nuova Popolazione" HorizontalAlignment="Center" Margin="0,564,323,0" VerticalAlignment="Bottom" Width="216" Height="70" FontSize="24" Cursor="Hand" Grid.Column="1" Click="newPopulation_Click" Visibility="Hidden"/>
-        <Button x:Name="loadGenomaButton" Content="Carica Genoma" HorizontalAlignment="Center" Margin="323,564,0,0" VerticalAlignment="Bottom" Width="216" Height="70" FontSize="24" Cursor="Hand" Click="loadGenoma" Grid.Column="1" Visibility="Hidden"/>
-        <Button x:Name="startSimulation" Content="Inizia Simulazione" HorizontalAlignment="Center" Margin="78,0,72,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="Button_Click" FontSize="24" Grid.Column="1" Cursor="Hand" Grid.RowSpan="2" Visibility="Hidden"/>
-        <Button x:Name="saveTerrain" Content="Salva Genoma" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="114" Height="30" Visibility="Hidden" Click="saveTerrain_Click"/>
+        <Button x:Name="loadGenome" Content="Carica Genoma" HorizontalAlignment="Center" Margin="323,564,0,0" VerticalAlignment="Bottom" Width="216" Height="70" FontSize="24" Cursor="Hand" Click="loadGenome_Click" Grid.Column="1" Visibility="Hidden"/>
+        <Button x:Name="toggleState" Content="Inizia Simulazione" HorizontalAlignment="Center" Margin="78,0,72,20" VerticalAlignment="Bottom" Width="276" Height="72" Click="toggleState_Click" FontSize="24" Grid.Column="1" Cursor="Hand" Grid.RowSpan="2" Visibility="Hidden"/>
+        <Button x:Name="saveGenome" Content="Salva Genoma" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="114" Height="30" Visibility="Hidden" Click="saveGenome_Click"/>
         <Button x:Name="saveSimulation" Content="Salva Simulazione" HorizontalAlignment="Right" Margin="0,0,10,13" VerticalAlignment="Bottom" Width="114" Height="30" Visibility="Hidden" Grid.Row="1" Click="saveSimulation_Click"/>
         <!--  <Button x:Name="headBack" Content="Chiudi" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Bottom" Width="75" Height="30" IsEnabled="True" Visibility="Hidden" Click="goBack"/>
 -->

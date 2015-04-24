@@ -41,6 +41,7 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media.Animation;
+using System.Runtime.Serialization;
 
 namespace LifeGame
 {
@@ -77,7 +78,7 @@ namespace LifeGame
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void toggleState_Click(object sender, RoutedEventArgs e)
         {
             //The function to call the mesagebox, then I'll implement it inside the graphical engine
             /*var prova = new dialoguebox("testo");
@@ -87,19 +88,14 @@ namespace LifeGame
             GraphicsEngine.Instance.editing = false;
             Simulation.Instance.TogglePause();
             //toggling text
-            if ((string)startSimulation.Content == "Ferma Simulazione")
+            if ((string)toggleState.Content == "Ferma Simulazione")
             {
-                startSimulation.Content = "Continua Simulazione";
+                toggleState.Content = "Continua Simulazione";
             }
             else
             {
-                startSimulation.Content = "Ferma Simulazione";
+                toggleState.Content = "Ferma Simulazione";
             }
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            Debug.Write(mainwindow.Height);
         }
 
         private void createWorld_Click(object sender, RoutedEventArgs e)
@@ -189,24 +185,24 @@ namespace LifeGame
         void SetLayout(int l)
         {
             mainpanel.Visibility = Visibility.Hidden;
-            opening_title.Visibility = Visibility.Hidden;
+            openingTitle.Visibility = Visibility.Hidden;
             loadSimulation.Visibility = Visibility.Hidden;
-            loadWorldButton.Visibility = Visibility.Hidden;
+            loadWorld.Visibility = Visibility.Hidden;
             createTerrain.Visibility = Visibility.Hidden;
             newPopulation.Visibility = Visibility.Hidden;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            loadGenomaButton.Visibility = Visibility.Hidden;
-            startSimulation.Visibility = Visibility.Hidden;
+            loadGenome.Visibility = Visibility.Hidden;
+            loadGenome.Visibility = Visibility.Hidden;
+            toggleState.Visibility = Visibility.Hidden;
             gridSpeed.Visibility = Visibility.Hidden;
             gridToolbox.Visibility = Visibility.Hidden;
             saveSimulation.Visibility = Visibility.Hidden;
-            saveTerrain.Visibility = Visibility.Hidden;
+            saveGenome.Visibility = Visibility.Hidden;
             //saveButton.Visibility = Visibility.Hidden;
             //headBack.Visibility = Visibility.Hidden;
             switch (l)
             {
                 case 0:
-                    opening_title.Visibility = Visibility.Visible;
+                    openingTitle.Visibility = Visibility.Visible;
                     loadSimulation.Visibility = Visibility.Visible;
                     createTerrain.Visibility = Visibility.Visible;
                     //loadWorldButton.Visibility = Visibility.Visible;
@@ -218,14 +214,14 @@ namespace LifeGame
                     gridToolbox.Visibility = Visibility.Visible;
                     mainpanel.Visibility = Visibility.Visible;
                     newPopulation.Visibility = Visibility.Visible;
-                    loadGenomaButton.Visibility = Visibility.Visible;
+                    loadGenome.Visibility = Visibility.Visible;
                     break;
                 case 2:
                     mainpanel.Visibility = Visibility.Visible;
-                    startSimulation.Visibility = Visibility.Visible;
+                    toggleState.Visibility = Visibility.Visible;
                     gridSpeed.Visibility = Visibility.Visible;
                     saveSimulation.Visibility = Visibility.Visible;
-                    saveTerrain.Visibility = Visibility.Visible;
+                    saveGenome.Visibility = Visibility.Visible;
                     //saveButton.Visibility = Visibility.Visible;
                     //headBack.Visibility = Visibility.Visible;
                     break;
@@ -234,12 +230,11 @@ namespace LifeGame
             }
         }
 
-        private void loadGenoma(object sender, RoutedEventArgs e)
+        private void loadGenome_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
             Tuple<Genome, NNGlobalLists> tuple;
-            Serializer.Load(out tuple, input);
-            if (tuple != null)
+            if (Serializer.Load(out tuple, input))
             {
                 Simulation.Instance.HallOfFame[0] = tuple.Item1;
                 Simulation.Instance.NNLists = tuple.Item2;
@@ -247,7 +242,7 @@ namespace LifeGame
             }
         }
 
-        private void loadWorld(object sender, RoutedEventArgs e)
+        private void loadWorld_Click(object sender, RoutedEventArgs e)
         {
             SetLayout(1);
             string input = Microsoft.VisualBasic.Interaction.InputBox("Prompt", "Title", "Default", -1, -1);
@@ -267,7 +262,7 @@ namespace LifeGame
 
         private void newPopulation_Click(object sender, RoutedEventArgs e)
         {
-            Button_Click(null, null);
+            toggleState_Click(null, null);
             SetLayout(2);
         }
 
@@ -278,7 +273,7 @@ namespace LifeGame
 
             if (Serializer.Load(out Simulation.Instance, input))
             {
-                Simulation.Instance.InitLoad();
+                // Simulation.Instance.InitLoad(default(StreamingContext));
                 SetLayout(1);
             }
         }
@@ -287,13 +282,13 @@ namespace LifeGame
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
             Serializer.Save(Simulation.Instance, input);
-            Properties.Settings.Default.lastSim = "input";
+            Properties.Settings.Default.lastSim = input;
             Properties.Settings.Default.Save();
             simSaved = true;
 
         }
 
-        private void saveTerrain_Click(object sender, RoutedEventArgs e)
+        private void saveGenome_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
             Serializer.Save(new Tuple<Genome, NNGlobalLists>(Simulation.Instance.HallOfFame[0], Simulation.Instance.NNLists), input);
@@ -319,7 +314,6 @@ namespace LifeGame
             {
                 if (Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim))
                 {
-                    Simulation.Instance.InitLoad();
                     SetLayout(1);
                 }
             }
