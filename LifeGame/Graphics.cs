@@ -145,18 +145,27 @@ namespace LifeGame
             //obj.Location
             if (FPS > 0)
             {
-            Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
+                if ((obj.OldLoc.Y == Simulation.Instance.GridHeight || obj.OldLoc.X == 0 || obj.OldLoc.X == Simulation.Instance.GridWidth || obj.OldLoc.Y == 0) && (obj.Location.Y == Simulation.Instance.GridHeight || obj.Location.X == 0 || obj.Location.X == Simulation.Instance.GridWidth || obj.Location.Y == 0))
+                {
+                    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+                    obj.polygon.RenderTransform = translate;
+                }
+                else
+                {
+                    Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
 
-                DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
-            DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), 
-                                        (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
-            Transform translate = obj.polygon.RenderTransform;
-            translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
-            translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
-        }
+                    DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
+                    DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
+
+                    Transform translate = obj.polygon.RenderTransform;
+                    translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
+                    translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
+                }
+            }
             else
             {
                 TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+                obj.polygon.RenderTransform = translate;
             }
         }
 
@@ -215,7 +224,7 @@ namespace LifeGame
             return color;
         }
 
-        private ImageBrush switchGround(ThingType type)
+        public ImageBrush switchGround(ThingType type)
         {
             BitmapImage image;
             ImageBrush brush = new ImageBrush();
