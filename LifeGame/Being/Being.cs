@@ -24,7 +24,7 @@ namespace LifeGame
         public bool Sex { get; private set; }
         public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
-        public Average FitnessMean { get; private set; }
+        public Fitness Fitness { get; private set; }
         public int Lifespan { get; private set; }
         public Genome Genome { get; set; }
         public NeuralNetwork Brain { get; private set; }
@@ -58,7 +58,7 @@ namespace LifeGame
             Lifespan = 0;
             LivingOffsprings.Clear();
             Genome = genome;
-            FitnessMean = new Average();
+            Fitness = new Fitness();
             Sex = RandomBool.Next();
             Brain = new NeuralNetwork(genome.NNGenome, Sex);
 
@@ -85,16 +85,19 @@ namespace LifeGame
             Lifespan++;
             if (sim.TrainingMode)
             {
-                var fitness = //Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
-                    //Properties[(ThingProperty)BeingMutableProp.Thirst] + //((float)Lifespan).Sigmoid() +
-                    (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10;
-                foreach (var id in LivingOffsprings)
-                {
-                    fitness += sim.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
-                }
-                FitnessMean.Add(fitness);
+                //var fitness = //Properties[(ThingProperty)BeingMutableProp.Health] + Properties[(ThingProperty)BeingMutableProp.Hunger] +
+                //    //Properties[(ThingProperty)BeingMutableProp.Thirst] + //((float)Lifespan).Sigmoid() +
+                //    (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10;
+                //foreach (var id in LivingOffsprings)
+                //{
+                //    fitness += sim.Population[id].Properties[(ThingProperty)BeingMutableProp.Health];
+                //}
+                //FitnessMean.Add(fitness);
+                Fitness.Update(FitnessParam.Walk, (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10);
+                //Fitness.Update(FitnessParam.Health, Properties[(ThingProperty)BeingMutableProp.Health]);
+                //Fitness.Update(FitnessParam.Reproduction, Properties[(ThingProperty)BeingMutableProp.Health]);
+
             }
-            //FitnessPoints = 0;
 
             OldLoc = Location;
 

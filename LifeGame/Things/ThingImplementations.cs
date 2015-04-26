@@ -15,13 +15,13 @@ namespace LifeGame
     {
         // TODO: consider swotching from List<...> to Dictionary<ThingType, ...> for more clarity, but it will be slower
         static List<Dictionary<ThingProperty, float>> propsDicts = new List<Dictionary<ThingProperty, float>>();// default properties
-        static List<Dictionary<ActionType, Effects>> interactionsDicts = new List<Dictionary<ActionType, Effects>>();
-        static List<UpdateDelegate> updateDels = new List<UpdateDelegate>();
+        static List<Dictionary<ActionType, Action<Thing, Being>>> interactionsDicts = new List<Dictionary<ActionType, Action<Thing, Being>>>();
+        static List<Action> updateDels = new List<Action>();
 
         static Thing()
         {
             Dictionary<ThingProperty, float> propsDict;
-            Dictionary<ActionType, Effects> interactDict;
+            Dictionary<ActionType, Action<Thing, Being>> interactDict;
 
             //proprietà che non devono essere nulle: weight, amplitude, smellIntensity
 
@@ -45,7 +45,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -77,7 +77,7 @@ namespace LifeGame
             propsDict.Add((ThingProperty)BeingMutableProp.Thirst, 1);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Breed, (t, b) => { });
             // interactDict.Add(ActionType.Breed, )
             interactionsDicts.Add(interactDict);
@@ -104,7 +104,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
 
@@ -150,7 +150,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -178,7 +178,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
                 b.ChangeProp((ThingProperty)BeingMutableProp.Thirst, 0.05f * b.EnergySpent, false);
@@ -209,7 +209,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -236,7 +236,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -263,7 +263,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) =>
             {
                 b.ChangeProp((ThingProperty)BeingMutableProp.Hunger, 0.03f * b.EnergySpent, false);
@@ -293,7 +293,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -320,7 +320,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -347,7 +347,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -374,7 +374,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);
@@ -401,7 +401,7 @@ namespace LifeGame
             propsDict.Add(ThingProperty.Wet, 0);
             propsDicts.Add(propsDict);
 
-            interactDict = new Dictionary<ActionType, Effects>();
+            interactDict = new Dictionary<ActionType, Action<Thing, Being>>();
             interactDict.Add(ActionType.Eat, (t, b) => { });
             interactDict.Add(ActionType.Fight, (t, b) => { });
             interactionsDicts.Add(interactDict);

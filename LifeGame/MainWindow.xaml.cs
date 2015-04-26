@@ -80,6 +80,7 @@ namespace LifeGame
 
         private void toggleState_Click(object sender, RoutedEventArgs e)
         {
+            simSaved = false;
             //The function to call the mesagebox, then I'll implement it inside the graphical engine
             /*var prova = new dialoguebox("testo");
             mainpanel.Children.Add(prova);
@@ -233,10 +234,10 @@ namespace LifeGame
         private void loadGenome_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            Tuple<Genome, NNGlobalLists> tuple;
+            Tuple<HallOfFame, NNGlobalLists> tuple;
             if (Serializer.Load(out tuple, input))
             {
-                Simulation.Instance.HallOfFame[0] = tuple.Item1;
+                Simulation.Instance.HallOfFame = tuple.Item1;
                 Simulation.Instance.NNLists = tuple.Item2;
                 SetLayout(2);
             }
@@ -268,12 +269,11 @@ namespace LifeGame
 
         private void loadSimulation_Click(object sender, RoutedEventArgs e)
         {
-
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
 
             if (Serializer.Load(out Simulation.Instance, input))
             {
-                // Simulation.Instance.InitLoad(default(StreamingContext));
+                Simulation.Instance.InitLoad();
                 SetLayout(1);
             }
         }
@@ -281,17 +281,19 @@ namespace LifeGame
         private void saveSimulation_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
-            Serializer.Save(Simulation.Instance, input);
-            Properties.Settings.Default.lastSim = input;
-            Properties.Settings.Default.Save();
-            simSaved = true;
+            if (Serializer.Save(Simulation.Instance, input))
+            {
+                Properties.Settings.Default.lastSim = input;
+                Properties.Settings.Default.Save();
+                simSaved = true;
+            }
 
         }
 
         private void saveGenome_Click(object sender, RoutedEventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            Serializer.Save(new Tuple<Genome, NNGlobalLists>(Simulation.Instance.HallOfFame[0], Simulation.Instance.NNLists), input);
+            Serializer.Save(new Tuple<HallOfFame, NNGlobalLists>(Simulation.Instance.HallOfFame, Simulation.Instance.NNLists), input);
 
         }
 
@@ -314,6 +316,7 @@ namespace LifeGame
             {
                 if (Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim))
                 {
+                    Simulation.Instance.InitLoad();
                     SetLayout(1);
                 }
             }

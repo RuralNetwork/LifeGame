@@ -50,7 +50,7 @@ namespace LifeGame
             var newLinkArr = new Link[linkCount];
 
             //create ID-index map dictionary
-            var idxDict = new Dictionary<uint, int>(nodeCount);
+            var idxDict = new Dictionary<ulong, int>(nodeCount);
             var idArr = nodeList.Keys.ToArray();
             for (int i = 0; i < nodeCount; i++)
             {

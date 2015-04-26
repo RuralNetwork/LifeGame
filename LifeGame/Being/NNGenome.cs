@@ -35,10 +35,11 @@ namespace LifeGame
         static RouletteWheel stdMutationRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_LINK_MUT_PROB, DEL_LINK_MUT_PROB, UNCHANGED_MUT_PROB);
         static RouletteWheel alwaysMutateRW = new RouletteWheel(WEIGHT_MUT_PROB, ADD_NODE_MUT_PROB, ADD_LINK_MUT_PROB, DEL_LINK_MUT_PROB);
         static FastRandom rand = new FastRandom();
+        static ZigguratGaussianSampler gaussRand = new ZigguratGaussianSampler();
 
         //Being specific genomes
-        public Dictionary<uint, NodeGene> NodeGeneList { get; private set; }
-        public SortedList<uint, LinkGene> LinkGeneList { get; private set; }// need sorted, for the recombination algorithm
+        public Dictionary<ulong, NodeGene> NodeGeneList { get; private set; }
+        public SortedList<ulong, LinkGene> LinkGeneList { get; private set; }// need sorted, for the recombination algorithm
         // Complexity comparison:
         // Dictionary: unsorted, search by index: O(1) (in practice is slower), search by key: O(1),     add: O(1)
         // SortedList: sorted,   search by index: O(log n),                     search by key: O(log n), add: O(n) (O(1) if sorted)
@@ -49,18 +50,18 @@ namespace LifeGame
         /// </summary>
         public NNGenome()
         {
-            NodeGeneList = new Dictionary<uint, NodeGene>(Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT);
+            NodeGeneList = new Dictionary<ulong, NodeGene>(Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT);
             NodeGeneList.Add(0, new NodeGene(NodeType.Bias));
-            for (uint i = 1; i < Constants.INPUTS_AND_BIAS_COUNT; i++)
+            for (ulong i = 1; i < Constants.INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Input));
             }
-            for (uint i = Constants.INPUTS_AND_BIAS_COUNT; i < Constants.OUTPUTS_COUNT + Constants.INPUTS_AND_BIAS_COUNT; i++)
+            for (ulong i = Constants.INPUTS_AND_BIAS_COUNT; i < Constants.OUTPUTS_COUNT + Constants.INPUTS_AND_BIAS_COUNT; i++)
             {
                 NodeGeneList.Add(i, new NodeGene(NodeType.Output));
             }
 
-            LinkGeneList = new SortedList<uint, LinkGene>(5);
+            LinkGeneList = new SortedList<ulong, LinkGene>(5);
             for (int i = 0; i < 5; i++)// choose how many links to add for starting the simulation
             {
                 addLink();
@@ -71,12 +72,12 @@ namespace LifeGame
         /// </summary>
         public NNGenome(NNGenome genome)
         {
-            NodeGeneList = new Dictionary<uint, NodeGene>(genome.NodeGeneList.Count);
+            NodeGeneList = new Dictionary<ulong, NodeGene>(genome.NodeGeneList.Count);
             foreach (var kvp in genome.NodeGeneList)
             {
                 NodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
             }
-            LinkGeneList = new SortedList<uint, LinkGene>(genome.LinkGeneList.Count);
+            LinkGeneList = new SortedList<ulong, LinkGene>(genome.LinkGeneList.Count);
             foreach (var kvp in genome.LinkGeneList)
             {
                 LinkGeneList.Add(kvp.Key, new LinkGene(kvp.Value));
@@ -90,11 +91,11 @@ namespace LifeGame
         /// </summary>
         // for now this is unfinisced: the recombination applies only over weights and not over morphology of the net
         // the structure is copied from the fittest genome
-        public NNGenome(NNGenome parent1, NNGenome parent2, float fitness1, float fitness2)
+        public NNGenome(NNGenome parent1, NNGenome parent2)
         {
             //determine fittest parent
             NNGenome fitPar, weakPar;
-            if (fitness1 > fitness2)
+            if (RandomBool.Next())
             {
                 fitPar = parent1;
                 weakPar = parent2;
@@ -106,7 +107,7 @@ namespace LifeGame
             }
 
             // add nodes to NodeGeneList
-            var nodeGeneList = new Dictionary<uint, NodeGene>(fitPar.NodeGeneList.Count + weakPar.NodeGeneList.Count);
+            var nodeGeneList = new Dictionary<ulong, NodeGene>(fitPar.NodeGeneList.Count + weakPar.NodeGeneList.Count);
             foreach (var kvp in fitPar.NodeGeneList)
             {
                 nodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
@@ -124,13 +125,13 @@ namespace LifeGame
             var idList2 = weakPar.LinkGeneList.Keys;
             var linkList2 = weakPar.LinkGeneList.Values;
 
-            var linkGeneList = new SortedList<uint, LinkGene>(list1Count + list2Count);
-            var disjExcList = new List<KeyValuePair<uint, LinkGene>>(list2Count); // genes in weakPar that don't match in fitPar
+            var linkGeneList = new SortedList<ulong, LinkGene>(list1Count + list2Count);
+            var disjExcList = new List<KeyValuePair<ulong, LinkGene>>(list2Count); // genes in weakPar that don't match in fitPar
             var recombDisjExc = rand.Next() < DISJ_EXC_RECOMB_PROB;
 
             var idx1 = 0;
             var idx2 = 0;
-            uint ID1, ID2;
+            ulong ID1, ID2;
             LinkGene link1, link2;
             while (idx1 == list1Count && idx2 == list2Count)
             {
@@ -154,7 +155,7 @@ namespace LifeGame
                 {
                     if (recombDisjExc)
                     {
-                        disjExcList.Add(new KeyValuePair<uint, LinkGene>(ID2, link2));
+                        disjExcList.Add(new KeyValuePair<ulong, LinkGene>(ID2, link2));
                     }
                     idx2++;
                 }
@@ -177,7 +178,7 @@ namespace LifeGame
                         while (idx2 < list2Count)
                         {
                             idx2++;
-                            disjExcList.Add(new KeyValuePair<uint, LinkGene>(idList2[idx2], new LinkGene(linkList2[idx2])));
+                            disjExcList.Add(new KeyValuePair<ulong, LinkGene>(idList2[idx2], new LinkGene(linkList2[idx2])));
                         }
                     }
                     break;
@@ -185,7 +186,7 @@ namespace LifeGame
             }
 
             //TODO: this works (and allow evolution) but is missing code for adding disjoint-excess
-            // (need an additional SortedDictionary<AddedLink, uint?> filled with LinkGeneList genes)
+            // (need an additional SortedDictionary<AddedLink, ulong?> filled with LinkGeneList genes)
 
 
             //mutate
@@ -225,7 +226,8 @@ namespace LifeGame
             {
                 var m = rand.Next(LinkGeneList.Count);// it doesn't matter mutating a connection twice
 
-                var weight = valueList[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
+                //var weight = valueList[m].Weight + 2 * (float)rand.NextDouble() * MAX_WEIGHT_PERT_PROP - MAX_WEIGHT_PERT_PROP;
+                var weight = (float)gaussRand.NextSample(valueList[m].Weight, MAX_WEIGHT_PERT_PROP);
                 valueList[m].Weight = (weight < WEIGHT_RANGE ? (weight > -WEIGHT_RANGE ? weight : -WEIGHT_RANGE) : WEIGHT_RANGE);
             }
         }
@@ -269,7 +271,7 @@ namespace LifeGame
         /// <summary>
         /// Returns an AddedNode struct with the right IDs and, if necessary, save the new struct in the global buffer
         /// </summary>
-        AddedNode getAddedNode(uint oldLinkID)//tried to shrink sharpneat code but didn't succeed
+        AddedNode getAddedNode(ulong oldLinkID)//tried to shrink sharpneat code but didn't succeed
         {
             AddedNode addedNode;
             var isNewAddedNode = false;
@@ -314,7 +316,7 @@ namespace LifeGame
                 if (!srcNode.TgtNodeIDs.Contains(tgtID))
                 {
                     var addedLink = new AddedLink(srcID, tgtID);
-                    uint? existingLinkID;// must be nullable, to handle the case there isn't an existing ID
+                    ulong? existingLinkID;// must be nullable, to handle the case there isn't an existing ID
                     var newLink = new LinkGene(srcID, tgtID, ((float)rand.NextDouble() * 2f - 1f) * WEIGHT_RANGE);
 
                     if (Simulation.Instance.NNLists.linkBuffer.TryGetValue(addedLink, out existingLinkID))
@@ -411,13 +413,13 @@ namespace LifeGame
         //Nodes: based on link they replaced
 
         //ID counter for both linkBuffer and nodeBuffer
-        public uint lastID = Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT;
+        public ulong lastID = Constants.INPUTS_AND_BIAS_COUNT + Constants.OUTPUTS_COUNT;
 
         //The key is the link ID the AddedNode struct replaced
         //The ID is contained in the AddedNode struct
-        public KVCircularBuffer<uint, AddedNode> nodeBuffer = new KVCircularBuffer<uint, AddedNode>(0x20000);
+        public KVCircularBuffer<ulong, AddedNode> nodeBuffer = new KVCircularBuffer<ulong, AddedNode>(0x20000);
 
         //The value is the actual ID
-        public KVCircularBuffer<AddedLink, uint?> linkBuffer = new KVCircularBuffer<AddedLink, uint?>(0x20000);
+        public KVCircularBuffer<AddedLink, ulong?> linkBuffer = new KVCircularBuffer<AddedLink, ulong?>(0x20000);
     }
 }
