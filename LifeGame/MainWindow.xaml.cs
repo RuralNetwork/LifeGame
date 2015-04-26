@@ -145,10 +145,14 @@ namespace LifeGame
             Button current = e.Source as Button;
             for (int i = 0; i < gridToolbox.Children.Count; i++)
             {
-                UIElement f = gridToolbox.Children[i];
-                f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
+                Button f = gridToolbox.Children[i] as Button;
+               //f.Background= GraphicsEngine.Instance.switchGround((ThingType)Enum.Parse(typeof(ThingType), f.Name, true));
+                f.Background.Opacity = 0.5;
+                f.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
             }
-            current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
+            //current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
+            current.Background.Opacity = 1;
+            current.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
             GraphicsEngine.Instance.changeBrush(current.Name);
 
         }
@@ -320,6 +324,12 @@ namespace LifeGame
                     SetLayout(1);
                 }
             }
+        }
+
+        private void buttonToolHover(object sender, MouseEventArgs e)
+        {
+            Button current = e.Source as Button;
+            current.Background = GraphicsEngine.Instance.switchGround((ThingType)Enum.Parse(typeof(ThingType), current.Name, true));
         }
     }
 }
