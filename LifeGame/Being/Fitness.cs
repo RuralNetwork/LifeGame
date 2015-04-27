@@ -9,6 +9,7 @@ namespace LifeGame
     /// <summary>
     /// Class for managing being fitness.
     /// </summary>
+    [Serializable]
     public class Fitness
     {
         public Average[] Parameters;

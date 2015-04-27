@@ -188,7 +188,7 @@ namespace LifeGame
                     {
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
-                     Debug.Write("    best fitness: " + HallOfFame.Genomes[0].Fitness[0].ToString("0.000") + "\n");
+                    Debug.Write("    best fitness: " + HallOfFame.Genomes[0].Fitness[0].ToString("0.000") + "\n");
 #if DEBUG
                     int c = 0;
                     for (int x = 0; x < GridWidth; x++)
@@ -436,9 +436,9 @@ namespace LifeGame
         }
 
 
-        public void Cycle(ref GridPoint pt)
+        public GridPoint Cycle(GridPoint pt)
         {
-            pt = new GridPoint(pt.X.Cycle(GridWidth), pt.Y.Cycle(GridHeight));
+            return new GridPoint(pt.X.Cycle(GridWidth), pt.Y.Cycle(GridHeight));
         }
     }
 }

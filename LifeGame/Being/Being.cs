@@ -17,6 +17,7 @@ namespace LifeGame
 
         // mutable properties
         public CellDirection Direction { get; private set; }
+        public int NCellsWalk { get; private set; }
         public GridPoint OldLoc { get; set; }
         public float EnergySpent; // I had to create this because C# doesn't allow ref parameters in lambda expressions
 
@@ -100,6 +101,7 @@ namespace LifeGame
             }
 
             OldLoc = Location;
+            NCellsWalk = 0;
 
             mute();
             rest();
@@ -319,9 +321,8 @@ namespace LifeGame
                 case ActionType.Walk:
                     if (tgtType == 2)
                     {
-                        var steps = 0;
                         cellPt = Location;
-                        while (EnergySpent > 0 && steps < 3)
+                        while (EnergySpent > 0 && NCellsWalk < 3)
                         {
                             cellPt = cellPt.GetNearCell(cDir);
                             cellPt.X = cellPt.X.Cycle(width);
@@ -332,10 +333,10 @@ namespace LifeGame
                             {
                                 walkThrough(target.InnerThing);
                             }
-                            steps++;
+                            NCellsWalk++;
                             //FitnessPoints++;
                         }
-                        if (steps > 0)
+                        if (NCellsWalk > 0)
                         {
                             sim.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
                             int a = (int)cDir;

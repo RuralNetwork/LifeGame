@@ -59,18 +59,6 @@ namespace LifeGame
             InitializeComponent();
             Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
-            string a = "ciao";
-            var b = a;
-            b = "addio";
-            var c = new List<Thing>();
-            //c.Add(null);
-            var d = c.Contains(null);
-            // var window = new Window();
-            //visualHost prova = new visualHost();
-            //window.Content = prova;
-            //this.Content = prova;
-            //Application.Current.Run(window);
-            //Bitmap bitm = LifeGame.Properties.Resources.erba_prova;
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;

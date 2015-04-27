@@ -131,7 +131,7 @@ namespace LifeGame
             brush.ImageSource = being;
             poligono.Fill = brush;
 
-            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.CartesianX, (Double)30 * obj.Location.CartesianY);
             poligono.RenderTransform = translate;
 
             this._canvas.Children.Add(poligono);
@@ -145,28 +145,59 @@ namespace LifeGame
             //obj.Location
             if (FPS > 0)
             {
-                if ((obj.OldLoc.Y == Simulation.Instance.GridHeight || obj.OldLoc.X == 0 || obj.OldLoc.X == Simulation.Instance.GridWidth || obj.OldLoc.Y == 0) && (obj.Location.Y == Simulation.Instance.GridHeight || obj.Location.X == 0 || obj.Location.X == Simulation.Instance.GridWidth || obj.Location.Y == 0))
-                {
-                    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-                    obj.polygon.RenderTransform = translate;
-                }
-                else
-                {
-                    Duration duration = new Duration(TimeSpan.FromSeconds(1 / FPS));
+                //if ((obj.OldLoc.Y == Simulation.Instance.GridHeight || obj.OldLoc.X == 0 || obj.OldLoc.X == Simulation.Instance.GridWidth || obj.OldLoc.Y == 0) && (obj.Location.Y == Simulation.Instance.GridHeight || obj.Location.X == 0 || obj.Location.X == Simulation.Instance.GridWidth || obj.Location.Y == 0))
+                //{
+                //    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+                //    obj.polygon.RenderTransform = translate;
+                //}
+                //else
+                //{
 
-                    DoubleAnimation ascissa = new DoubleAnimation((Double)30 * obj.OldLoc.X, (Double)30 * obj.Location.X, duration);
-                    DoubleAnimation ordinata = new DoubleAnimation((Double)((34 * obj.OldLoc.Y) + (obj.OldLoc.X % 2 == 0 ? 0 : 17)), (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)), duration);
 
-                    Transform translate = obj.polygon.RenderTransform;
-                    translate.BeginAnimation(TranslateTransform.XProperty, ascissa);
-                    translate.BeginAnimation(TranslateTransform.YProperty, ordinata);
+
+                DoubleAnimationUsingKeyFrames xWalk = new DoubleAnimationUsingKeyFrames();
+                DoubleAnimationUsingKeyFrames yWalk = new DoubleAnimationUsingKeyFrames();
+                xWalk.Duration = TimeSpan.FromSeconds(1 / FPS);
+                yWalk.Duration = TimeSpan.FromSeconds(1 / FPS);
+                var cell = obj.OldLoc;
+                xWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * cell.CartesianX, KeyTime.FromPercent(0)));
+                yWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * cell.CartesianY, KeyTime.FromPercent(0)));
+                for (int i = 1; i <= obj.NCellsWalk; i++)
+                {
+                    var jump = false;
+                    var dummyCell = cell.GetNearCell(obj.Direction);
+                    if (i < obj.NCellsWalk)
+                    {
+                        cell = Simulation.Instance.Cycle(dummyCell);
+                    }
+                    else
+                    {
+                        cell = obj.Location;
+                    }
+
+                    xWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianX, KeyTime.FromPercent((double)i / obj.NCellsWalk - 0.001)));
+                    yWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianY, KeyTime.FromPercent((double)i / obj.NCellsWalk - 0.001)));
+
+                    if (!cell.Equals(dummyCell))
+                    {
+                        xWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianX, KeyTime.FromPercent((double)i / obj.NCellsWalk)));
+                        yWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianY, KeyTime.FromPercent((double)i / obj.NCellsWalk)));
+                    }
                 }
+
+                Transform translate = obj.polygon.RenderTransform;
+                translate.BeginAnimation(TranslateTransform.XProperty, xWalk);
+                translate.BeginAnimation(TranslateTransform.YProperty, yWalk);
+
+                //ascissa.
+                //}
             }
-            else
-            {
-                TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-                obj.polygon.RenderTransform = translate;
-            }
+
+            //else    //too heavy
+            //{
+            //    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            //    obj.polygon.RenderTransform = translate;
+            //}
         }
 
         public void removeThing(Thing obj)
@@ -193,7 +224,7 @@ namespace LifeGame
             poligono.Fill = switchGround(obj.Type);
 
             //Set the position inside the canvas
-            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
+            TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.CartesianX, (Double)30 * obj.Location.CartesianY);
             poligono.RenderTransform = translate;
 
             poligono.AddHandler(Polygon.MouseUpEvent, new RoutedEventHandler(cellaMouseEnter));

@@ -9,6 +9,7 @@ namespace LifeGame
     /// <summary>
     /// Stores genomes ordered by fitness parameters.
     /// </summary>
+    [Serializable]
     public class HallOfFame
     {
         const float THRESH = 0.5f;//min distance of fitness values

@@ -5,7 +5,7 @@ using System.Text;
 //I renamed this file because I struct can be confused and structures is too long, I don't know, useless change, but whatever
 namespace LifeGame
 {
-        [Serializable]
+    [Serializable]
     public enum NodeType
     {
         Bias,
@@ -13,7 +13,7 @@ namespace LifeGame
         Output,
         Hidden
     }
-        [Serializable]
+    [Serializable]
     public class NodeGene// switched back to class because it is not immutable and gave problems with references
     {
         public NodeType Type { get; private set; }
@@ -61,7 +61,7 @@ namespace LifeGame
         }
     }
     //Class that identifies one single link
-        [Serializable]
+    [Serializable]
     public class LinkGene
     {
         public ulong SourceID { get; private set; }
@@ -83,7 +83,7 @@ namespace LifeGame
         }
     }
 
-        [Serializable]
+    [Serializable]
     public struct AddedNode
     {
         public ulong NodeID { get; private set; }
@@ -99,7 +99,7 @@ namespace LifeGame
         }
     }
 
-        [Serializable]
+    [Serializable]
     public struct AddedLink
     {
         public ulong SourceID { get; private set; }

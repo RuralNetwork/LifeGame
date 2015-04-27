@@ -15,7 +15,7 @@ namespace LifeGame
 
     //TODO: - test if is better to have one bias node or the bias in every node, for best evolution speed/computation speed
     //      - to emulate the memory mechanics we can modify the weights according to the signal strenght that pass through the links
-        [Serializable]
+    [Serializable]
     public class NeuralNetwork
     {
         // parameters to be adjusted
