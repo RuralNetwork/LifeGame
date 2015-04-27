@@ -119,9 +119,16 @@
         Hunger
     }
 
-    //public enum ModType
-    //{
-    //    Property,
-    //    InnerThing// used to switch between null and Thing instance, used to move beings or create/delete carried objects
-    //}
+    public enum Substance
+    {
+
+    }
+
+    public enum FitnessParam
+    {
+        Walk,
+        Health,
+        Reproduction,
+
+    }
 }

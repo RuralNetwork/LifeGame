@@ -18,26 +18,26 @@ namespace LifeGame
     {
         public NodeType Type { get; private set; }
         //Source node
-        public HashSet<uint> SrcNodeIDs { get; private set; }
+        public HashSet<ulong> SrcNodeIDs { get; private set; }
         //Target node
-        public HashSet<uint> TgtNodeIDs { get; private set; }
+        public HashSet<ulong> TgtNodeIDs { get; private set; }
 
         public NodeGene()
         {
             Type = NodeType.Hidden;
-            SrcNodeIDs = new HashSet<uint>();
-            TgtNodeIDs = new HashSet<uint>();
+            SrcNodeIDs = new HashSet<ulong>();
+            TgtNodeIDs = new HashSet<ulong>();
         }
 
         public NodeGene(NodeGene nodeGene)
         {
             Type = nodeGene.Type;
-            SrcNodeIDs = new HashSet<uint>();
+            SrcNodeIDs = new HashSet<ulong>();
             foreach (var id in nodeGene.SrcNodeIDs)
             {
                 SrcNodeIDs.Add(id);
             }
-            TgtNodeIDs = new HashSet<uint>();
+            TgtNodeIDs = new HashSet<ulong>();
             foreach (var id in nodeGene.TgtNodeIDs)
             {
                 TgtNodeIDs.Add(id);
@@ -47,8 +47,8 @@ namespace LifeGame
         public NodeGene(NodeType type)
         {
             Type = type;
-            SrcNodeIDs = new HashSet<uint>();
-            TgtNodeIDs = new HashSet<uint>();
+            SrcNodeIDs = new HashSet<ulong>();
+            TgtNodeIDs = new HashSet<ulong>();
         }
 
         public bool IsRedundant
@@ -64,11 +64,11 @@ namespace LifeGame
         [Serializable]
     public class LinkGene
     {
-        public uint SourceID { get; private set; }
-        public uint TargetID { get; private set; }
+        public ulong SourceID { get; private set; }
+        public ulong TargetID { get; private set; }
         public float Weight { get; set; }
 
-        public LinkGene(uint sourceId, uint targetId, float weight)
+        public LinkGene(ulong sourceId, ulong targetId, float weight)
         {
             SourceID = sourceId;
             TargetID = targetId;
@@ -86,11 +86,11 @@ namespace LifeGame
         [Serializable]
     public struct AddedNode
     {
-        public uint NodeID { get; private set; }
-        public uint InpLinkID { get; private set; }
-        public uint OutpLinkID { get; private set; }
+        public ulong NodeID { get; private set; }
+        public ulong InpLinkID { get; private set; }
+        public ulong OutpLinkID { get; private set; }
 
-        public AddedNode(ref uint lastID)
+        public AddedNode(ref ulong lastID)
             : this()
         {
             NodeID = ++lastID;
@@ -102,10 +102,10 @@ namespace LifeGame
         [Serializable]
     public struct AddedLink
     {
-        public uint SourceID { get; private set; }
-        public uint TargetID { get; private set; }
+        public ulong SourceID { get; private set; }
+        public ulong TargetID { get; private set; }
 
-        public AddedLink(uint sourceId, uint targetId)
+        public AddedLink(ulong sourceId, ulong targetId)
             : this()
         {
             SourceID = sourceId;

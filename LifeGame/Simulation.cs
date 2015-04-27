@@ -32,7 +32,6 @@ namespace LifeGame
         Stopwatch watch;
         [NonSerialized]
         public int lastID;
-        //public
         [NonSerialized]
         public DispatcherTimer timer;
         [NonSerialized]
@@ -55,8 +54,7 @@ namespace LifeGame
         public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
-        public List<Genome> HallOfFame;
-        public int HallSeats;
+        public HallOfFame HallOfFame;
         public NNGlobalLists NNLists;
 
         public Thing[][] Terrain { get; set; }
@@ -121,15 +119,10 @@ namespace LifeGame
                 freeBeingObjs.Add(being);
             }
 
-            InitLoad(default(StreamingContext));
+            InitLoad();
 
             NNLists = new NNGlobalLists();
-            HallSeats = 5;
-            HallOfFame = new List<Genome>();
-            for (int i = 0; i < HallSeats; i++)
-            {
-                HallOfFame.Add(new Genome());
-            }
+            HallOfFame = new HallOfFame();
 
         }
 
@@ -148,8 +141,7 @@ namespace LifeGame
             }
         }
 
-        [OnDeserialized]
-        public void InitLoad(StreamingContext context)
+        public void InitLoad()
         {
             timer = new DispatcherTimer(DispatcherPriority.Background);
             timer.Tick += Update;
@@ -160,6 +152,11 @@ namespace LifeGame
                 foreach (var thing in arr)
                 {
                     GraphicsEngine.Instance.addCell(thing);
+                    //var being=(Being)thing.InnerThing;
+                    //if (being!=null)
+                    //{
+                    //    Population.Add(being.ID, being);
+                    //}
                 }
             }
             foreach (var being in Population)
@@ -191,7 +188,7 @@ namespace LifeGame
                     {
                         Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
-                    Debug.Write("    best fitness: " + HallOfFame.First().Fitness.ToString("0.000") + "\n");
+                     Debug.Write("    best fitness: " + HallOfFame.Genomes[0].Fitness[0].ToString("0.000") + "\n");
 #if DEBUG
                     int c = 0;
                     for (int x = 0; x < GridWidth; x++)
@@ -248,7 +245,7 @@ namespace LifeGame
                                 cell = Terrain[x][y];
                             } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
 
-                            GiveBirth(HallOfFame[rand.Next(HallSeats)], new GridPoint(x, y));
+                            GiveBirth(HallOfFame.RandomGenome, new GridPoint(x, y));
                         }
                     }
 
@@ -334,6 +331,7 @@ namespace LifeGame
                                         }
                                     }
 
+                                    // lay corpse
                                     //if (Thing.BiggerBetween(being, cell))
                                     //{
                                     //    var dict = new Dictionary<ThingProperty, float>();
@@ -344,17 +342,25 @@ namespace LifeGame
                                     //    cell.ChangeType(ThingType.Corpse, dict);
                                     //}
 
+                                    //for (int i = 0; i < HallSeats; i++)
+                                    //{
+                                    //    if (being.FitnessMean.Value > HallOfFame[i].Fitness)
+                                    //    {
+                                    //        being.Genome.Fitness = being.FitnessMean.Value;
+                                    //        HallOfFame.Insert(i, being.Genome);
+                                    //        HallOfFame.RemoveAt(HallSeats);
+                                    //        break;
+                                    //    }
+                                    //}
+
                                     //check if is best genome
-                                    for (int i = 0; i < HallSeats; i++)
+                                    var fitnessArr = new float[Constants.FITNESS_PARAM_COUNT];
+                                    for (int i = 0; i < Constants.FITNESS_PARAM_COUNT; i++)
                                     {
-                                        if (being.FitnessMean.Value > HallOfFame[i].Fitness)
-                                        {
-                                            being.Genome.Fitness = being.FitnessMean.Value;
-                                            HallOfFame.Insert(i, being.Genome);
-                                            HallOfFame.RemoveAt(HallSeats);
-                                            break;
-                                        }
+                                        fitnessArr[i] = being.Fitness.Parameters[i].Value;
                                     }
+                                    being.Genome.Fitness = fitnessArr;
+                                    HallOfFame.TryEnqueue(being.Genome);
 
                                     ///////////////////////////aggiungi qui codice per nascondere il being (e il suo innerthing)//////////////////////
                                     GraphicsEngine.Instance.removeThing(being);
@@ -397,66 +403,6 @@ namespace LifeGame
                         BeingLocQueue.RemoveAt(idx);
                     }
 
-
-                    //#else
-                    //       Rifare questa parte
-                    //Parallel.ForEach(Terrain, arr =>
-                    //{
-                    //    foreach (var thing in arr) thing.Update();
-                    //});
-
-                    //Parallel.ForEach(Population, being => being.Update());
-
-                    //Parallel.ForEach(Terrain, arr =>
-                    //{
-                    //    foreach (var thing in arr) thing.Apply();
-                    //});
-
-                    //Parallel.ForEach(Population, being => being.Apply());
-
-                    //Parallel.For(0, BeingLocQueue.Length, x =>
-                    //{
-                    //    for (int y = 0; y < BeingLocQueue[x].Length; y++)
-                    //    {
-                    //        var beingList = BeingLocQueue[x][y];
-                    //        if (beingList.Count > 0)
-                    //        {
-
-                    //            var biggerBeing = beingList[0];
-                    //            idx = 0;
-                    //            for (int i = 1; i < beingList.Count; i++)
-                    //            {
-                    //                if (beingList[i].Properties[ThingProperty.Weigth] > biggerBeing.Properties[ThingProperty.Weigth])
-                    //                {
-                    //                    biggerBeing = beingList[i];
-                    //                    idx = i;
-                    //                }
-                    //            }
-                    //            beingList.RemoveAt(idx);
-                    //            Terrain[biggerBeing.Location.X][biggerBeing.Location.Y].InnerThing = null;
-
-                    //            var loc = new GridPoint(x, y);
-                    //            biggerBeing.Location = loc;
-                    //            Terrain[x][y].InnerThing = biggerBeing;
-                    //            foreach (var being in beingList)
-                    //            {
-                    //                var newLoc = loc;
-                    //                Thing newCell;
-                    //                do
-                    //                {
-                    //                    newLoc = newLoc.GetNearCell();
-                    //                    newCell = Terrain[newLoc.X][newLoc.Y];
-                    //                } while (newCell.InnerThing != null || BeingLocQueue[newLoc.X][newLoc.Y].Count != 0);
-                    //                newCell.InnerThing = being;
-                    //                Terrain[being.Location.X][being.Location.Y].InnerThing = null;
-                    //                being.Location = newLoc;
-                    //            }
-                    //            beingList.Clear();
-                    //        }
-                    //    }
-                    //});
-
-                    //#endif
                     //Draw
                     if (MustDraw)
                     {

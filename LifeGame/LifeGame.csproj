@@ -90,6 +90,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Being\Allele.cs" />
+    <Compile Include="Being\Fitness.cs" />
+    <Compile Include="Being\HallOfFame.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="dialoguebox.xaml.cs">
       <DependentUpon>dialoguebox.xaml</DependentUpon>
@@ -115,6 +118,7 @@
     <Compile Include="Being\Being.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Math_stuff\Vector.cs" />
+    <Compile Include="Math_stuff\ZigguratGaussianSampler.cs" />
     <Page Include="dialoguebox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

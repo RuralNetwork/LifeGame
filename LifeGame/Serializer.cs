@@ -38,20 +38,5 @@ namespace LifeGame
             obj = null;
             return false;
         }
-
-
-        static public Genome LoadGenome(string filename)
-        {
-            if (File.Exists(filename))
-            {
-                Genome obj;
-                BinaryFormatter bf = new BinaryFormatter();
-                Stream stream = File.OpenRead(filename);
-                obj = (Genome)bf.Deserialize(stream);
-                stream.Close();
-                return obj;
-            }
-            return null;
-        }
     }
 }

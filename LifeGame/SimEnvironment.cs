@@ -14,8 +14,6 @@ namespace LifeGame
     public class SimEnvironment
     {
         Simulation simulation;
-        [NonSerialized]
-        public GraphicsEngine Engine;
 
         //Properties
         public float Color1 { get; set; }

@@ -38,12 +38,10 @@ namespace LifeGame
 
         public Dictionary<ThingProperty, float> Properties { get; private set; }
 
-        public delegate void Effects(Thing target, Being actor);
-        public Dictionary<ActionType, Effects> Interactions { get; set; }
+        public Dictionary<ActionType, Action<Thing, Being>> Interactions { get; set; }
 
 
-        public delegate void UpdateDelegate();
-        protected UpdateDelegate updateDel;
+        protected Action updateDel;
 
         public bool IsCarrObj;
         [NonSerialized]
