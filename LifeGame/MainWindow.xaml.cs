@@ -74,7 +74,6 @@ namespace LifeGame
             mainpanel.Children.Add(prova);
             //Here to center the box
             Canvas.SetLeft(prova, 50);*/
-            GraphicsEngine.Instance.editing = false;
             Simulation.Instance.TogglePause();
             //toggling text
             if ((string)toggleState.Content == "Ferma Simulazione")
@@ -203,7 +202,6 @@ namespace LifeGame
                 case 1:
                     mainpanel.Width = 910;
                     mainpanel.Height = 700;
-                    GraphicsEngine.Instance.editing = true;
                     gridToolbox.Visibility = Visibility.Visible;
                     mainpanel.Visibility = Visibility.Visible;
                     newPopulation.Visibility = Visibility.Visible;
@@ -250,7 +248,6 @@ namespace LifeGame
             Simulation.Instance.UnbindEngine();
             Simulation.Instance = null;
             SetLayout(0);
-            GraphicsEngine.Instance.editing = false;
         }
 
         private void newPopulation_Click(object sender, RoutedEventArgs e)
@@ -317,7 +314,7 @@ namespace LifeGame
         private void buttonToolHover(object sender, MouseEventArgs e)
         {
             Button current = e.Source as Button;
-            current.Background = GraphicsEngine.Instance.switchGround((ThingType)Enum.Parse(typeof(ThingType), current.Name, true));
+            current.Background = GraphicsEngine.Instance.TerrainBrushes[(ThingType)Enum.Parse(typeof(ThingType), current.Name, true)];
         }
     }
 }

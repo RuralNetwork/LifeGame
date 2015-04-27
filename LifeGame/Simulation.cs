@@ -215,7 +215,6 @@ namespace LifeGame
 #else
                     var po = new ParallelOptions() { MaxDegreeOfParallelism = 10 };
 #endif
-                    //#if DEBUG // change to release to execute parallel code
                     Parallel.ForEach(Terrain, po, arr =>
                     {
                         foreach (var thing in arr) thing.Update();
@@ -229,6 +228,18 @@ namespace LifeGame
                     });
 
                     Parallel.ForEach(Population, po, being => being.Value.Apply());
+
+                    // draw: change being texture in order to match last action
+                    if (GraphicsEngine.Instance.FPS > 0)
+                    {
+                        foreach (var being in Population)
+                        {
+                            if (being.Value.LastAction != being.Value.OldAction)
+                            {
+                                GraphicsEngine.Instance.ChangeBeingTex(being.Value);
+                            }
+                        }
+                    }
 
 
                     // make born some beings
@@ -394,7 +405,7 @@ namespace LifeGame
                             Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                             being.Location = newLoc;
                             Debug.Write("New location" + newLoc.X + "\n");
-                            GraphicsEngine.Instance.changeBeing(being); //             <-----chiamata all'engine
+                            GraphicsEngine.Instance.WalkAnimation(being); //             <-----chiamata all'engine
                         }
                         else
                         {

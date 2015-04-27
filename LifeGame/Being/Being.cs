@@ -19,16 +19,18 @@ namespace LifeGame
         public CellDirection Direction { get; private set; }
         public int NCellsWalk { get; private set; }
         public GridPoint OldLoc { get; set; }
-        public float EnergySpent; // I had to create this because C# doesn't allow ref parameters in lambda expressions
+        public ActionType LastAction { get; private set; }
+        public ActionType OldAction { get; private set; }
+        public float EnergySpent;
 
         //immutable properties
-        public bool Sex { get; private set; }
-        public float HeightMul { get; private set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
+        public bool Sex { get { return Brain.State[1] > 0f; } }
+        //public float HeightMul { get; set; }//height multiplicator: assume that a being can grow during life, consider if we should change to static height
 
         public Fitness Fitness { get; private set; }
         public int Lifespan { get; private set; }
         public Genome Genome { get; set; }
-        public NeuralNetwork Brain { get; private set; }
+        public NeuralNetwork Brain { get; set; }
         public List<int> LivingOffsprings { get; private set; }
 
         //need to identify whose the father and the mother 
@@ -59,9 +61,8 @@ namespace LifeGame
             Lifespan = 0;
             LivingOffsprings.Clear();
             Genome = genome;
+            genome.Apply(this);
             Fitness = new Fitness();
-            Sex = RandomBool.Next();
-            Brain = new NeuralNetwork(genome.NNGenome, Sex);
 
             walk = new float[6];
         }
@@ -101,6 +102,7 @@ namespace LifeGame
             }
 
             OldLoc = Location;
+            OldAction = LastAction;
             NCellsWalk = 0;
 
             mute();
@@ -296,7 +298,7 @@ namespace LifeGame
                     n = j;
                 }
             }
-            var act = (ActionType)n;
+            LastAction = (ActionType)n;
             var dirVec = new Vector(bState[++i].InverseSigmoid(), bState[++i].InverseSigmoid());
             var mag = dirVec.Magnitude;
             int tgtType = (mag < 0.5f ? 0 : (mag < 1f ? 1 : 2));//target type
@@ -316,7 +318,7 @@ namespace LifeGame
             //EnergySpent = 100f;
             //cDir = CellDirection.Bottom;// cambia questo per cambiare scegliere la direzione
 
-            switch (act)
+            switch (LastAction)
             {
                 case ActionType.Walk:
                     if (tgtType == 2)
@@ -352,7 +354,7 @@ namespace LifeGame
                     //interact(target, ActionType.Sleep);
                     break;
                 case ActionType.Eat:
-                    interact(target, act);
+                    interact(target, LastAction);
                     energy = 0;
                     break;
                 //case ActionType.Fight:

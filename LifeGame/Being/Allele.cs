@@ -12,17 +12,23 @@ namespace LifeGame
     {
         public Substance SubstEncoded;
         public int DominanceLevel;
+        public float MutationProb;
 
-        public Allele()
+        public Allele(Substance subst, int domLvl, int mutProb)
         {
-
+            SubstEncoded = subst;
+            DominanceLevel = domLvl;
+            MutationProb = mutProb;
         }
 
+        public static Dictionary<Substance, Dictionary<string, int>> AlleleTypes;
 
-        static Dictionary<Substance, Action<Being, Allele, Allele>> ApplyList;
+        public static Dictionary<Substance, Action<Being, Allele, Allele>> ApplyList;
 
         static Allele()
         {
+            AlleleTypes = new Dictionary<Substance, Dictionary<string, int>>();
+            ApplyList = new Dictionary<Substance, Action<Being, Allele, Allele>>();
 
         }
     }

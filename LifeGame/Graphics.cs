@@ -38,13 +38,9 @@ namespace LifeGame
         public double canvasWidth { get; set; }
         public int hexaW = 40;
         public int hexaH = 34;
-        private BitmapImage grass = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\grass.png"));
-        private BitmapImage earth = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\earth.png"));
-        private BitmapImage water = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\water.png"));
-        private BitmapImage bush = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\bush.png"));
-        private BitmapImage berry = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\berry.png"));
-        private BitmapImage sand = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\sand.png"));
-        public bool editing;
+
+        public Dictionary<ThingType, ImageBrush> TerrainBrushes = new Dictionary<ThingType, ImageBrush>();
+        public Dictionary<ActionType, ImageBrush> ActionBrushes = new Dictionary<ActionType, ImageBrush>();
 
         /// <summary>
         /// This is the update and draw speed.
@@ -54,6 +50,23 @@ namespace LifeGame
         public GraphicsEngine(Canvas canvas)
         {
             Instance = this;
+            var directory = "file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\";
+            TerrainBrushes.Add(ThingType.Earth, new ImageBrush(new BitmapImage(new Uri(directory + "earth.png"))));
+            TerrainBrushes.Add(ThingType.Grass, new ImageBrush(new BitmapImage(new Uri(directory + "grass.png"))));
+            TerrainBrushes.Add(ThingType.Water, new ImageBrush(new BitmapImage(new Uri(directory + "water.png"))));
+            TerrainBrushes.Add(ThingType.Bush, new ImageBrush(new BitmapImage(new Uri(directory + "bush.png"))));
+            TerrainBrushes.Add(ThingType.Berry, new ImageBrush(new BitmapImage(new Uri(directory + "berry.png"))));
+            TerrainBrushes.Add(ThingType.Sand, new ImageBrush(new BitmapImage(new Uri(directory + "sand.png"))));
+
+            ActionBrushes.Add(ActionType.Walk, new ImageBrush(new BitmapImage(new Uri(directory + "being.png"))));
+            ActionBrushes.Add(ActionType.Breed, new ImageBrush(new BitmapImage(new Uri(directory + "breeding.png"))));
+            ActionBrushes.Add(ActionType.Eat, new ImageBrush(new BitmapImage(new Uri(directory + "eating.png"))));
+            ActionBrushes.Add(ActionType.Sleep, new ImageBrush(new BitmapImage(new Uri(directory + "sleeping.png"))));
+            ActionBrushes.Add(ActionType.Fight , new ImageBrush(new BitmapImage(new Uri(directory + "being.png"))));
+            ActionBrushes.Add(ActionType.Take, new ImageBrush(new BitmapImage(new Uri(directory + "being.png"))));
+            ActionBrushes.Add(ActionType.Drop, new ImageBrush(new BitmapImage(new Uri(directory + "being.png"))));
+            ActionBrushes.Add(ActionType.MakeSound, new ImageBrush(new BitmapImage(new Uri(directory + "being.png"))));
+
             _canvas = canvas;
             canvasHeight = canvas.Height;
             canvasWidth = canvas.Width;
@@ -126,10 +139,7 @@ namespace LifeGame
         {
             Polygon poligono = new Polygon();
             poligono.Points = getPointCollectionBeing();
-            BitmapImage being = new BitmapImage(new Uri("file:///" + System.IO.Directory.GetCurrentDirectory() + @"\Resources\being.png"));
-            ImageBrush brush = new ImageBrush();
-            brush.ImageSource = being;
-            poligono.Fill = brush;
+            poligono.Fill = ActionBrushes[ActionType.Walk];
 
             TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.CartesianX, (Double)30 * obj.Location.CartesianY);
             poligono.RenderTransform = translate;
@@ -139,66 +149,51 @@ namespace LifeGame
             obj.polygon = poligono;
         }
 
-        public void changeBeing(Being obj)
+        public void WalkAnimation(Being being)
         {
             Debug.Write("Move\n");
-            //obj.Location
             if (FPS > 0)
             {
-                //if ((obj.OldLoc.Y == Simulation.Instance.GridHeight || obj.OldLoc.X == 0 || obj.OldLoc.X == Simulation.Instance.GridWidth || obj.OldLoc.Y == 0) && (obj.Location.Y == Simulation.Instance.GridHeight || obj.Location.X == 0 || obj.Location.X == Simulation.Instance.GridWidth || obj.Location.Y == 0))
-                //{
-                //    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-                //    obj.polygon.RenderTransform = translate;
-                //}
-                //else
-                //{
-
-
-
                 DoubleAnimationUsingKeyFrames xWalk = new DoubleAnimationUsingKeyFrames();
                 DoubleAnimationUsingKeyFrames yWalk = new DoubleAnimationUsingKeyFrames();
                 xWalk.Duration = TimeSpan.FromSeconds(1 / FPS);
                 yWalk.Duration = TimeSpan.FromSeconds(1 / FPS);
-                var cell = obj.OldLoc;
+                var cell = being.OldLoc;
                 xWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * cell.CartesianX, KeyTime.FromPercent(0)));
                 yWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * cell.CartesianY, KeyTime.FromPercent(0)));
-                for (int i = 1; i <= obj.NCellsWalk; i++)
+                for (int i = 1; i <= being.NCellsWalk; i++)
                 {
-                    var jump = false;
-                    var dummyCell = cell.GetNearCell(obj.Direction);
-                    if (i < obj.NCellsWalk)
+                    var dummyCell = cell.GetNearCell(being.Direction);
+                    if (i < being.NCellsWalk)
                     {
                         cell = Simulation.Instance.Cycle(dummyCell);
                     }
                     else
                     {
-                        cell = obj.Location;
+                        cell = being.Location;
                     }
 
-                    xWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianX, KeyTime.FromPercent((double)i / obj.NCellsWalk - 0.001)));
-                    yWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianY, KeyTime.FromPercent((double)i / obj.NCellsWalk - 0.001)));
+                    xWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianX, KeyTime.FromPercent((double)i / being.NCellsWalk)));
+                    yWalk.KeyFrames.Add(new LinearDoubleKeyFrame((double)30 * dummyCell.CartesianY, KeyTime.FromPercent((double)i / being.NCellsWalk)));
 
                     if (!cell.Equals(dummyCell))
                     {
-                        xWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianX, KeyTime.FromPercent((double)i / obj.NCellsWalk)));
-                        yWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianY, KeyTime.FromPercent((double)i / obj.NCellsWalk)));
+                        xWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianX, KeyTime.FromPercent((double)i / being.NCellsWalk)));
+                        yWalk.KeyFrames.Add(new DiscreteDoubleKeyFrame((double)30 * cell.CartesianY, KeyTime.FromPercent((double)i / being.NCellsWalk)));
                     }
                 }
 
-                Transform translate = obj.polygon.RenderTransform;
+                Transform translate = being.polygon.RenderTransform;
                 translate.BeginAnimation(TranslateTransform.XProperty, xWalk);
                 translate.BeginAnimation(TranslateTransform.YProperty, yWalk);
-
-                //ascissa.
-                //}
             }
-
-            //else    //too heavy
-            //{
-            //    TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.X, (Double)((34 * obj.Location.Y) + (obj.Location.X % 2 == 0 ? 0 : 17)));
-            //    obj.polygon.RenderTransform = translate;
-            //}
         }
+
+        public void ChangeBeingTex(Being being)
+        {
+            being.polygon.Fill = ActionBrushes[being.LastAction];
+        }
+
 
         public void removeThing(Thing obj)
         {
@@ -221,7 +216,7 @@ namespace LifeGame
             //poligono.Fill = new SolidColorBrush(switchColor(obj.Type));
             //System.Drawing.Image image = System.Drawing.Image.FromFile("grass.png"); 
 
-            poligono.Fill = switchGround(obj.Type);
+            poligono.Fill = TerrainBrushes[obj.Type];
 
             //Set the position inside the canvas
             TranslateTransform translate = new TranslateTransform((Double)30 * obj.Location.CartesianX, (Double)30 * obj.Location.CartesianY);
@@ -235,62 +230,9 @@ namespace LifeGame
             obj.polygon = poligono; //la fantasia con i nomi...
         }
 
-        private System.Windows.Media.Color switchColor(ThingType type)
-        {
-            System.Windows.Media.Color earth = System.Windows.Media.Color.FromRgb(205, 179, 128);
-            System.Windows.Media.Color water = System.Windows.Media.Color.FromRgb(105, 210, 231);
-            System.Windows.Media.Color color;
-            switch (type)
-            {
-                case ThingType.Earth:
-                    color = earth;
-                    break;
-                case ThingType.Water:
-                    color = water;
-                    break;
-                default:
-                    color = System.Windows.Media.Color.FromRgb(255, 255, 255);
-                    break;
-            }
-            return color;
-        }
-
-        public ImageBrush switchGround(ThingType type)
-        {
-            BitmapImage image;
-            ImageBrush brush = new ImageBrush();
-
-            switch (type)
-            {
-                case ThingType.Earth:
-                    image = earth;
-                    break;
-                case ThingType.Water:
-                    image = water;
-                    break;
-                case ThingType.Grass:
-                    image = grass;
-                    break;
-                case ThingType.Bush:
-                    image = bush;
-                    break;
-                case ThingType.Berry:
-                    image = berry;
-                    break;
-                case ThingType.Sand:
-                    image = sand;
-                    break;
-                default:
-                    image = grass;
-                    break;
-            }
-            brush.ImageSource = image;
-            return brush;
-        }
-
         public void updateCell(Thing obj)
         {
-            obj.polygon.Fill = switchGround(obj.Type);
+            obj.polygon.Fill = TerrainBrushes[obj.Type];
         }
 
         private ThingType currentType = ThingType.Earth;
@@ -309,11 +251,8 @@ namespace LifeGame
             //Debug stuff
             Debug.Write("Over a polygon " + poligono.Name + "\n");
             //cosa.showID();
-            if (editing)
-            {
-                cosa.ChangeType(this.currentType, null);
-                cosa.Apply();
-            }
+            cosa.ChangeType(this.currentType, null);
+            cosa.Apply();
         }
     }
 }

@@ -11,12 +11,16 @@ namespace LifeGame
         public float[] Fitness { get; set; }
         public NNGenome NNGenome { get; set; }
         public BodyGenome BodyGenome { get; set; }
+        public Genome FatherGen { get; private set; }
+        public Genome MotherGen { get; private set; }
 
         public Genome(Genome dadGen, Genome mumGen)
         {
             Fitness = new float[Constants.FITNESS_PARAM_COUNT];
             NNGenome = new NNGenome(dadGen.NNGenome, mumGen.NNGenome);
             BodyGenome = new BodyGenome(dadGen.BodyGenome, mumGen.BodyGenome);
+            FatherGen = dadGen;
+            MotherGen = mumGen;
         }
 
         public Genome()
@@ -31,6 +35,12 @@ namespace LifeGame
             Fitness = new float[Constants.FITNESS_PARAM_COUNT];
             NNGenome = new NNGenome(genome.NNGenome);
             //BodyGenome = new BodyGenome();
+        }
+
+        public void Apply(Being being)
+        {
+            //BodyGenome.Apply(being);
+            being.Brain = new NeuralNetwork(NNGenome, RandomBool.Next());
         }
 
         /// <summary>
