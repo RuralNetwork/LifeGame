@@ -36,6 +36,8 @@ namespace LifeGame
         public DispatcherTimer timer;
         [NonSerialized]
         public bool IsRunning;
+        [NonSerialized]
+        public bool IsSaved;
 
         public int TimeTick { get; set; }
 
@@ -108,7 +110,7 @@ namespace LifeGame
                 BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[gridHeight];
                 for (int j = 0; j < gridHeight; j++)
                 {
-                    Terrain[i][j] = new Thing(ThingType.Grass, new GridPoint(i, j));// per metto Earth per ogni cella
+                    Terrain[i][j] = new Thing(ThingType.Grass, new GridPoint(i, j));
                 }
             }
             Population = new Dictionary<int, Being>();
@@ -126,20 +128,20 @@ namespace LifeGame
 
         }
 
-        public void UnbindEngine()
-        {
-            foreach (var arr in Terrain)
-            {
-                foreach (var thing in arr)
-                {
-                    GraphicsEngine.Instance.removeThing(thing);
-                }
-            }
-            foreach (var being in Population)
-            {
-                GraphicsEngine.Instance.removeThing(being.Value);
-            }
-        }
+        //public void UnbindEngine()
+        //{
+        //    foreach (var arr in Terrain)
+        //    {
+        //        foreach (var thing in arr)
+        //        {
+        //            GraphicsEngine.Instance.removeThing(thing);
+        //        }
+        //    }
+        //    foreach (var being in Population)
+        //    {
+        //        GraphicsEngine.Instance.removeThing(being.Value);
+        //    }
+        //}
 
         public void InitLoad()
         {
@@ -152,16 +154,26 @@ namespace LifeGame
                 foreach (var thing in arr)
                 {
                     GraphicsEngine.Instance.addCell(thing);
-                    //var being=(Being)thing.InnerThing;
-                    //if (being!=null)
-                    //{
-                    //    Population.Add(being.ID, being);
-                    //}
                 }
             }
             foreach (var being in Population)
             {
                 GraphicsEngine.Instance.addBeing(being.Value);
+            }
+        }
+
+        public void initLoadTerrain()
+        {
+            foreach (var arr in Terrain)
+            {
+                foreach (var thing in arr)
+                {
+                    thing.InnerThing = null;
+                }
+            }
+            foreach (var being in Population)
+            {
+                Terrain[being.Value.Location.X][being.Value.Location.Y] = being.Value;
             }
         }
 
@@ -171,6 +183,7 @@ namespace LifeGame
         }
 
         public float ActualFPS;
+        static ParallelOptions po = new ParallelOptions() { MaxDegreeOfParallelism = 10 };
 
         //This must be at a fixed rate, so the rate is the one defined by the user
         public void Update(object sender, EventArgs e)
@@ -181,28 +194,11 @@ namespace LifeGame
                 {
                     ActualFPS = 1 / (float)watch.Elapsed.TotalSeconds;
 
-                    Debug.Write("Fps: " + ActualFPS.ToString("0.0"));
-                    Debug.Write(" Population.Count: " + Population.Count.ToString("00"));
-                    Debug.Write(" Free Beings: " + freeBeingObjs.Count.ToString("00") + "\n");
                     if (Population.Count > 0)
                     {
-                        Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
+                      //  Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
                     Debug.Write("    best fitness: " + HallOfFame.Genomes[0].Fitness[0].ToString("0.000") + "\n");
-#if DEBUG
-                    int c = 0;
-                    for (int x = 0; x < GridWidth; x++)
-                    {
-                        for (int y = 0; y < GridHeight; y++)
-                        {
-                            if (Terrain[x][y].InnerThing != null)
-                            {
-                                c++;
-                            }
-                        }
-                    }
-                    Debug.Write("    " + c);
-#endif
 
                     watch.Restart();
                     TimeTick++;
@@ -212,8 +208,6 @@ namespace LifeGame
                     int idx = 0;
 #if DEBUG
                     var po = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
-#else
-                    var po = new ParallelOptions() { MaxDegreeOfParallelism = 10 };
 #endif
                     Parallel.ForEach(Terrain, po, arr =>
                     {
@@ -256,7 +250,7 @@ namespace LifeGame
                                 cell = Terrain[x][y];
                             } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
 
-                            GiveBirth(HallOfFame.RandomGenome, new GridPoint(x, y));
+                            GiveBirth(HallOfFame.RndOffspringGen, new GridPoint(x, y));
                         }
                     }
 
@@ -305,8 +299,7 @@ namespace LifeGame
 
                                     being.InitOffspring(tuple.Item2);
 
-                                    ///////////////////////////aggiungi qui codice per mostrare il being (e il suo innerthing)//////////////////////
-                                    GraphicsEngine.Instance.addBeing(being);
+                                    GraphicsEngine.Instance.addBeing(being); //             <-----chiamata all'engine
                                 }
                                 else
                                 {
@@ -353,17 +346,6 @@ namespace LifeGame
                                     //    cell.ChangeType(ThingType.Corpse, dict);
                                     //}
 
-                                    //for (int i = 0; i < HallSeats; i++)
-                                    //{
-                                    //    if (being.FitnessMean.Value > HallOfFame[i].Fitness)
-                                    //    {
-                                    //        being.Genome.Fitness = being.FitnessMean.Value;
-                                    //        HallOfFame.Insert(i, being.Genome);
-                                    //        HallOfFame.RemoveAt(HallSeats);
-                                    //        break;
-                                    //    }
-                                    //}
-
                                     //check if is best genome
                                     var fitnessArr = new float[Constants.FITNESS_PARAM_COUNT];
                                     for (int i = 0; i < Constants.FITNESS_PARAM_COUNT; i++)
@@ -373,8 +355,7 @@ namespace LifeGame
                                     being.Genome.Fitness = fitnessArr;
                                     HallOfFame.TryEnqueue(being.Genome);
 
-                                    ///////////////////////////aggiungi qui codice per nascondere il being (e il suo innerthing)//////////////////////
-                                    GraphicsEngine.Instance.removeThing(being);
+                                    GraphicsEngine.Instance.removeThing(being); //             <-----chiamata all'engine
                                 }
                                 BornDiedQueue[x][y] = null;
                             }
@@ -388,23 +369,18 @@ namespace LifeGame
 
                         var tuple = BeingLocQueue[idx];
                         var being = tuple.Item1;
-                        Debug.Write("Count Beings" + BeingLocQueue.Count + "\n");
                         if (Population.ContainsKey(being.ID))
                         {
                             var newLoc = tuple.Item2;
                             Thing newCell = Terrain[newLoc.X][newLoc.Y];
                             while (newCell.InnerThing != null)
                             {
-                                newLoc = newLoc.GetNearCell();
-                                newLoc.X = newLoc.X.Cycle(GridWidth);
-                                newLoc.Y = newLoc.Y.Cycle(GridHeight);
+                                newLoc = Cycle(newLoc.GetNearCell());
                                 newCell = Terrain[newLoc.X][newLoc.Y];
                             }
                             newCell.InnerThing = being;
-                            Debug.Write("Ex location" + being.Location.X + "\n");
                             Terrain[being.Location.X][being.Location.Y].InnerThing = null;
                             being.Location = newLoc;
-                            Debug.Write("New location" + newLoc.X + "\n");
                             GraphicsEngine.Instance.WalkAnimation(being); //             <-----chiamata all'engine
                         }
                         else
@@ -426,7 +402,7 @@ namespace LifeGame
                             }
                         }
                     }
-                    //Debug.WriteLine(null);
+                    Debug.WriteLine(null);
                 }
             }
         }

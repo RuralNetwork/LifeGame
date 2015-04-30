@@ -151,7 +151,6 @@ namespace LifeGame
 
         public void WalkAnimation(Being being)
         {
-            Debug.Write("Move\n");
             if (FPS > 0)
             {
                 DoubleAnimationUsingKeyFrames xWalk = new DoubleAnimationUsingKeyFrames();
@@ -197,7 +196,6 @@ namespace LifeGame
 
         public void removeThing(Thing obj)
         {
-            Debug.Write("Removed Thing\n");
             this._canvas.Children.Remove(obj.polygon);
         }
 
@@ -247,10 +245,6 @@ namespace LifeGame
             Polygon poligono = e.Source as Polygon;
             Thing cosa = poligono.DataContext as Thing;
 
-            /*poligono.Fill = System.Windows.Media.Brushes.Aqua;*/
-            //Debug stuff
-            Debug.Write("Over a polygon " + poligono.Name + "\n");
-            //cosa.showID();
             cosa.ChangeType(this.currentType, null);
             cosa.Apply();
         }

@@ -98,6 +98,9 @@
       <DependentUpon>dialoguebox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums.cs" />
+    <Compile Include="MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Math_stuff\Average.cs" />
     <Compile Include="Being\BodyGenome.cs" />
     <Compile Include="Being\Genome.cs" />
@@ -120,6 +123,10 @@
     <Compile Include="Math_stuff\Vector.cs" />
     <Compile Include="Math_stuff\ZigguratGaussianSampler.cs" />
     <Page Include="dialoguebox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

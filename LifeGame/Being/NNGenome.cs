@@ -72,18 +72,22 @@ namespace LifeGame
         /// </summary>
         public NNGenome(NNGenome genome)
         {
-            NodeGeneList = new Dictionary<ulong, NodeGene>(genome.NodeGeneList.Count);
-            foreach (var kvp in genome.NodeGeneList)
+            initModdedGen(genome);
+            mutate();
+        }
+
+        void initModdedGen(NNGenome gen)
+        {
+            NodeGeneList = new Dictionary<ulong, NodeGene>(gen.NodeGeneList.Count);
+            foreach (var kvp in gen.NodeGeneList)
             {
                 NodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
             }
-            LinkGeneList = new SortedList<ulong, LinkGene>(genome.LinkGeneList.Count);
-            foreach (var kvp in genome.LinkGeneList)
+            LinkGeneList = new SortedList<ulong, LinkGene>(gen.LinkGeneList.Count);
+            foreach (var kvp in gen.LinkGeneList)
             {
                 LinkGeneList.Add(kvp.Key, new LinkGene(kvp.Value));
             }
-
-            mutate();
         }
 
         /// <summary>
@@ -106,94 +110,95 @@ namespace LifeGame
                 weakPar = parent1;
             }
 
-            // add nodes to NodeGeneList
-            var nodeGeneList = new Dictionary<ulong, NodeGene>(fitPar.NodeGeneList.Count + weakPar.NodeGeneList.Count);
-            foreach (var kvp in fitPar.NodeGeneList)
+            if (rand.NextDouble() > DISJ_EXC_RECOMB_PROB)
             {
-                nodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
+                initModdedGen(fitPar);
             }
-
-            // correlate link genes:
-            // if present in both: choose the weight randomly from one of the parent
-            // if present in the fittest parent: just use it
-            // if present in the weakest parent: add it to the disjoint-excess list
-
-            var list1Count = fitPar.LinkGeneList.Count; // precalculate values & references
-            var list2Count = weakPar.LinkGeneList.Count;
-            var idList1 = fitPar.LinkGeneList.Keys;
-            var linkList1 = fitPar.LinkGeneList.Values;
-            var idList2 = weakPar.LinkGeneList.Keys;
-            var linkList2 = weakPar.LinkGeneList.Values;
-
-            var linkGeneList = new SortedList<ulong, LinkGene>(list1Count + list2Count);
-            var disjExcList = new List<KeyValuePair<ulong, LinkGene>>(list2Count); // genes in weakPar that don't match in fitPar
-            var recombDisjExc = rand.Next() < DISJ_EXC_RECOMB_PROB;
-
-            var idx1 = 0;
-            var idx2 = 0;
-            ulong ID1, ID2;
-            LinkGene link1, link2;
-            while (idx1 == list1Count && idx2 == list2Count)
+            else
             {
-                ID1 = idList1[idx1];
-                ID2 = idList2[idx2];
-                link1 = linkList1[idx1];
-                link2 = linkList2[idx2];
+                // add nodes to NodeGeneList
+                var nodeGeneList = new Dictionary<ulong, NodeGene>(fitPar.NodeGeneList.Count + weakPar.NodeGeneList.Count);
+                foreach (var kvp in fitPar.NodeGeneList)
+                {
+                    nodeGeneList.Add(kvp.Key, new NodeGene(kvp.Value));
+                }
 
-                if (ID1 == ID2)
+                // correlate link genes:
+                // if present in both: choose the weight randomly from one of the parent
+                // if present in the fittest parent: just use it
+                // if present in the weakest parent: add it to the disjoint-excess list
+
+                var list1Count = fitPar.LinkGeneList.Count; // precalculate values & references
+                var list2Count = weakPar.LinkGeneList.Count;
+                var idList1 = fitPar.LinkGeneList.Keys;
+                var linkList1 = fitPar.LinkGeneList.Values;
+                var idList2 = weakPar.LinkGeneList.Keys;
+                var linkList2 = weakPar.LinkGeneList.Values;
+
+                var linkGeneList = new SortedList<ulong, LinkGene>(list1Count + list2Count);
+                var disjExcList = new List<KeyValuePair<ulong, LinkGene>>(list2Count); // genes in weakPar that don't match in fitPar
+
+                var idx1 = 0;
+                var idx2 = 0;
+                ulong ID1, ID2;
+                LinkGene link1, link2;
+                while (true)
                 {
-                    linkGeneList.Add(ID1, new LinkGene(RandomBool.Next() ? link1 : link2));
-                    idx1++;
-                    idx2++;
-                }
-                else if (ID1 < ID2) // then beacause in fitPar there's a gene that don't match in weakPar
-                {
-                    linkGeneList.Add(ID1, new LinkGene(link1));
-                    idx1++;
-                }
-                else // ID1 > ID2
-                {
-                    if (recombDisjExc)
+                    ID1 = idList1[idx1];
+                    ID2 = idList2[idx2];
+                    link1 = linkList1[idx1];
+                    link2 = linkList2[idx2];
+
+                    if (ID1 == ID2)
+                    {
+                        linkGeneList.Add(ID1, new LinkGene(RandomBool.Next() ? link1 : link2));
+                        idx1++;
+                        idx2++;
+                    }
+                    else if (ID1 < ID2) // then beacause in fitPar there's a gene that don't match in weakPar
+                    {
+                        linkGeneList.Add(ID1, new LinkGene(link1));
+                        idx1++;
+                    }
+                    else // ID1 > ID2
                     {
                         disjExcList.Add(new KeyValuePair<ulong, LinkGene>(ID2, link2));
+                        idx2++;
                     }
-                    idx2++;
-                }
 
-                if (idx2 == list2Count)
-                {
-                    while (idx1 < list1Count)
+                    if (idx2 == list2Count)
                     {
-                        idx1++;
-                        linkGeneList.Add(idList1[idx1], new LinkGene(linkList1[idx1]));
+                        while (idx1 < list1Count)
+                        {
+                            linkGeneList.Add(idList1[idx1], new LinkGene(linkList1[idx1]));
+                            idx1++;
+                        }
+                        break;
                     }
-                    break;
-                }
 
-                if (idx1 == list1Count)
-                {
-                    if (recombDisjExc)
+                    if (idx1 == list1Count)
                     {
-
                         while (idx2 < list2Count)
                         {
-                            idx2++;
                             disjExcList.Add(new KeyValuePair<ulong, LinkGene>(idList2[idx2], new LinkGene(linkList2[idx2])));
+                            idx2++;
                         }
+                        break;
                     }
-                    break;
                 }
-            }
 
-            //TODO: this works (and allow evolution) but is missing code for adding disjoint-excess
-            // (need an additional SortedDictionary<AddedLink, ulong?> filled with LinkGeneList genes)
+                //TODO: this works (and allow evolution) but is missing code for adding disjoint-excess
+                // (need an additional SortedDictionary<AddedLink, ulong?> filled with LinkGeneList genes)
+
+
+                LinkGeneList = linkGeneList;
+                NodeGeneList = nodeGeneList;
+
+            }
 
 
             //mutate
             mutate();//consider calling this multiple times
-
-            LinkGeneList = linkGeneList;
-            NodeGeneList = nodeGeneList;
         }
 
         void mutate()

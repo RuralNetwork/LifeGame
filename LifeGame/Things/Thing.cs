@@ -67,14 +67,6 @@ namespace LifeGame
             Properties = new Dictionary<ThingProperty, float>(propsDicts[(int)type]);
         }
 
-        ///// <summary>
-        ///// In order to test if graphics and back-end are linked
-        ///// </summary>
-        //public void showID()
-        //{
-        //    Debug.Write("My ID is: " + this.ID + "\n");
-        //}
-
         /// <summary>
         /// This registers the changes to be applied at the end of the tick cycle, these are based on time and the environment
         /// </summary>

@@ -50,25 +50,22 @@ namespace LifeGame
     {
 
 
-        FastRandom rand = new FastRandom();
-
         System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
 
         public MainWindow()
         {
             InitializeComponent();
-            Debug.Write("\n******************\nComponents Initialized\n******************\n");
             //---------------------Test Space------------------------
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
             new GraphicsEngine(mainpanel);
-
+            new Simulation(30, 20);
         }
 
         private void toggleState_Click(object sender, RoutedEventArgs e)
         {
-            simSaved = false;
+            Simulation.Instance.IsSaved = false;
             //The function to call the mesagebox, then I'll implement it inside the graphical engine
             /*var prova = new dialoguebox("testo");
             mainpanel.Children.Add(prova);
@@ -88,43 +85,32 @@ namespace LifeGame
 
         private void createWorld_Click(object sender, RoutedEventArgs e)
         {
-            new Simulation(30, 20);
 
-            for (int i = 0; i < 30; i++)
-            {
-                int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
-                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Earth, null);
-                Simulation.Instance.Terrain[x][y].Apply();
+            //for (int i = 0; i < 30; i++)
+            //{
+            //    int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
+            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Earth, null);
+            //    Simulation.Instance.Terrain[x][y].Apply();
 
-                x = rand.Next(Simulation.Instance.GridWidth);
-                y = rand.Next(Simulation.Instance.GridHeight);
-                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Sand, null);
-                Simulation.Instance.Terrain[x][y].Apply();
-            }
-            for (int i = 0; i < 50; i++)
-            {
-                int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
-                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Water, null);
-                Simulation.Instance.Terrain[x][y].Apply();
+            //    x = rand.Next(Simulation.Instance.GridWidth);
+            //    y = rand.Next(Simulation.Instance.GridHeight);
+            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Sand, null);
+            //    Simulation.Instance.Terrain[x][y].Apply();
+            //}
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
+            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Water, null);
+            //    Simulation.Instance.Terrain[x][y].Apply();
 
-                x = rand.Next(Simulation.Instance.GridWidth);
-                y = rand.Next(Simulation.Instance.GridHeight);
-                Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Bush, null);
-                Simulation.Instance.Terrain[x][y].Apply();
-            }
+            //    x = rand.Next(Simulation.Instance.GridWidth);
+            //    y = rand.Next(Simulation.Instance.GridHeight);
+            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Bush, null);
+            //    Simulation.Instance.Terrain[x][y].Apply();
+            //}
 
             SetLayout(1);
 
-            //debug
-            timer.Tick += delegate
-            {
-                if (Simulation.Instance != null)
-                {
-                    Title = Simulation.Instance.ActualFPS.ToString("0.0");
-                }
-            };
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
-            timer.Start();
         }
 
         private void toggleBrush(object sender, RoutedEventArgs e)
@@ -133,7 +119,7 @@ namespace LifeGame
             for (int i = 0; i < gridToolbox.Children.Count; i++)
             {
                 Button f = gridToolbox.Children[i] as Button;
-               //f.Background= GraphicsEngine.Instance.switchGround((ThingType)Enum.Parse(typeof(ThingType), f.Name, true));
+                //f.Background= GraphicsEngine.Instance.switchGround((ThingType)Enum.Parse(typeof(ThingType), f.Name, true));
                 f.Background.Opacity = 0.5;
                 f.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
             }
@@ -146,11 +132,11 @@ namespace LifeGame
         private void toggleSpeed(object sender, RoutedEventArgs e)
         {
             Button current = e.Source as Button;
-            for (int i = 0; i < gridSpeed.Children.Count; i++)
-            {
-                UIElement f = gridSpeed.Children[i];
-                f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
-            }
+            //for (int i = 0; i < gridSpeed.Children.Count; i++)
+            //{
+            //    UIElement f = gridSpeed.Children[i];
+            //    f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
+            //}
             current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
             toggleSpeed(current.Name);
 
@@ -176,49 +162,49 @@ namespace LifeGame
 
         void SetLayout(int l)
         {
-            mainpanel.Visibility = Visibility.Hidden;
-            openingTitle.Visibility = Visibility.Hidden;
-            loadSimulation.Visibility = Visibility.Hidden;
-            loadWorld.Visibility = Visibility.Hidden;
-            createTerrain.Visibility = Visibility.Hidden;
-            newPopulation.Visibility = Visibility.Hidden;
-            loadGenome.Visibility = Visibility.Hidden;
-            loadGenome.Visibility = Visibility.Hidden;
-            toggleState.Visibility = Visibility.Hidden;
-            gridSpeed.Visibility = Visibility.Hidden;
-            gridToolbox.Visibility = Visibility.Hidden;
-            saveSimulation.Visibility = Visibility.Hidden;
-            saveGenome.Visibility = Visibility.Hidden;
-            //saveButton.Visibility = Visibility.Hidden;
-            //headBack.Visibility = Visibility.Hidden;
-            switch (l)
-            {
-                case 0:
-                    openingTitle.Visibility = Visibility.Visible;
-                    loadSimulation.Visibility = Visibility.Visible;
-                    createTerrain.Visibility = Visibility.Visible;
-                    //loadWorldButton.Visibility = Visibility.Visible;
-                    break;
-                case 1:
-                    mainpanel.Width = 910;
-                    mainpanel.Height = 700;
-                    gridToolbox.Visibility = Visibility.Visible;
-                    mainpanel.Visibility = Visibility.Visible;
-                    newPopulation.Visibility = Visibility.Visible;
-                    loadGenome.Visibility = Visibility.Visible;
-                    break;
-                case 2:
-                    mainpanel.Visibility = Visibility.Visible;
-                    toggleState.Visibility = Visibility.Visible;
-                    gridSpeed.Visibility = Visibility.Visible;
-                    saveSimulation.Visibility = Visibility.Visible;
-                    saveGenome.Visibility = Visibility.Visible;
-                    //saveButton.Visibility = Visibility.Visible;
-                    //headBack.Visibility = Visibility.Visible;
-                    break;
-                default:
-                    break;
-            }
+            //mainpanel.Visibility = Visibility.Hidden;
+            //openingTitle.Visibility = Visibility.Hidden;
+            //loadSimulation.Visibility = Visibility.Hidden;
+            //loadWorld.Visibility = Visibility.Hidden;
+            //createTerrain.Visibility = Visibility.Hidden;
+            //newPopulation.Visibility = Visibility.Hidden;
+            //loadGenome.Visibility = Visibility.Hidden;
+            //loadGenome.Visibility = Visibility.Hidden;
+            //toggleState.Visibility = Visibility.Hidden;
+            //gridSpeed.Visibility = Visibility.Hidden;
+            //gridToolbox.Visibility = Visibility.Hidden;
+            //saveSimulation.Visibility = Visibility.Hidden;
+            //saveGenome.Visibility = Visibility.Hidden;
+            ////saveButton.Visibility = Visibility.Hidden;
+            ////headBack.Visibility = Visibility.Hidden;
+            //switch (l)
+            //{
+            //    case 0:
+            //        openingTitle.Visibility = Visibility.Visible;
+            //        loadSimulation.Visibility = Visibility.Visible;
+            //        createTerrain.Visibility = Visibility.Visible;
+            //        //loadWorldButton.Visibility = Visibility.Visible;
+            //        break;
+            //    case 1:
+            //        mainpanel.Width = 910;
+            //        mainpanel.Height = 700;
+            //        gridToolbox.Visibility = Visibility.Visible;
+            //        mainpanel.Visibility = Visibility.Visible;
+            //        newPopulation.Visibility = Visibility.Visible;
+            //        loadGenome.Visibility = Visibility.Visible;
+            //        break;
+            //    case 2:
+            //        mainpanel.Visibility = Visibility.Visible;
+            //        toggleState.Visibility = Visibility.Visible;
+            //        gridSpeed.Visibility = Visibility.Visible;
+            //        saveSimulation.Visibility = Visibility.Visible;
+            //        saveGenome.Visibility = Visibility.Visible;
+            //        //saveButton.Visibility = Visibility.Visible;
+            //        //headBack.Visibility = Visibility.Visible;
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
         private void loadGenome_Click(object sender, RoutedEventArgs e)
@@ -243,12 +229,12 @@ namespace LifeGame
             }
         }
 
-        private void goBack(object sender, RoutedEventArgs e)
-        {
-            Simulation.Instance.UnbindEngine();
-            Simulation.Instance = null;
-            SetLayout(0);
-        }
+        //private void goBack(object sender, RoutedEventArgs e)
+        //{
+        //    Simulation.Instance.UnbindEngine();
+        //    Simulation.Instance = null;
+        //    SetLayout(0);
+        //}
 
         private void newPopulation_Click(object sender, RoutedEventArgs e)
         {
@@ -274,7 +260,7 @@ namespace LifeGame
             {
                 Properties.Settings.Default.lastSim = input;
                 Properties.Settings.Default.Save();
-                simSaved = true;
+                Simulation.Instance.IsSaved = true;
             }
 
         }
@@ -286,11 +272,9 @@ namespace LifeGame
 
         }
 
-        bool simSaved;
-
         private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!simSaved && Simulation.Instance != null)
+            if (!Simulation.Instance.IsSaved)
             {
                 Serializer.Save(Simulation.Instance, "lastsim");
                 Properties.Settings.Default.lastSim = "lastsim";
@@ -301,20 +285,61 @@ namespace LifeGame
 
         private void mainwindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Aprire l'ultima simulazione?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            mainMenu.Width = mainGrid.ActualWidth;
+            mainMenu.Height = mainGrid.ActualHeight;
+            mainMenu.Margin = new Thickness();
+            try
             {
-                if (Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim))
+                Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim);
+                Simulation.Instance.IsSaved = true;
+                Simulation.Instance.InitLoad();
+                mainMenu.simulationName.Text = "Simulazione: " + Properties.Settings.Default.lastSim;
+            }
+            catch (Exception)
+            {
+            }
+            //debug
+            timer.Tick += delegate
+            {
+                if (Simulation.Instance != null)
                 {
-                    Simulation.Instance.InitLoad();
-                    SetLayout(1);
+                    Title = Simulation.Instance.ActualFPS.ToString("0.0");
+                }
+            };
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            timer.Start();
+        }
+
+        //private void buttonToolHover(object sender, MouseEventArgs e)
+        //{
+        //    Button current = e.Source as Button;
+        //    current.Background = GraphicsEngine.Instance.TerrainBrushes[(ThingType)Enum.Parse(typeof(ThingType), current.Name, true)];
+        //}
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (GraphicsEngine.Instance != null)
+            {
+                if (speedSlider.Value != 100.0)
+                {
+                GraphicsEngine.Instance.FPS = (float)speedSlider.Value;
+                SpeedText.Text = GraphicsEngine.Instance.FPS.ToString("0.0");
+                }
+                else
+                {
+                    GraphicsEngine.Instance.FPS = 0;
+                    SpeedText.Text = "Max";
                 }
             }
         }
 
-        private void buttonToolHover(object sender, MouseEventArgs e)
+        private void goBack_Click(object sender, RoutedEventArgs e)
         {
-            Button current = e.Source as Button;
-            current.Background = GraphicsEngine.Instance.TerrainBrushes[(ThingType)Enum.Parse(typeof(ThingType), current.Name, true)];
+            if (Simulation.Instance.IsRunning)
+            {
+                toggleState_Click(null, null);
+            }
+            mainMenu.Visibility = Visibility.Visible;
         }
     }
 }

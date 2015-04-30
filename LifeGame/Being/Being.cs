@@ -96,6 +96,7 @@ namespace LifeGame
                 //}
                 //FitnessMean.Add(fitness);
                 Fitness.Update(FitnessParam.Walk, (walk[0].Sigmoid() + walk[1].Sigmoid() + walk[2].Sigmoid() + walk[3].Sigmoid() + walk[4].Sigmoid() + walk[5].Sigmoid()) * 10);
+                Fitness.Update(FitnessParam.BrainSize, ((float)(Brain.Links.Length + Brain.State.Length) / 20f).Sigmoid() * 10f);
                 //Fitness.Update(FitnessParam.Health, Properties[(ThingProperty)BeingMutableProp.Health]);
                 //Fitness.Update(FitnessParam.Reproduction, Properties[(ThingProperty)BeingMutableProp.Health]);
 
@@ -306,10 +307,34 @@ namespace LifeGame
             energy = Math.Min((energy - 0.5f) * 2f * Properties[(ThingProperty)BeingMutableProp.Energy], Properties[(ThingProperty)BeingMutableProp.Energy] / 5); //beings can spend at most a fifth of their total energy
             EnergySpent = energy;
             var ang = (float)Math.Atan2(-dirVec.Y, dirVec.X);
-            var cDir = (ang > 0 ? ang : ang + (float)Math.PI).AngleToDirection();
-            GridPoint cellPt = (tgtType == 2 ? Location.GetNearCell(cDir) : Location);
-            cellPt.X = cellPt.X.Cycle(width);
-            cellPt.Y = cellPt.Y.Cycle(height);
+            if (ang < 0)
+            {
+                if (true)
+                {
+                    var a = 10;
+                    a = a + 20;
+                }
+            }
+            var cDir = (ang >= 0 ? ang : ang + (float)Math.PI * 2).AngleToDirection();
+            if (ang > Math.PI)
+            {
+                var a = 10;
+                a = a + 20;
+
+            }
+            if (cDir == CellDirection.TopRight)
+            {
+                var a = 10;
+                a = a + 20;
+
+            }
+            if (cDir == CellDirection.BottomRight)
+            {
+                var a = 10;
+                a = a + 20;
+
+            }
+            GridPoint cellPt = (tgtType == 2 ? Simulation.Instance.Cycle(Location.GetNearCell(cDir)) : Location);
             var target = terrain[cellPt.X][cellPt.Y];
 
             //debug: sovrascrivi questi
@@ -326,9 +351,7 @@ namespace LifeGame
                         cellPt = Location;
                         while (EnergySpent > 0 && NCellsWalk < 3)
                         {
-                            cellPt = cellPt.GetNearCell(cDir);
-                            cellPt.X = cellPt.X.Cycle(width);
-                            cellPt.Y = cellPt.Y.Cycle(height);
+                            cellPt = Simulation.Instance.Cycle(cellPt.GetNearCell(cDir));
                             target = terrain[cellPt.X][cellPt.Y];
                             walkThrough(target);
                             if (target.InnerThing != null)
@@ -401,7 +424,7 @@ namespace LifeGame
             ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.002f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.005f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.005f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.01f, false);
 
             if (Properties[(ThingProperty)BeingMutableProp.Health] > Properties[(ThingProperty)BeingMutableProp.Integrity])
             {

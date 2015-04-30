@@ -60,7 +60,7 @@ namespace LifeGame
         /// </summary>
         public static CellDirection AngleToDirection(this float angle)
         {
-            return (CellDirection)Math.Round(angle * 3 / (float)Math.PI - 0.5f);
+            return (CellDirection)(Math.Round(angle * 3 / (float)Math.PI - 0.5f));
         }
         /// <summary>
         /// Mod function extended to negative numbers

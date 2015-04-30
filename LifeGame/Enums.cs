@@ -127,8 +127,9 @@
     public enum FitnessParam
     {
         Walk,
-        Health,
-        Reproduction,
+        BrainSize,
+        //Health,
+        //Reproduction,
 
     }
 }
