@@ -119,9 +119,21 @@
         Hunger
     }
 
-    public enum Substance
+    public enum PhenomeEffect
     {
-
+        FurColor1,//melanina
+        FurColor2,
+        FurColorRegolator,//Mitf
+        HungryRegolator, //leptina
+        Lifespan,//telomerasi
+        BloodGroup,
+        PlantDigestion,//amilasi salivare, AMY1
+        StressResponse,//cortisolo
+        Development,
+        CellDivisionControl,
+        OxigenAbsorption,
+        GlucoseAbsorption,// insulina
+        Testosterone,
     }
 
     public enum FitnessParam

@@ -13,7 +13,7 @@ namespace LifeGame
         //consts:
         public const float CAL2KG = 0.42f;// kg lifted with one calorie  ->  1 / (1kg * 9.81m/s^2 * 1m)
 
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
         // mutable properties
         public CellDirection Direction { get; private set; }
@@ -46,9 +46,6 @@ namespace LifeGame
             InnerThing = new Thing(ThingType.Null, default(GridPoint));
             InnerThing.IsCarrObj = true;
             LivingOffsprings = new List<int>();
-
-            ID = Simulation.Instance.lastID;
-            Simulation.Instance.lastID++;
         }
 
         public void InitOffspring(Genome genome)
@@ -76,8 +73,8 @@ namespace LifeGame
             var terrain = sim.Terrain;
             var environment = sim.Environment;
             var bState = Brain.State;
-            var width = sim.GridWidth;
-            var height = sim.GridHeight;
+            var width = GraphicsEngine.GRID_WIDTH;
+            var height = GraphicsEngine.GRID_HEIGHT;
             var locX = Location.X;
             var locY = Location.Y;
             var ccProps = terrain[locX][locY].Properties;
@@ -334,7 +331,7 @@ namespace LifeGame
                 a = a + 20;
 
             }
-            GridPoint cellPt = (tgtType == 2 ? Simulation.Instance.Cycle(Location.GetNearCell(cDir)) : Location);
+            GridPoint cellPt = (tgtType == 2 ? GraphicsEngine.Cycle(Location.GetNearCell(cDir)) : Location);
             var target = terrain[cellPt.X][cellPt.Y];
 
             //debug: sovrascrivi questi
@@ -351,7 +348,7 @@ namespace LifeGame
                         cellPt = Location;
                         while (EnergySpent > 0 && NCellsWalk < 3)
                         {
-                            cellPt = Simulation.Instance.Cycle(cellPt.GetNearCell(cDir));
+                            cellPt = GraphicsEngine.Cycle(cellPt.GetNearCell(cDir));
                             target = terrain[cellPt.X][cellPt.Y];
                             walkThrough(target);
                             if (target.InnerThing != null)

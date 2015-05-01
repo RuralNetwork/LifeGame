@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace LifeGame
 {
@@ -18,6 +19,8 @@ namespace LifeGame
                 bf.Serialize(stream, obj);
                 stream.Close();
                 return true;
+
+
             }
             catch (Exception)
             {
@@ -25,18 +28,25 @@ namespace LifeGame
             }
         }
 
-        static public bool Load<T>(out T obj, string filename) where T : class //  <-- allow obj to be null
+        static public bool Load<T>(ref T obj, string filename) where T : class //  <-- allow obj to be null
         {
-            if (File.Exists(filename))
+            try
             {
-                BinaryFormatter bf = new BinaryFormatter();
-                Stream stream = File.OpenRead(filename);
-                obj = (T)bf.Deserialize(stream);
-                stream.Close();
-                return true;
+
+                if (File.Exists(filename))
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    Stream stream = File.OpenRead(filename);
+                    obj = (T)bf.Deserialize(stream);
+                    stream.Close();
+                    return true;
+                }
+                return false;
             }
-            obj = null;
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

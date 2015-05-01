@@ -30,8 +30,8 @@ namespace LifeGame
         //private
         [NonSerialized]
         Stopwatch watch;
-        [NonSerialized]
-        public int lastID;
+       // [NonSerialized]
+        //public int lastID;
         [NonSerialized]
         public DispatcherTimer timer;
         [NonSerialized]
@@ -45,15 +45,12 @@ namespace LifeGame
         /// Tells if should be used PopulationCount and the hall of fame genome list to maintain the population.
         /// </summary>
         public bool TrainingMode { get; set; }
-        public int PopulationCount { get; set; }
 
         /// <summary>
         /// History of events.
         /// </summary>
         public List<Event> Events { get; set; }
 
-        public int GridWidth { get; private set; }// this must be an even number to permit the world to wrap around itself
-        public int GridHeight { get; private set; }// this can be any number
 
         public SimEnvironment Environment { get; set; }
         public HallOfFame HallOfFame;
@@ -83,7 +80,7 @@ namespace LifeGame
         /// </summary>
         public List<Being> freeBeingObjs { get; private set; }
 
-        public Simulation(int gridWidth, int gridHeight)
+        public Simulation()
         {
             Instance = this;
             // timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
@@ -94,30 +91,29 @@ namespace LifeGame
             //thread.Start();
 
             TrainingMode = true;
-            PopulationCount = 20;
             //hallOfFame = new List<Genome>(10);
 
             Environment = new SimEnvironment(this);
-            GridWidth = gridWidth;
-            GridHeight = gridHeight;
 
-            Terrain = new Thing[gridWidth][];
+            Terrain = new Thing[GraphicsEngine.GRID_WIDTH][];
             BeingLocQueue = new List<Tuple<Being, GridPoint>>();
-            BornDiedQueue = new Tuple<Being, Genome, Being, Being>[gridWidth][];
-            for (int i = 0; i < gridWidth; i++)
+            BornDiedQueue = new Tuple<Being, Genome, Being, Being>[GraphicsEngine.GRID_WIDTH][];
+            for (int i = 0; i < GraphicsEngine.GRID_WIDTH; i++)
             {
-                Terrain[i] = new Thing[gridHeight];
-                BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[gridHeight];
-                for (int j = 0; j < gridHeight; j++)
+                Terrain[i] = new Thing[GraphicsEngine.GRID_HEIGHT];
+                BornDiedQueue[i] = new Tuple<Being, Genome, Being, Being>[GraphicsEngine.GRID_HEIGHT];
+                for (int j = 0; j < GraphicsEngine.GRID_HEIGHT; j++)
                 {
                     Terrain[i][j] = new Thing(ThingType.Grass, new GridPoint(i, j));
                 }
             }
             Population = new Dictionary<int, Being>();
             freeBeingObjs = new List<Being>();
-            for (int i = 0; i < PopulationCount * 1.5f; i++)
+            int id = 0;
+            for (int i = 0; i < GraphicsEngine.MAX_POPULATION_COUNT; i++)
             {
                 var being = new Being();
+                being.ID = id++;
                 freeBeingObjs.Add(being);
             }
 
@@ -153,27 +149,12 @@ namespace LifeGame
             {
                 foreach (var thing in arr)
                 {
-                    GraphicsEngine.Instance.addCell(thing);
+                    GraphicsEngine.Instance.ChangeCell(thing);
                 }
             }
             foreach (var being in Population)
             {
                 GraphicsEngine.Instance.addBeing(being.Value);
-            }
-        }
-
-        public void initLoadTerrain()
-        {
-            foreach (var arr in Terrain)
-            {
-                foreach (var thing in arr)
-                {
-                    thing.InnerThing = null;
-                }
-            }
-            foreach (var being in Population)
-            {
-                Terrain[being.Value.Location.X][being.Value.Location.Y] = being.Value;
             }
         }
 
@@ -196,7 +177,7 @@ namespace LifeGame
 
                     if (Population.Count > 0)
                     {
-                      //  Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
+                        //  Debug.Write("    Population[0]:  Health: " + Population.ElementAt(0).Value.Properties[(ThingProperty)BeingMutableProp.Health].ToString("0.00"));
                     }
                     Debug.Write("    best fitness: " + HallOfFame.Genomes[0].Fitness[0].ToString("0.000") + "\n");
 
@@ -239,14 +220,14 @@ namespace LifeGame
                     // make born some beings
                     if (TrainingMode)
                     {
-                        if (Population.Count < PopulationCount)
+                        if (Population.Count < GraphicsEngine.POPULATION_COUNT)
                         {
                             Thing cell;
                             int x, y;
                             do
                             {
-                                x = rand.Next(GridWidth);
-                                y = rand.Next(GridHeight);
+                                x = rand.Next(GraphicsEngine.GRID_WIDTH);
+                                y = rand.Next(GraphicsEngine.GRID_HEIGHT);
                                 cell = Terrain[x][y];
                             } while (cell.InnerThing != null || cell.Type == ThingType.Mountain || cell.Type == ThingType.Water || BornDiedQueue[x][y] != null);
 
@@ -255,7 +236,7 @@ namespace LifeGame
                     }
 
                     // make die some beings
-                    while (Population.Count > PopulationCount)
+                    while (Population.Count > GraphicsEngine.POPULATION_COUNT)
                     {
                         idx = rand.Next(Population.Count);
                         var being = Population.ElementAt(idx).Value;
@@ -265,9 +246,9 @@ namespace LifeGame
 
                     // apply births/deaths
                     //Parallel.For(0, GridWidth, po, x =>
-                    for (int x = 0; x < GridWidth; x++)
+                    for (int x = 0; x < GraphicsEngine.GRID_WIDTH; x++)
                     {
-                        for (int y = 0; y < GridHeight; y++)
+                        for (int y = 0; y < GraphicsEngine.GRID_HEIGHT; y++)
                         {
                             var tuple = BornDiedQueue[x][y];
                             if (tuple != null)
@@ -355,7 +336,7 @@ namespace LifeGame
                                     being.Genome.Fitness = fitnessArr;
                                     HallOfFame.TryEnqueue(being.Genome);
 
-                                    GraphicsEngine.Instance.removeThing(being); //             <-----chiamata all'engine
+                                    GraphicsEngine.Instance.RemoveBeing(being); //             <-----chiamata all'engine
                                 }
                                 BornDiedQueue[x][y] = null;
                             }
@@ -375,7 +356,7 @@ namespace LifeGame
                             Thing newCell = Terrain[newLoc.X][newLoc.Y];
                             while (newCell.InnerThing != null)
                             {
-                                newLoc = Cycle(newLoc.GetNearCell());
+                                newLoc = GraphicsEngine.Cycle(newLoc.GetNearCell());
                                 newCell = Terrain[newLoc.X][newLoc.Y];
                             }
                             newCell.InnerThing = being;
@@ -423,9 +404,5 @@ namespace LifeGame
         }
 
 
-        public GridPoint Cycle(GridPoint pt)
-        {
-            return new GridPoint(pt.X.Cycle(GridWidth), pt.Y.Cycle(GridHeight));
-        }
     }
 }

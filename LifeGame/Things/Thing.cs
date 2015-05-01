@@ -44,19 +44,14 @@ namespace LifeGame
         protected Action updateDel;
 
         public bool IsCarrObj;
-        [NonSerialized]
-        public Polygon polygon; //I'll use polygon in both thing and being, in being i'll change the images inside the polygon, hopefully
 
         public Thing(ThingType type, GridPoint location)//The type of thing should already be in the initialization
         {
+            Location = location;
             init(type);
             PropsQueueDelta = new Dictionary<ThingProperty, float>();
             PropsQueueReset = new Dictionary<ThingProperty, float>();
             NewTypeQueue = new List<Tuple<ThingType, Dictionary<ThingProperty, float>>>();
-
-
-            Location = location;
-
         }
 
         void init(ThingType type)
@@ -98,7 +93,7 @@ namespace LifeGame
 
                 if (!IsCarrObj)
                 {
-                    GraphicsEngine.Instance.updateCell(this);                       //<- qui c'è la chiamata all'engine
+                    GraphicsEngine.Instance.ChangeCell(this);                       //<- qui c'è la chiamata all'engine
                 }
             }
             else

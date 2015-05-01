@@ -19,7 +19,7 @@
             <TextBlock Height="44" Margin="0,-4,0,0" TextWrapping="Wrap" Text="Terreno" VerticalAlignment="Top" FontSize="24" TextAlignment="Center"/>
             <Button x:Name="saveTerrain" Content="Salva" Margin="0,40,0,0" VerticalAlignment="Top" Height="58" FontSize="24" Cursor="Hand" HorizontalAlignment="Right" Width="113" Click="saveTerrain_Click"/>
             <TextBlock x:Name="terrainName" Margin="0,103,0,0" TextWrapping="Wrap" FontSize="18" TextAlignment="Center"/>
-            <Button x:Name="newTerrain" Content="Nuovo" HorizontalAlignment="Left" Margin="0,40,0,0" VerticalAlignment="Top" Width="114" Height="58" FontSize="24" Cursor="Hand" Click="newTerrain_Click" IsEnabled="False"/>
+            <Button x:Name="newTerrain" Content="Nuovo" HorizontalAlignment="Left" Margin="0,40,0,0" VerticalAlignment="Top" Width="114" Height="58" FontSize="24" Cursor="Hand" Click="newTerrain_Click"/>
         </Grid>
         <Grid Height="172" Margin="568,0,0,108" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="432">
             <Button x:Name="loadGenome" Content="Carica" HorizontalAlignment="Left" Margin="159,40,0,0" VerticalAlignment="Top" Width="114" Height="58" FontSize="24" Cursor="Hand" Click="loadGenome_Click"/>

@@ -46,6 +46,7 @@ namespace LifeGame
 
         public BodyGenome(BodyGenome dadGen, BodyGenome mumGen)
         {
+           // dadGen
             //dadGen.
         }
 

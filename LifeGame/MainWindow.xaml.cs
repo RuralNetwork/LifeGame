@@ -48,7 +48,7 @@ namespace LifeGame
 
     public partial class MainWindow : Window
     {
-
+        double sidePanelWidth;
 
         System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
 
@@ -59,8 +59,8 @@ namespace LifeGame
             //-------------------------------------------------------
             mainpanel.Height = mainwindow.Height;
             mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
-            new GraphicsEngine(mainpanel);
-            new Simulation(30, 20);
+            new GraphicsEngine(this);
+            new Simulation();
         }
 
         private void toggleState_Click(object sender, RoutedEventArgs e)
@@ -83,36 +83,6 @@ namespace LifeGame
             }
         }
 
-        private void createWorld_Click(object sender, RoutedEventArgs e)
-        {
-
-            //for (int i = 0; i < 30; i++)
-            //{
-            //    int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
-            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Earth, null);
-            //    Simulation.Instance.Terrain[x][y].Apply();
-
-            //    x = rand.Next(Simulation.Instance.GridWidth);
-            //    y = rand.Next(Simulation.Instance.GridHeight);
-            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Sand, null);
-            //    Simulation.Instance.Terrain[x][y].Apply();
-            //}
-            //for (int i = 0; i < 50; i++)
-            //{
-            //    int x = rand.Next(Simulation.Instance.GridWidth), y = rand.Next(Simulation.Instance.GridHeight);
-            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Water, null);
-            //    Simulation.Instance.Terrain[x][y].Apply();
-
-            //    x = rand.Next(Simulation.Instance.GridWidth);
-            //    y = rand.Next(Simulation.Instance.GridHeight);
-            //    Simulation.Instance.Terrain[x][y].ChangeType(ThingType.Bush, null);
-            //    Simulation.Instance.Terrain[x][y].Apply();
-            //}
-
-            SetLayout(1);
-
-        }
-
         private void toggleBrush(object sender, RoutedEventArgs e)
         {
             Button current = e.Source as Button;
@@ -129,154 +99,12 @@ namespace LifeGame
             GraphicsEngine.Instance.changeBrush(current.Name);
 
         }
-        private void toggleSpeed(object sender, RoutedEventArgs e)
-        {
-            Button current = e.Source as Button;
-            //for (int i = 0; i < gridSpeed.Children.Count; i++)
-            //{
-            //    UIElement f = gridSpeed.Children[i];
-            //    f.GetType().GetProperty("Background").SetValue(f, new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255)));
-            //}
-            current.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(193, 193, 193));
-            toggleSpeed(current.Name);
-
-        }
-        public void toggleSpeed(string speed)
-        {
-            switch (speed)
-            {
-                case "x1":
-                    GraphicsEngine.Instance.FPS = 1;
-                    break;
-                case "x10":
-                    GraphicsEngine.Instance.FPS = 10;
-                    break;
-                case "Max":
-                    GraphicsEngine.Instance.FPS = 0;
-                    break;
-                default:
-                    GraphicsEngine.Instance.FPS = 1;
-                    break;
-            }
-        }
-
-        void SetLayout(int l)
-        {
-            //mainpanel.Visibility = Visibility.Hidden;
-            //openingTitle.Visibility = Visibility.Hidden;
-            //loadSimulation.Visibility = Visibility.Hidden;
-            //loadWorld.Visibility = Visibility.Hidden;
-            //createTerrain.Visibility = Visibility.Hidden;
-            //newPopulation.Visibility = Visibility.Hidden;
-            //loadGenome.Visibility = Visibility.Hidden;
-            //loadGenome.Visibility = Visibility.Hidden;
-            //toggleState.Visibility = Visibility.Hidden;
-            //gridSpeed.Visibility = Visibility.Hidden;
-            //gridToolbox.Visibility = Visibility.Hidden;
-            //saveSimulation.Visibility = Visibility.Hidden;
-            //saveGenome.Visibility = Visibility.Hidden;
-            ////saveButton.Visibility = Visibility.Hidden;
-            ////headBack.Visibility = Visibility.Hidden;
-            //switch (l)
-            //{
-            //    case 0:
-            //        openingTitle.Visibility = Visibility.Visible;
-            //        loadSimulation.Visibility = Visibility.Visible;
-            //        createTerrain.Visibility = Visibility.Visible;
-            //        //loadWorldButton.Visibility = Visibility.Visible;
-            //        break;
-            //    case 1:
-            //        mainpanel.Width = 910;
-            //        mainpanel.Height = 700;
-            //        gridToolbox.Visibility = Visibility.Visible;
-            //        mainpanel.Visibility = Visibility.Visible;
-            //        newPopulation.Visibility = Visibility.Visible;
-            //        loadGenome.Visibility = Visibility.Visible;
-            //        break;
-            //    case 2:
-            //        mainpanel.Visibility = Visibility.Visible;
-            //        toggleState.Visibility = Visibility.Visible;
-            //        gridSpeed.Visibility = Visibility.Visible;
-            //        saveSimulation.Visibility = Visibility.Visible;
-            //        saveGenome.Visibility = Visibility.Visible;
-            //        //saveButton.Visibility = Visibility.Visible;
-            //        //headBack.Visibility = Visibility.Visible;
-            //        break;
-            //    default:
-            //        break;
-            //}
-        }
-
-        private void loadGenome_Click(object sender, RoutedEventArgs e)
-        {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            Tuple<HallOfFame, NNGlobalLists> tuple;
-            if (Serializer.Load(out tuple, input))
-            {
-                Simulation.Instance.HallOfFame = tuple.Item1;
-                Simulation.Instance.NNLists = tuple.Item2;
-                SetLayout(2);
-            }
-        }
-
-        private void loadWorld_Click(object sender, RoutedEventArgs e)
-        {
-            SetLayout(1);
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Prompt", "Title", "Default", -1, -1);
-            if (Simulation.Instance != null)
-            {
-                SetLayout(1);
-            }
-        }
-
-        //private void goBack(object sender, RoutedEventArgs e)
-        //{
-        //    Simulation.Instance.UnbindEngine();
-        //    Simulation.Instance = null;
-        //    SetLayout(0);
-        //}
-
-        private void newPopulation_Click(object sender, RoutedEventArgs e)
-        {
-            toggleState_Click(null, null);
-            SetLayout(2);
-        }
-
-        private void loadSimulation_Click(object sender, RoutedEventArgs e)
-        {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
-
-            if (Serializer.Load(out Simulation.Instance, input))
-            {
-                Simulation.Instance.InitLoad();
-                SetLayout(1);
-            }
-        }
-
-        private void saveSimulation_Click(object sender, RoutedEventArgs e)
-        {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file della simulazione");
-            if (Serializer.Save(Simulation.Instance, input))
-            {
-                Properties.Settings.Default.lastSim = input;
-                Properties.Settings.Default.Save();
-                Simulation.Instance.IsSaved = true;
-            }
-
-        }
-
-        private void saveGenome_Click(object sender, RoutedEventArgs e)
-        {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Inserire il nome del file del genoma");
-            Serializer.Save(new Tuple<HallOfFame, NNGlobalLists>(Simulation.Instance.HallOfFame, Simulation.Instance.NNLists), input);
-
-        }
 
         private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!Simulation.Instance.IsSaved)
             {
-                Serializer.Save(Simulation.Instance, "lastsim");
+                Serializer.Save(Simulation.Instance, "lastsim.sim");
                 Properties.Settings.Default.lastSim = "lastsim";
                 Properties.Settings.Default.Save();
             }
@@ -290,7 +118,7 @@ namespace LifeGame
             mainMenu.Margin = new Thickness();
             try
             {
-                Serializer.Load(out Simulation.Instance, Properties.Settings.Default.lastSim);
+                Serializer.Load(ref Simulation.Instance, Properties.Settings.Default.lastSim + ".sim");
                 Simulation.Instance.IsSaved = true;
                 Simulation.Instance.InitLoad();
                 mainMenu.simulationName.Text = "Simulazione: " + Properties.Settings.Default.lastSim;
@@ -310,20 +138,14 @@ namespace LifeGame
             timer.Start();
         }
 
-        //private void buttonToolHover(object sender, MouseEventArgs e)
-        //{
-        //    Button current = e.Source as Button;
-        //    current.Background = GraphicsEngine.Instance.TerrainBrushes[(ThingType)Enum.Parse(typeof(ThingType), current.Name, true)];
-        //}
-
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (GraphicsEngine.Instance != null)
             {
                 if (speedSlider.Value != 100.0)
                 {
-                GraphicsEngine.Instance.FPS = (float)speedSlider.Value;
-                SpeedText.Text = GraphicsEngine.Instance.FPS.ToString("0.0");
+                    GraphicsEngine.Instance.FPS = (float)speedSlider.Value;
+                    SpeedText.Text = GraphicsEngine.Instance.FPS.ToString("0.0");
                 }
                 else
                 {
@@ -335,11 +157,16 @@ namespace LifeGame
 
         private void goBack_Click(object sender, RoutedEventArgs e)
         {
-            if (Simulation.Instance.IsRunning)
+            if (Simulation.Instance != null && Simulation.Instance.IsRunning)
             {
                 toggleState_Click(null, null);
             }
             mainMenu.Visibility = Visibility.Visible;
+        }
+
+        private void closeSidePanel_Click(object sender, RoutedEventArgs e)
+        {
+            mainGrid.ColumnDefinitions[0].Width = new GridLength(0);
         }
     }
 }
