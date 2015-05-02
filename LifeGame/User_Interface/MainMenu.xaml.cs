@@ -29,8 +29,12 @@ namespace LifeGame
 
         private void newSimulation_Click(object sender, RoutedEventArgs e)
         {
+            foreach (var being in Simulation.Instance.Population)
+            {
+                GraphicsEngine.Instance.RemoveBeing(being.Value);
+            }
             new Simulation();
-            Simulation.Instance.IsSaved = true;
+            GraphicsEngine.Instance.IsSaved = true;
             simulationName.Text = "Nuova simulazione";
             newTerrain_Click(null, null);
             newGenome_Click(null, null);
@@ -44,7 +48,7 @@ namespace LifeGame
             if (Serializer.Load(ref Simulation.Instance, input + ".sim"))
             {
                 Simulation.Instance.InitLoad();
-                Simulation.Instance.IsSaved = true;
+                GraphicsEngine.Instance.IsSaved = true;
                 simulationName.Text = "Simulazione: " + input;
                 terrainName.Text = "";
                 genomeName.Text = "";
@@ -63,7 +67,7 @@ namespace LifeGame
             {
                 Properties.Settings.Default.lastSim = input;
                 Properties.Settings.Default.Save();
-                Simulation.Instance.IsSaved = true;
+                GraphicsEngine.Instance.IsSaved = true;
                 simulationName.Text = "Simulazione: " + input;
             }
             else
@@ -84,6 +88,7 @@ namespace LifeGame
             }
             foreach (var being in Simulation.Instance.Population)
             {
+                GraphicsEngine.Instance.RemoveBeing(being.Value);
                 Simulation.Instance.freeBeingObjs.Add(being.Value);
             }
             Simulation.Instance.Population.Clear();
@@ -211,7 +216,7 @@ namespace LifeGame
 
         }
 
-        private void startButton_Click(object sender, RoutedEventArgs e)
+        public void startButton_Click(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Hidden;
             startButton.Content = "Riprendi";

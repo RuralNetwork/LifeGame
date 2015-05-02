@@ -28,7 +28,6 @@ namespace LifeGame
         public Chromosome[] ChromArr1 { get; private set; }// for now we test with 1 pair of sexual chromosomes and 1 pair of autosomes
         public Chromosome[] ChromArr2 { get; private set; }
 
-
         //public static float RProb = 0.1f;
         //public static float GProb = 0.1f;
         //public static float BProb = 0.1f;

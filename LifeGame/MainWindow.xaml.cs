@@ -42,36 +42,70 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media.Animation;
 using System.Runtime.Serialization;
+using System.Windows.Threading;
 
 namespace LifeGame
 {
 
     public partial class MainWindow : Window
     {
-        double sidePanelWidth;
+        DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Background);
 
-        System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Background);
+        Stopwatch idleWatch = Stopwatch.StartNew();
+        Stopwatch simWatch = Stopwatch.StartNew();
+
+        bool isRunning;
 
         public MainWindow()
         {
             InitializeComponent();
             //---------------------Test Space------------------------
             //-------------------------------------------------------
-            mainpanel.Height = mainwindow.Height;
-            mainpanel.Width = mainwindow.Width - toolbox.Width.Value;
             new GraphicsEngine(this);
             new Simulation();
+            Grid.SetRowSpan(mainMenu, 2);//this continues to revert to 0 in the designer
+
+            InputManager.Current.PreProcessInput += (sender, e) =>
+            {
+                if (e.StagingItem.Input is MouseButtonEventArgs)
+                {
+                    idleWatch.Restart();
+                }
+            };
+
+            timer = new DispatcherTimer(DispatcherPriority.Background);
+            timer.Tick += (sender, e) =>
+            {
+                if (isRunning && Simulation.Instance != null && (GraphicsEngine.Instance.FPS == 0 || simWatch.Elapsed.TotalSeconds > 1 / GraphicsEngine.Instance.FPS))
+                {
+                    Title = (1 / simWatch.Elapsed.TotalSeconds).ToString("0.0");
+                    simWatch.Restart();
+                    Simulation.Instance.Update();
+                    GraphicsEngine.Instance.Update();
+                }
+
+                if (idleWatch.Elapsed.TotalMinutes > 1.0)
+                {
+                    goBack_Click(null, null);
+                    mainMenu.startButton_Click(null, null);
+                    toggleState_Click(null, null);
+                    speedSlider.Value = 5;
+                    idleWatch.Reset();
+                }
+            };
+            timer.Start();
+
         }
 
         private void toggleState_Click(object sender, RoutedEventArgs e)
         {
-            Simulation.Instance.IsSaved = false;
+            GraphicsEngine.Instance.IsSaved = false;
             //The function to call the mesagebox, then I'll implement it inside the graphical engine
             /*var prova = new dialoguebox("testo");
             mainpanel.Children.Add(prova);
             //Here to center the box
             Canvas.SetLeft(prova, 50);*/
-            Simulation.Instance.TogglePause();
+            isRunning = !isRunning;
             //toggling text
             if ((string)toggleState.Content == "Ferma Simulazione")
             {
@@ -102,7 +136,7 @@ namespace LifeGame
 
         private void mainwindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!Simulation.Instance.IsSaved)
+            if (!GraphicsEngine.Instance.IsSaved)
             {
                 Serializer.Save(Simulation.Instance, "lastsim.sim");
                 Properties.Settings.Default.lastSim = "lastsim";
@@ -113,13 +147,18 @@ namespace LifeGame
 
         private void mainwindow_Loaded(object sender, RoutedEventArgs e)
         {
+            mainpanel.Width = GraphicsEngine.GRID_WIDTH * 30;
+            mainpanel.Height = GraphicsEngine.GRID_HEIGHT * 34 + 17;
+            infoPanel.Visibility = Visibility.Hidden;
+            infoPanel.Margin = new Thickness();
+
             mainMenu.Width = mainGrid.ActualWidth;
             mainMenu.Height = mainGrid.ActualHeight;
             mainMenu.Margin = new Thickness();
             try
             {
                 Serializer.Load(ref Simulation.Instance, Properties.Settings.Default.lastSim + ".sim");
-                Simulation.Instance.IsSaved = true;
+                GraphicsEngine.Instance.IsSaved = true;
                 Simulation.Instance.InitLoad();
                 mainMenu.simulationName.Text = "Simulazione: " + Properties.Settings.Default.lastSim;
             }
@@ -127,15 +166,6 @@ namespace LifeGame
             {
             }
             //debug
-            timer.Tick += delegate
-            {
-                if (Simulation.Instance != null)
-                {
-                    Title = Simulation.Instance.ActualFPS.ToString("0.0");
-                }
-            };
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
-            timer.Start();
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -157,7 +187,7 @@ namespace LifeGame
 
         private void goBack_Click(object sender, RoutedEventArgs e)
         {
-            if (Simulation.Instance != null && Simulation.Instance.IsRunning)
+            if (Simulation.Instance != null && isRunning)
             {
                 toggleState_Click(null, null);
             }
@@ -167,6 +197,16 @@ namespace LifeGame
         private void closeSidePanel_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.ColumnDefinitions[0].Width = new GridLength(0);
+        }
+
+        public void ViewReposition()
+        {
+            mainpanel.Margin = new Thickness((parentView.ActualWidth - mainpanel.ActualWidth) / 2, (parentView.ActualHeight - mainpanel.ActualHeight) / 2,
+                                            (parentView.ActualWidth - mainpanel.ActualWidth) / 2, (parentView.ActualHeight - mainpanel.ActualHeight) / 2);
+        }
+
+        private void mainwindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
         }
     }
 }

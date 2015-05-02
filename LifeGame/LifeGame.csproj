@@ -73,6 +73,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -90,15 +91,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="User_Interface\BeingPropsControl.xaml.cs">
+      <DependentUpon>BeingPropsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Being\Allele.cs" />
     <Compile Include="Being\Fitness.cs" />
     <Compile Include="Being\HallOfFame.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="dialoguebox.xaml.cs">
+    <Compile Include="User_Interface\dialoguebox.xaml.cs">
       <DependentUpon>dialoguebox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums.cs" />
-    <Compile Include="MainMenu.xaml.cs">
+    <Compile Include="User_Interface\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Math_stuff\Average.cs" />
@@ -116,17 +120,21 @@
     <Compile Include="Being\NNGenomeStructs.cs" />
     <Compile Include="Math_stuff\RandomBool.cs" />
     <Compile Include="Simulation.cs" />
-    <Compile Include="Graphics.cs" />
+    <Compile Include="User_Interface\Graphics.cs" />
     <Compile Include="Math_stuff\GridPoint.cs" />
     <Compile Include="Being\Being.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Math_stuff\Vector.cs" />
     <Compile Include="Math_stuff\ZigguratGaussianSampler.cs" />
-    <Page Include="dialoguebox.xaml">
+    <Page Include="User_Interface\BeingPropsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainMenu.xaml">
+    <Page Include="User_Interface\dialoguebox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="User_Interface\MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

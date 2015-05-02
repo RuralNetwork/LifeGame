@@ -14,6 +14,14 @@ namespace LifeGame
         public Genome FatherGen { get; private set; }
         public Genome MotherGen { get; private set; }
 
+        public bool Sex
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Genome(Genome dadGen, Genome mumGen)
         {
             Fitness = new float[Constants.FITNESS_PARAM_COUNT];

@@ -218,8 +218,8 @@ namespace LifeGame
 
             //---------------- Mountain:
             propsDict = new Dictionary<ThingProperty, float>();
-            propsDict.Add(ThingProperty.Height, 0);
-            propsDict.Add(ThingProperty.Alpha, 0);
+            propsDict.Add(ThingProperty.Height, 1000f);
+            propsDict.Add(ThingProperty.Alpha, 1f);
             propsDict.Add(ThingProperty.Weigth, 0);
             propsDict.Add(ThingProperty.Color1, 0.48f);
             propsDict.Add(ThingProperty.Color2, 0.42f);

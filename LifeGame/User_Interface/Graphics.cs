@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using System.Drawing;
+using System.Windows.Input;
 
 namespace LifeGame
 {
@@ -49,10 +50,14 @@ namespace LifeGame
         Polygon[] beingShapes;
         Polygon[][] terrainPolygons;
 
+        public int SelectedID = -1;
+
+
         /// <summary>
         /// This is the update and draw speed.
         /// </summary>
         public float FPS = 10;
+        public bool IsSaved;// it refers to the simulation, put here for convenience
 
         public GraphicsEngine(MainWindow window)
         {
@@ -94,13 +99,15 @@ namespace LifeGame
                     var pt = new GridPoint(x, y);
                     var poly = new Polygon() { Points = hexPoints };
                     poly.RenderTransform = new TranslateTransform((Double)30 * pt.CartesianX, (Double)30 * pt.CartesianY);
-                    poly.MouseUp += cellClick;
+                    poly.MouseMove += mouseMove;
+                    poly.MouseDown += cellClick;
                     poly.Tag = pt;
                     terrainPolygons[x][y] = poly;
                     poly.Fill = TerrainBrushes[ThingType.Earth];
                     canvas.Children.Add(poly);
                 }
             }
+
             int id = 0;
             PointCollection series = new PointCollection();
             series.Add(new System.Windows.Point(3, 0));
@@ -110,14 +117,39 @@ namespace LifeGame
             beingShapes = new Polygon[MAX_POPULATION_COUNT];
             for (int i = 0; i < MAX_POPULATION_COUNT; i++)
             {
-                var poly = new Polygon() { Points = series };
-                poly.MouseUp += beingClick;
+                var poly = new Polygon() { Points = series, Stroke = System.Windows.Media.Brushes.Black, StrokeThickness = 0 };
+                poly.MouseLeftButtonDown += beingClick;
                 poly.Tag = id;
                 beingShapes[id++] = poly;
                 canvas.Children.Add(poly);
                 poly.Visibility = Visibility.Hidden;
             }
+        }
 
+
+        public void Update()
+        {
+            if (SelectedID != -1)
+            {
+                window.beingStats.UpdateStats(Simulation.Instance.Population[SelectedID]);
+            }
+        }
+
+        void cellClick(object sender, MouseEventArgs e)
+        {
+            mouseMove(sender, e);
+        }
+
+        void mouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Polygon poly = sender as Polygon;
+                var loc = (GridPoint)poly.Tag;
+                var thing = Simulation.Instance.Terrain[loc.X][loc.Y];
+                thing.ChangeType(currentType, null);
+                thing.Apply();
+            }
         }
 
         //public void messageBox(int x, int y, int w, int h, string message, int life = 0, Del callbackOK = null, Del callbackNO = null)
@@ -174,7 +206,13 @@ namespace LifeGame
 
         public void RemoveBeing(Being being)
         {
-            beingShapes[being.ID].Visibility = Visibility.Hidden;
+            var poly = beingShapes[being.ID];
+            poly.Visibility = Visibility.Hidden;
+            if (SelectedID == being.ID)
+            {
+                DeselectBeings();
+            }
+
         }
 
         public void WalkAnimation(Being being)
@@ -227,26 +265,32 @@ namespace LifeGame
             this.currentType = (ThingType)Enum.Parse(typeof(ThingType), name, true);
         }
 
-        void cellClick(object sender, RoutedEventArgs e)
-        {
-            Polygon poly = sender as Polygon;
-            var loc = (GridPoint)poly.Tag;
-            var thing = Simulation.Instance.Terrain[loc.X][loc.Y];
-            thing.ChangeType(currentType, null);
-            thing.Apply();
-        }
-
         void beingClick(object sender, RoutedEventArgs e)
         {
             Polygon poly = sender as Polygon;
             var id = (int)poly.Tag;
             var being = Simulation.Instance.Population[id];
-            window.mainGrid.ColumnDefinitions[0].Width = new GridLength(window.sidePanel.Width);
+            //window.mainGrid.ColumnDefinitions[0].Width = new GridLength(window.sidePanel.Width);
+
+            //canvas.Margin = new Thickness((window.parentView.ActualWidth - canvas.ActualWidth) / 2, (window.parentView.ActualHeight - canvas.ActualHeight) / 2,
+            //                                (window.parentView.ActualWidth - canvas.ActualWidth) / 2, (window.parentView.ActualHeight - canvas.ActualHeight) / 2);
+            DeselectBeings();
+            SelectedID = id;
+            window.beingStats.InitStats(being);
+            Update();
+            window.infoPanel.Visibility = Visibility.Visible;
+            poly.StrokeThickness = 2;
         }
 
-        public void DeselectAll()
+        public void DeselectBeings()
         {
+            if (SelectedID != -1)
+            {
 
+                beingShapes[SelectedID].StrokeThickness = 0;
+                SelectedID = -1;
+                window.infoPanel.Visibility = Visibility.Hidden;
+            }
         }
 
 

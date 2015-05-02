@@ -346,6 +346,7 @@ namespace LifeGame
                     if (tgtType == 2)
                     {
                         cellPt = Location;
+                        var lastCell = cellPt;
                         while (EnergySpent > 0 && NCellsWalk < 3)
                         {
                             cellPt = GraphicsEngine.Cycle(cellPt.GetNearCell(cDir));
@@ -355,12 +356,16 @@ namespace LifeGame
                             {
                                 walkThrough(target.InnerThing);
                             }
-                            NCellsWalk++;
+                            if (EnergySpent > 0)
+                            {
+                                lastCell = cellPt;
+                                NCellsWalk++;
+                            }
                             //FitnessPoints++;
                         }
                         if (NCellsWalk > 0)
                         {
-                            sim.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, cellPt));
+                            sim.BeingLocQueue.Add(new Tuple<Being, GridPoint>(this, lastCell));
                             int a = (int)cDir;
 
                             walk[a]++;
@@ -418,8 +423,8 @@ namespace LifeGame
             {
                 ChangeProp((ThingProperty)BeingMutableProp.Energy, +100f, false);
             }
-            ChangeProp((ThingProperty)BeingMutableProp.Hunger, -(energy + 10f) * 0.002f, false);
-            ChangeProp((ThingProperty)BeingMutableProp.Thirst, -(energy + 10f) * 0.005f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Hunger, -energy * 0.00002f - 0.015f, false);
+            ChangeProp((ThingProperty)BeingMutableProp.Thirst, -energy * 0.00005f - 0.02f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Health, ((Properties[(ThingProperty)BeingMutableProp.Hunger] + Properties[(ThingProperty)BeingMutableProp.Thirst]) / 2 - 0.2f) * 0.05f, false);
             ChangeProp((ThingProperty)BeingMutableProp.Integrity, -0.01f, false);
 
@@ -431,6 +436,11 @@ namespace LifeGame
             if (Properties[(ThingProperty)BeingMutableProp.Health] < 0.01f)
             {
                 sim.MakeDie(this); //  FATALITY!!!
+            }
+
+            if (terrain[Location.X][Location.Y].Type==ThingType.Mountain)// die for cold
+            {
+                sim.MakeDie(this);
             }
 
             InnerThing.Update();
@@ -492,7 +502,7 @@ namespace LifeGame
 
         void walkThrough(Thing t)
         {
-            EnergySpent -= t.Properties[ThingProperty.Height] / Properties[ThingProperty.Height] *
+            EnergySpent -= (t.Properties[ThingProperty.Height] - Properties[ThingProperty.Height]) *
                 (t.Properties[ThingProperty.Alpha] + Properties[ThingProperty.Alpha]) * 10f + Properties[ThingProperty.Weigth] / CAL2KG;
         }
     }
